@@ -8,6 +8,16 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    private let viewModel: ViewModel
+    
+    init(viewModel: ViewModel = ViewModel()) {
+        RichDependencyInject.home.register(ViewModelDependencyable.self) { _ in
+            return ViewModelDependency()
+        }
+        self.viewModel = viewModel
+    }
+    
     var body: some View {
         VStack {
             Image(systemName: "globe")
