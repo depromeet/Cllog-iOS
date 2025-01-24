@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "group:Projects"
+      name = "Projects">
+      <Group
+         location = "group:App"
+         name = "App">
+         <FileRef
+            location = "group:CleanApp/CleanApp.xcodeproj">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:Data"
+         name = "Data">
+         <FileRef
+            location = "group:Account/AccountData.xcodeproj">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:Domain"
+         name = "Domain">
+         <FileRef
+            location = "group:Account/AccountDomain.xcodeproj">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:Module"
+         name = "Module">
+         <FileRef
+            location = "group:Account/Account.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:Umbrella/Umbrella.xcodeproj">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:Presentation"
+         name = "Presentation">
+         <FileRef
+            location = "group:Account/AccountPresentation.xcodeproj">
+         </FileRef>
+      </Group>
+   </Group>
+</Workspace>
