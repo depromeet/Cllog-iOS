@@ -9,7 +9,6 @@ import ProjectDescription
 
 public extension TargetDependency {
     struct Domains {
-        public struct My {}
         public struct Sample {}
         public struct Domain {}
     }
@@ -35,15 +34,6 @@ public extension TargetDependency.Domains.Domain {
 
 public extension TargetDependency.Domains.Sample {
     static let name = "Sample"
-    
-    static let domain = TargetDependency.Domains.project(
-        name: "\(name)Domain",
-        service: .sample
-    )
-}
-
-public extension TargetDependency.Domains.My {
-    static let name = "My"
     
     static let domain = TargetDependency.Domains.project(
         name: "\(name)Domain",
