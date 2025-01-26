@@ -24,6 +24,16 @@
 
 <br />
 
+## 🥝 Wiki
+
+### 📑 Docs
+- [문서 링크]()
+
+### 👻 Blog
+- [블로그 링크]()
+
+<br />
+
 ## 🏘️ Member
 |[이준영](https://github.com/junlight94)|[여정승](https://github.com/jungseungyeo)|[이승환](https://github.com/lsh424)|[이지원](https://github.com/JIWON1923)|
 |------|---|---|---|
