@@ -30,8 +30,8 @@ public extension TargetDependency.Modules {
     
     static func networkModule(_ service: ServiceType) -> TargetDependency {
         TargetDependency.project(
-            target: "NetworkModule",
-            path: .relativeToModule(path: "NetworkModule", service: service)
+            target: "SpaceX",
+            path: .relativeToModule(path: "SpaceX", service: service)
         )
     }
     
