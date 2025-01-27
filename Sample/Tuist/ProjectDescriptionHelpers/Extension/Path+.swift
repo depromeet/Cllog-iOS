@@ -28,6 +28,10 @@ public extension ProjectDescription.Path {
         return .relativeToRoot("Projects/\(service.rawValue)/Data/Data")
     }
     
+    static func releativeNetworker(_ service: ServiceType) -> Self {
+        return .relativeToRoot("Projects/\(service.rawValue)/Data/Networker")
+    }
+    
     static func releativShared(_ service: ServiceType) -> Self {
         return .relativeToRoot("Projects/\(service.rawValue)/Shared")
     }

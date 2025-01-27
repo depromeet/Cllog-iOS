@@ -13,6 +13,6 @@ let project = Project.configure(
     product: .staticFramework,
     dependencies: [
         .Core.designKit(.sample),
-        .Domains.Domain.domain,
+        .Domains.Domain.domain(.sample),
     ]
 )

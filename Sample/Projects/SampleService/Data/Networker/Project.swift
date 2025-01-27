@@ -9,7 +9,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.configure(
-    moduleType: .module(name: "NetworkModule"),
+    moduleType: .module(name: "Networker"),
     product: .staticFramework,
     dependencies: [
         .Framework.SpaceX

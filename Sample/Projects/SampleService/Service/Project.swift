@@ -13,6 +13,6 @@ let project = Project.configure(
     product: .staticFramework,
     dependencies: [
         .Features.Main.feature,
-        .Modules.data(.sample)
+        .Data.data(.sample)
     ]
 )
