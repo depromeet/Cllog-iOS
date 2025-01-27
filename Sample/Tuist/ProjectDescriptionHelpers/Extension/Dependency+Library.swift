@@ -8,7 +8,12 @@
 import ProjectDescription
 
 public extension TargetDependency {
+    struct Framework {}
     struct Library {}
+}
+
+public extension TargetDependency.Framework {
+    static let SpaceX = TargetDependency.project(target: "SpaceX", path: "../../../../Projects/AppModule/SpaceX")
 }
 
 public extension TargetDependency.Library {
