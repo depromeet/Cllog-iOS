@@ -2,16 +2,18 @@
 //  Project.swift
 //  Config
 //
-//  Created by Junyoung on 1/9/25.
+//  Created by saeng lin on 1/27/25.
 //
+
+import Foundation
 
 import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.configure(
-    moduleType: .module(name: "NetworkModule"),
+    moduleType: .module(name: "SpaceX"),
     product: .staticFramework,
     dependencies: [
-        .Framework.SpaceX
+        .Library.alamofire
     ]
 )
