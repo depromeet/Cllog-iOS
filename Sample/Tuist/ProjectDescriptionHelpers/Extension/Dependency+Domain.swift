@@ -26,10 +26,12 @@ public extension TargetDependency.Domains {
 public extension TargetDependency.Domains.Domain {
     static let name = "Domain"
     
-    static let domain = TargetDependency.Domains.project(
-        name: "\(name)",
-        service: .sample
-    )
+    static func domain(_ service: ServiceType) -> TargetDependency {
+        TargetDependency.Domains.project(
+            name: "\(name)",
+            service: service
+        )
+    }
 }
 
 public extension TargetDependency.Domains.Sample {

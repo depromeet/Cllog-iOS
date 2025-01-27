@@ -12,7 +12,7 @@ let project = Project.configure(
     moduleType: .module(name: "Data"),
     product: .staticFramework,
     dependencies: [
-        .Modules.networkModule(.sample),
-        .Domains.Domain.domain,
+        .Data.networker(.sample),
+        .Domains.Domain.domain(.sample),
     ]
 )
