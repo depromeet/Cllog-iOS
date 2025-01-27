@@ -1,0 +1,4 @@
+//SWIFT_ACTIVE_COMPILATION_CONDITIONS=DEV
+OTHER_SWIFT_FLAGS[config=TEST][sdk=*] = $(inherited) -DDevelop
+GCC_PREPROCESSOR_DEFINITIONS = Test=0 Develop=1 Production=0
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
