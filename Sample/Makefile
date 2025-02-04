@@ -57,7 +57,7 @@ install:
 	@make close_xcode
 	@echo "\033[34m[1/6] Running 'tuist clean'...\033[39m"
 	@make clean
-	@echo "\033[34m[2/6] Running 'tuist fetch'...\033[39m"
+	@echo "\033[34m[2/6] Running 'tuist install'...\033[39m"
 	@make fetch
 	@echo "\033[34m[3/6] Running 'tuist generate'...\033[39m"
 	@make generate
