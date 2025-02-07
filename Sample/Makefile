@@ -52,3 +52,38 @@ module:
 	echo "\n"; \
 	echo "🔨 모듈 생성중입니다"; \
 	tuist scaffold "$$folderName" --name "$$name" --service "$$service_name" --path "$$destination"
+
+install:
+	@make close_xcode
+	@echo "\033[34m[1/6] Running 'tuist clean'...\033[39m"
+	@make clean
+	@echo "\033[34m[2/6] Running 'tuist install'...\033[39m"
+	@make fetch
+	@echo "\033[34m[3/6] Running 'tuist generate'...\033[39m"
+	@make generate
+	@echo "\033[34m[4/6] Running 'tuist graph'...\033[39m"
+	@make depency_graph
+	@echo "\033[34m[6/6] Running 'open Xcode'...\033[39m"
+	@make open_xcode
+	@echo "\033[32mCompleted!\033[39m"
+
+clean:
+	@tuist clean
+
+edit:
+	@tuist edit
+
+fetch:
+	tuist install
+
+depency_graph:
+	tuist graph
+
+generate:
+	@tuist generate --no-open
+	
+open_xcode:
+	@open TestProject.xcworkspace
+	
+close_xcode:
+	-@pkill -x Xcode
