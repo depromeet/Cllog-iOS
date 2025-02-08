@@ -7,11 +7,15 @@
 
 import SwiftUI
 
+import DesignKit
+
 @main
 struct SampleApp: App {
     var body: some Scene {
         WindowGroup {
             Text("hi")
+                // 테스트용 코드
+                .foregroundColor(.dpUI.background)
         }
     }
 }
