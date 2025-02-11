@@ -16,7 +16,7 @@ public struct AppConfiguration {
     let projectName: String = "Clog"
     let organizationName = "Supershy"
     let shortVersion: String = "1.0.0"
-    let bundleIdentifier: String = "com.supershy.climbinglog.prod"
+    let bundleIdentifier: String = "com.supershy.climbinglog.product"
     let displayName: String = "클로그"
     let destination: Set<Destination> = [.iPhone, .iPad]
     var entitlements: Entitlements? = nil
