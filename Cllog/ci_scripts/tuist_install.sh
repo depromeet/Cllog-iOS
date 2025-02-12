@@ -1,11 +1,6 @@
 #!/bin/sh
 
-# mise 설치
-curl https://mise.run | sh
-"eval \"\$(/Users/local/.local/bin/mise activate zsh)\"" >> "/Users/local/.zshrc"
-
-# tuist 설치
-mise install tuist
+brew install tuist
 
 cd ..
 
