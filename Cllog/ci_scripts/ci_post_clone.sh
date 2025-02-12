@@ -4,4 +4,5 @@ curl -Ls https://install.tuist.io | bash
 
 cd ..
 
-make install
+tuist install
+tuist generate --no-open
