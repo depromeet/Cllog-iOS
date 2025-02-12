@@ -2,4 +2,6 @@
 
 curl -Ls https://install.tuist.io | bash
 
-make install --path ..
+cd ..
+
+make install
