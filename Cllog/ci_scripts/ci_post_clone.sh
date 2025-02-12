@@ -1,8 +1,5 @@
 #!/bin/sh
 
-curl -Ls https://install.tuist.io | bash
+chmod +x tuist_install.sh
 
-cd ..
-
-tuist install
-tuist generate --no-open
+./tuist_install.sh
