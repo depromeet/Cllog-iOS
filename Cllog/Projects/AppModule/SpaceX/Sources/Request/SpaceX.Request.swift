@@ -11,7 +11,6 @@ import Foundation
 import Combine
 
 public protocol SpaceXRequest {
-    
     func reponsePublisher<T: Decodable>() -> AnyPublisher<T, any Error>
     func reponseAsync<T: Decodable>() async throws -> T
     func response<T: Decodable>(_ complete: @escaping @Sendable (Result<T, any Error>) -> Void)
@@ -23,10 +22,10 @@ extension SpaceX {
         private let id: UUID
         public let session: URLSession
         public let path: URLConversion
-        public let params: [String: Any]?
+        public let params: SafeDictionary<String, Any>?
         public let method: Method
         public let requestTime: Date
-        let trakers: [any SpaceXTracking]
+        let trakers: SafeTrackers
 
         /// 초기화
         /// - Parameters:
@@ -38,10 +37,10 @@ extension SpaceX {
             id: UUID = .init(),
             session: URLSession,
             path: URLConversion,
-            params: [String: Any]? = nil,
+            params: SafeDictionary<String, Any>? = nil,
             method: Method,
             requestTime: Date = Date(),
-            trakers: [any SpaceXTracking]
+            trakers: SafeTrackers
         ) {
             self.id = id
             self.session = session

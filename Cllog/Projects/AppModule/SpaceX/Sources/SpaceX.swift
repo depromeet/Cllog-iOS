@@ -13,24 +13,22 @@ import Alamofire
 extension SpaceX {
     
     // default
-    public static let session: SpaceX = .init(
-        configure: SpaceX.default()
-    ).option([
-        SpaceXLogTraking()
-    ])
-    
+    public static let session: SpaceX = .init(configure: SpaceX.default())
+        .option([
+            SpaceXLogTraking()
+        ])    
 }
 
-public final class SpaceX: @unchecked Sendable {
+public final class SpaceX: Sendable {
     
     private let session: URLSession
-    private var trackers: [any SpaceXTracking] = []
+    private let trackers: SafeTrackers = .init()
     
     /// 초기화
     /// - Parameter configure: SpaceXConfiguration ( URLSession Configure - Service 별로 주입 필요)
     public init(
         configure: SpaceXConfiguration = SpaceX.default()
-    ) {    
+    ) {
         self.session = URLSession(
             configuration: configure.configure(),
             delegate: configure.delegate,
@@ -44,7 +42,7 @@ public final class SpaceX: @unchecked Sendable {
     public func option(
         _ trackers: [any SpaceXTracking]
     ) -> SpaceX {
-        self.trackers.append(contentsOf: trackers)
+        self.trackers.append(trackers)
         return self
     }
     
@@ -57,7 +55,7 @@ public final class SpaceX: @unchecked Sendable {
     /// - Returns: SpaceXRequest
     public func request(
         _ urlConversion: URLConversion,
-        params: [String: Any]? = nil,
+        params: SafeDictionary<String, Any>? = nil,
         method: SpaceX.Method
     ) -> SpaceXRequest {
         let request = SpaceX.Request(

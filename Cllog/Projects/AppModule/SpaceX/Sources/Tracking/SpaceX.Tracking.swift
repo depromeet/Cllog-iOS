@@ -9,12 +9,11 @@
 import Foundation
 
 public protocol SpaceXTracking: Sendable {
-    
     func didRequest(_ request: SpaceX.Request)
     func willRequest(_ request: SpaceX.Request, _ response: SpaceX.Response)
 }
 
-public final class SpaceXLogTraking: @unchecked Sendable, SpaceXTracking {
+public struct SpaceXLogTraking: SpaceXTracking {
     
     /// 로그 요청
     /// - Parameter request: 요청 정보

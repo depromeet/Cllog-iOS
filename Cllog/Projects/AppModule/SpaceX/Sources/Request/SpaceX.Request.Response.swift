@@ -70,12 +70,12 @@ extension SpaceX.Request: SpaceXRequest {
     
     public func reponseAsync<T: Decodable>() async throws -> T {
         
-        self.trakers.forEach { $0.didRequest(self) }
+        self.trakers.allTrackers().forEach { $0.didRequest(self) }
         
         let (data, urlResponse) = try await self.perform()
         let spaceXResponse = SpaceX.Response(response: urlResponse, data: data, error: nil)
         
-        self.trakers.forEach { $0.willRequest(self, spaceXResponse) }
+        self.trakers.allTrackers().forEach { $0.willRequest(self, spaceXResponse) }
         
         let model: T = try self.validResponse(spaceXResponse)
         return model
