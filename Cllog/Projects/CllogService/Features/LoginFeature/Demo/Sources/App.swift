@@ -4,7 +4,7 @@ import ComposableArchitecture
 
 @main
 struct LoginApp: App {
-//    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     static let store = Store(initialState: LoginFeature.State()) {
         LoginFeature()
