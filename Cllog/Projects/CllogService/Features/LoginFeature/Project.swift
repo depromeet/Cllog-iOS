@@ -1,17 +1,10 @@
-//
-//  Project.swift
-//  Config
-//
-//  Created by Junyoung on 1/9/25.
-//
-
 import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.configure(
-    moduleType: .module(name: "DesignKit"),
+    moduleType: .feature(name: "Login", type: .micro),
     product: .staticFramework,
     dependencies: [
-        .Library.tca,
+        .Core.core(.cllog)
     ]
 )
