@@ -11,7 +11,9 @@ public struct InfoPlist {
     private static let commonInfoPlist: [String: Plist.Value] = [
         "CFBundleDevelopmentRegion": "ko",
         "CFBundleVersion": "1",
-        "UILaunchStoryboardName": "Launch Screen",
+        "UILaunchScreen": [
+            "BackgroundColor": "systemBackgroundColor"
+        ],
         "UIUserInterfaceStyle": "Light",
         "LSSupportsOpeningDocumentsInPlace": true,
         "ITSAppUsesNonExemptEncryption": false,
