@@ -25,7 +25,7 @@ extension Starlink {
     }
 }
 
-public final class Starlink: Sendable {
+public final class Starlink: @unchecked Sendable {
     
     private let session: Sessionable
     private let trackers: SafeTrackers = .init()
@@ -62,14 +62,14 @@ public final class Starlink: Sendable {
         _ urlConversion: URLConversion,
         params: SafeDictionary<String, Any>? = nil,
         method: Starlink.Method,
-        header: Starlink.Header? = nil
+        headers: [Starlink.Header] = []
     ) -> StarlinkRequest {
         let request = Starlink.Request(
             session: session,
             path: urlConversion,
             params: params,
             method: method,
-            header: header,
+            headers: headers,
             trakers: trackers,
             interceptors: interceptors
         )

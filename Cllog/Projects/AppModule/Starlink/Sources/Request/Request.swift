@@ -47,7 +47,7 @@ extension Starlink {
             self.path = path
             self.params = params
             self.method = method
-            self.header = header
+            self.headers = headers
             self.requestTime = requestTime
             self.trakers = trakers
             self.interceptors = interceptors
