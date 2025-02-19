@@ -12,10 +12,10 @@ public extension TargetDependency {
 }
 
 public extension TargetDependency.Core {
-    static func designKit(_ service: ServiceType) -> TargetDependency {
+    static func ClLogUI(_ service: ServiceType) -> TargetDependency {
         TargetDependency.project(
-            target: "DesignKit",
-            path: .relativeToCore(path: "DesignKit", service: service)
+            target: "ClLogUI",
+            path: .relativeToCore(path: "ClLogUI", service: service)
         )
     }
     
