@@ -1,23 +1,22 @@
 //
-//  SpaceX.Tracking.swift
-//  SpaceXTests
+//  LogTrackering.swift
+//  TossFoundation
 //
-//  Created by saeng lin on 1/27/25.
-//  Copyright © 2025 SampleCompany. All rights reserved.
+//  Created by saeng lin on 2/15/25.
 //
 
 import Foundation
 
-public protocol SpaceXTracking: Sendable {
-    func didRequest(_ request: SpaceX.Request)
-    func willRequest(_ request: SpaceX.Request, _ response: SpaceX.Response)
+public protocol StarlinkTracking: Sendable {
+    func didRequest(_ request: Starlink.Request)
+    func willRequest(_ request: Starlink.Request, _ response: Starlink.Response)
 }
 
-public struct SpaceXLogTraking: SpaceXTracking {
+public struct StarlinkLogTraking: StarlinkTracking {
     
     /// 로그 요청
     /// - Parameter request: 요청 정보
-    public func didRequest(_ request: SpaceX.Request) {
+    public func didRequest(_ request: Starlink.Request) {
         #if DEBUG
         var log: String = ""
         let formatter = DateFormatter()
@@ -42,7 +41,7 @@ public struct SpaceXLogTraking: SpaceXTracking {
     /// - Parameters:
     ///   - request: 요청 정보
     ///   - response: 응답 정보
-    public func willRequest(_ request: SpaceX.Request, _ response: SpaceX.Response) {
+    public func willRequest(_ request: Starlink.Request, _ response: Starlink.Response) {
         #if DEBUG
         var log: String = ""
         let statusCode = (response.response as? HTTPURLResponse)?.statusCode ?? -999

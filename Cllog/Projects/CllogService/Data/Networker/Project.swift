@@ -12,6 +12,6 @@ let project = Project.configure(
     moduleType: .module(name: "Networker"),
     product: .staticFramework,
     dependencies: [
-        .Framework.SpaceX
+        .Framework.Starlink
     ]
 )

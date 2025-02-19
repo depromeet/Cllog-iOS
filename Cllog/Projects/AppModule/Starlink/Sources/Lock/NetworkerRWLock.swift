@@ -1,19 +1,18 @@
 //
-//  Lock.swift
-//  SpaceX
+//  StarlinkRWLock.swift
+//  TossFoundation
 //
-//  Created by saeng lin on 2/14/25.
-//  Copyright © 2025 Supershy. All rights reserved.
+//  Created by saeng lin on 2/15/25.
 //
 
 import Foundation
 
-protocol SpaceXLock {
+protocol StarlinkLock {
     func read<T>(_ callback: () throws -> T) rethrows -> T
     func write<T>(_ callback: () throws -> T) rethrows -> T
 }
 
-final class SpaceXRWLock: SpaceXLock {
+final class StarlinkRWLock: StarlinkLock {
     
     private var lock: pthread_rwlock_t = pthread_rwlock_t()
     

@@ -11,7 +11,7 @@ import Foundation
 import ProjectDescriptionHelpers
 
 let project = Project.configure(
-    moduleType: .module(name: "SpaceX"),
+    moduleType: .module(name: "Starlink"),
     product: .staticFramework,
     dependencies: [
         .Library.alamofire

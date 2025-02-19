@@ -1,18 +1,17 @@
 //
-//  ThreadSafeDictionary.swift
-//  SpaceX
+//  SafeDictionary.swift
+//  TossFoundation
 //
-//  Created by saeng lin on 2/14/25.
-//  Copyright © 2025 Supershy. All rights reserved.
+//  Created by saeng lin on 2/15/25.
 //
 
 import Foundation
 
-extension SpaceX {
+extension Starlink {
 
     public final class SafeDictionary<Key: Hashable, Value> {
         private var storage: [Key: Value] = [:]
-        private let lock = SpaceXRWLock()
+        private let lock = StarlinkRWLock()
         
         public init(storage: [Key: Value] = [:]) {
             self.storage = storage
