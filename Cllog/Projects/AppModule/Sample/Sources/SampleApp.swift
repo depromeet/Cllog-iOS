@@ -7,11 +7,14 @@
 
 import SwiftUI
 
+import ClLogUI
+
 @main
 struct SampleApp: App {
     var body: some Scene {
         WindowGroup {
             Text("hi")
+                .foregroundColor(.clLogUI.background)
         }
     }
 }
