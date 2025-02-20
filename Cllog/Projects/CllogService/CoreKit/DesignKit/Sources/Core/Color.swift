@@ -23,7 +23,7 @@ extension ClLogUI where Base == UIColor {
     
     private static func asset(_ name: String) -> UIColor {
         let colorName = "clLogUI_" + name
-        guard let color = UIColor(named: colorName, in: .clLogUIBundle, compatibleWith: nil) else {
+        guard let color = UIColor(named: colorName, in: .module, compatibleWith: nil) else {
             assertionFailure("can't find color asset: \(colorName)")
             return UIColor.clear
         }

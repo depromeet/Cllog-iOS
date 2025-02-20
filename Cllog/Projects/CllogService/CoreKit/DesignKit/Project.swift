@@ -9,7 +9,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.configure(
-    moduleType: .module(name: "ClLogUI"),
+    moduleType: .module(name: "DesignKit"),
     product: .framework,
     dependencies: [
         .Library.snapKit,

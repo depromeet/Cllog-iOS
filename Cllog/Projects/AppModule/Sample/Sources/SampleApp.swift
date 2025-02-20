@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-import ClLogUI
+import DesignKit
 
 @main
 struct SampleApp: App {
