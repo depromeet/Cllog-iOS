@@ -11,16 +11,8 @@
 <br />
 
 ## 🛠️ Project Skills
+![image](https://github.com/user-attachments/assets/a3217a4e-05ad-4331-ab09-01d8e84bc33a)
 
-### 🔨 Modularization
-
-<br />
-
-### 🔨 Architecture
-
-<br />
-
-### 🔨 Technology Stack
 
 <br />
 
