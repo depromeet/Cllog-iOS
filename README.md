@@ -12,17 +12,21 @@
 
 ## 🛠️ Project Skills
 
-### 🔨 Modularization
+<img src="https://github.com/user-attachments/assets/6e67b6f7-22d1-40b4-a61f-2867697d7481" width=700 alt="TechStack"/>
 
-<br />
+<br>
 
-### 🔨 Architecture
+<img src="https://github.com/user-attachments/assets/962db334-4e3d-4ef0-9ea4-e538b30c95ed" width=700 alt="Module" />
 
-<br />
+<br>
 
-### 🔨 Technology Stack
+<img src="https://github.com/user-attachments/assets/ea386a49-5c7c-4554-8c34-339b86223058" width=700 alt="Clean" />
 
-<br />
+<br>
+
+<img src="https://github.com/user-attachments/assets/694f42bb-d57e-4150-903b-bfc633329c2c" width=700 alt="TCA" />
+
+<br>
 
 ## 🥝 Wiki
 
