@@ -1,6 +1,6 @@
 //
 //  Error.swift
-//  TossFoundation
+//  Starlink
 //
 //  Created by saeng lin on 2/15/25.
 //
