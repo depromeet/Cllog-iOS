@@ -1,0 +1,9 @@
+git_url("https://github.com/depromeet/Cllog-iOS-Certificates.git")
+
+storage_mode("git")
+
+type("development")
+
+app_identifier(["com.supershy.climbinglog.dev"])
+
+api_key_path("fastlane/api_key.json")

@@ -16,7 +16,7 @@ public struct AppConfiguration {
     let projectName: String = "Cllog"
     let organizationName = "Supershy"
     let shortVersion: String = "1.0.0"
-    let bundleIdentifier: String = "com.supershy.climbinglog.product"
+    let bundleIdentifier: String = "com.supershy.climbinglog.dev
     let displayName: String = "클로그"
     let destination: Set<Destination> = [.iPhone, .iPad]
     var entitlements: Entitlements? = "CllogProduction.entitlements"
@@ -36,7 +36,7 @@ public struct AppConfiguration {
     
     var setting: Settings {
         return Settings.settings(
-            base: autoCodeSigning,
+            base: SettingsDictionary().matchCertificate(),
             configurations: XCConfig.project
         )
     }
