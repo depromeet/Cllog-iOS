@@ -12,7 +12,7 @@ let project = Project.configure(
     moduleType: .module(name: "Core"),
     product: .staticFramework,
     dependencies: [
-        .Core.ClLogUI(.cllog),
+        .Core.designKit(.cllog),
         .Domains.Domain.domain(.cllog),
     ]
 )
