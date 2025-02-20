@@ -24,12 +24,6 @@ public extension SettingsDictionary {
     func configureAutoCodeSigning() -> SettingsDictionary {
         return automaticCodeSigning(devTeam: "SUMATJC294")
     }
-    func matchCertificate() -> SettingsDictionary {
-        return SettingsDictionary().manualCodeSigning(
-            identity: "Apple Development",
-            provisioningProfileSpecifier: "match Development com.supershy.climbinglog.dev"
-        ).merging(["DEVELOPMENT_TEAM": "SUMATJC294"])
-    }
     
     func configureVersioning() -> SettingsDictionary {
         currentProjectVersion("1")

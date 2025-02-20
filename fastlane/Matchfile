@@ -4,6 +4,6 @@ storage_mode("git")
 
 type("development")
 
-app_identifier(["com.supershy.climbinglog.dev"])
+app_identifier(["com.supershy.climbinglog.dev", "com.supershy.climbinglog.product"])
 
 api_key_path("fastlane/api_key.json")
