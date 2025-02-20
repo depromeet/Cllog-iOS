@@ -11,10 +11,22 @@
 <br />
 
 ## 🛠️ Project Skills
-![image](https://github.com/user-attachments/assets/a3217a4e-05ad-4331-ab09-01d8e84bc33a)
 
+<img src="https://github.com/user-attachments/assets/6e67b6f7-22d1-40b4-a61f-2867697d7481" height=300 alt="TechStack"/>
 
-<br />
+<br>
+
+<img src="https://github.com/user-attachments/assets/962db334-4e3d-4ef0-9ea4-e538b30c95ed" height=500 alt="Module" />
+
+<br>
+
+<img src="https://github.com/user-attachments/assets/e3507e09-ae46-4d08-8288-b60d46412fb2" height=300 alt="Clean" />
+
+<br>
+
+<img src="https://github.com/user-attachments/assets/694f42bb-d57e-4150-903b-bfc633329c2c" height=300 alt="TCA" />
+
+<br>
 
 ## 🥝 Wiki
 
