@@ -1,14 +1,13 @@
 //
-//  SpaceX.Response.swift
-//  SpaceXTests
+//  Response.swift
+//  Starlink
 //
-//  Created by saeng lin on 1/27/25.
-//  Copyright © 2025 SampleCompany. All rights reserved.
+//  Created by saeng lin on 2/15/25.
 //
 
 import Foundation
 
-public extension SpaceX {
+public extension Starlink {
     
     struct Response: Sendable {
         public let response: URLResponse?

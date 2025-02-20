@@ -1,27 +1,26 @@
 //
-//  SpaceX.Configure.swift
-//  SpaceXTests
+//  Configure.swift
+//  Starlink
 //
-//  Created by saeng lin on 1/27/25.
-//  Copyright © 2025 SampleCompany. All rights reserved.
+//  Created by saeng lin on 2/15/25.
 //
 
 import Foundation
 
-public protocol SpaceXConfiguration: Sendable {
+public protocol StarlinkConfiguration: Sendable {
     var queue: OperationQueue? { get }
     var delegate: URLSessionDelegate? { get }
     func configure() -> URLSessionConfiguration
 }
 
-extension SpaceXConfiguration {
+extension StarlinkConfiguration {
     public var queue: OperationQueue? { nil }
     public var delegate: URLSessionDelegate? { nil }
 }
 
-public extension SpaceX {
+public extension Starlink {
     
-    struct `default`: SpaceXConfiguration {
+    struct `default`: StarlinkConfiguration {
         
         public init() {}
         

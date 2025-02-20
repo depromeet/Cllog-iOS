@@ -13,7 +13,7 @@ public extension TargetDependency {
 }
 
 public extension TargetDependency.Framework {
-    static let SpaceX = TargetDependency.project(target: "SpaceX", path: "../../../../Projects/AppModule/SpaceX")
+    static let Starlink = TargetDependency.project(target: "Starlink", path: "../../../../Projects/AppModule/Starlink")
 }
 
 public extension TargetDependency.Library {

@@ -7,11 +7,11 @@
 
 import Foundation
 
-import ProjectDescription
+@preconcurrency import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.configure(
-    moduleType: .module(name: "SpaceX"),
+    moduleType: .module(name: "Starlink"),
     product: .staticFramework,
     dependencies: [
         .Library.alamofire

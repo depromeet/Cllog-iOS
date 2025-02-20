@@ -1,32 +1,31 @@
 //
-//  SpaceX.Request.swift
-//  SpaceXTests
+//  Request.swift
+//  Starlink
 //
-//  Created by saeng lin on 1/27/25.
-//  Copyright © 2025 SampleCompany. All rights reserved.
+//  Created by saeng lin on 2/15/25.
 //
 
 import Foundation
 
 import Combine
 
-public protocol SpaceXRequest {
-    
+public protocol StarlinkRequest {
     func reponsePublisher<T: Decodable>() -> AnyPublisher<T, any Error>
     func reponseAsync<T: Decodable>() async throws -> T
     func response<T: Decodable>(_ complete: @escaping @Sendable (Result<T, any Error>) -> Void)
 }
 
-extension SpaceX {
+extension Starlink {
 
     public struct Request: @unchecked Sendable {
-        private let id: UUID
-        public let session: URLSession
+        public let session: Sessionable
         public let path: URLConversion
-        public let params: [String: Any]?
+        public let params: SafeDictionary<String, Any>?
         public let method: Method
+        public let headers: [Starlink.Header]
         public let requestTime: Date
-        let trakers: [any SpaceXTracking]
+        let trakers: SafeTrackers
+        let interceptors: [any StarlinkInterceptor]
 
         /// 초기화
         /// - Parameters:
@@ -35,22 +34,35 @@ extension SpaceX {
         ///   - path: api path
         ///   - requestTime: 요청 시간
         init(
-            id: UUID = .init(),
-            session: URLSession,
+            session: Sessionable,
             path: URLConversion,
-            params: [String: Any]? = nil,
+            params: SafeDictionary<String, Any>? = nil,
             method: Method,
+            headers: [Starlink.Header] = [],
             requestTime: Date = Date(),
-            trakers: [any SpaceXTracking]
+            trakers: SafeTrackers,
+            interceptors: [any StarlinkInterceptor] = []
         ) {
-            self.id = id
             self.session = session
             self.path = path
             self.params = params
             self.method = method
+            self.headers = headers
             self.requestTime = requestTime
             self.trakers = trakers
+            self.interceptors = interceptors
         }
+    }
+}
+
+
+public extension URLRequest {
+    mutating func setHeaders(_ headers: [Starlink.Header]) {
+        headers.forEach { self.setHeader($0) }
+    }
+    
+    mutating func setHeader(_ header: Starlink.Header) {
+        self.setValue(header.value, forHTTPHeaderField: header.name)
     }
 }
 
