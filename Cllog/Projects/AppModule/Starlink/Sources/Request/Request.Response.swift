@@ -1,20 +1,19 @@
 //
-//  SpaceX.Request.Perform.swift
-//  SpaceXTests
+//  Requests.swift
+//  Starlink
 //
-//  Created by saeng lin on 1/27/25.
-//  Copyright © 2025 SampleCompany. All rights reserved.
+//  Created by saeng lin on 2/15/25.
 //
 
 import Foundation
 import Combine
 
-extension SpaceX.Request {
+extension Starlink.Request {
     
     private func perform() async throws -> (Data, URLResponse) {
         
         guard let urlConversion = try? path.asURL() else {
-            throw NSError(domain: "inValidURLPath", code: -999)
+            throw StarlinkError.inValidURLPath(ErrorInfo(code: "-999", error: nil, message: nil))
         }
         
         var urlComponents = URLComponents(string: urlConversion.absoluteString)
@@ -31,13 +30,19 @@ extension SpaceX.Request {
             urlComponents?.queryItems = parameters
             
             guard let url = urlComponents?.url else {
-                throw NSError(domain: "inValidURLPath", code: -999)
+                throw StarlinkError.inValidURLPath(ErrorInfo(code: "-999", error: nil, message: nil))
             }
             
             var urlRequest = URLRequest(url: url)
             urlRequest.httpMethod = "\(method)"
+        
+            for interceptor in self.interceptors {
+                urlRequest = try await interceptor.adapt(urlRequest)
+            }
+
+            urlRequest.setHeaders(headers)
             
-            return try await session.data(for: urlRequest)
+            return try await session.data(for: urlRequest, delegate: nil)
             
         case .post, .put, .delete:
             let requestBody = try? JSONSerialization.data(withJSONObject: params ?? [:], options: [])
@@ -47,12 +52,18 @@ extension SpaceX.Request {
             urlRequest.httpMethod = "\(method)"
             urlRequest.httpBody = requestBody
             
-            return try await session.data(for: urlRequest)
+            for interceptor in self.interceptors {
+                urlRequest = try await interceptor.adapt(urlRequest)
+            }
+            
+            urlRequest.setHeaders(headers)
+            
+            return try await session.data(for: urlRequest, delegate: nil)
         }
     }
 }
 
-extension SpaceX.Request: SpaceXRequest {
+extension Starlink.Request: StarlinkRequest {
     
     public func reponsePublisher<T: Decodable>() -> AnyPublisher<T, any Error> {
         return Future<T, Error> { @Sendable promise in
@@ -70,15 +81,24 @@ extension SpaceX.Request: SpaceXRequest {
     
     public func reponseAsync<T: Decodable>() async throws -> T {
         
-        self.trakers.forEach { $0.didRequest(self) }
+        do {
+            self.trakers.allTrackers().forEach { $0.didRequest(self) }
+            
+            let (data, urlResponse) = try await self.perform()
+            let response = Starlink.Response(response: urlResponse, data: data, error: nil)
+            
+            self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
+            
+            let model: T = try self.validResponse(response)
+            return model
+            
+        } catch {
+            let response = Starlink.Response(response: nil, data: nil, error: error)
+            self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
+            
+            throw StarlinkError(error: error)
+        }
         
-        let (data, urlResponse) = try await self.perform()
-        let spaceXResponse = SpaceX.Response(response: urlResponse, data: data, error: nil)
-        
-        self.trakers.forEach { $0.willRequest(self, spaceXResponse) }
-        
-        let model: T = try self.validResponse(spaceXResponse)
-        return model
     }
     
     public func response<T: Decodable>(_ complete: @escaping @Sendable (Result<T, any Error>) -> Void) {
@@ -93,21 +113,21 @@ extension SpaceX.Request: SpaceXRequest {
     }
 }
 
-extension SpaceXRequest {
+extension StarlinkRequest {
     
     /// 유효성 체크 함수
     /// - Parameter response: 응답 response
     /// - Returns: 모델
-    func validResponse<T: Decodable>(_ response: SpaceX.Response) throws -> T {
+    func validResponse<T: Decodable>(_ response: Starlink.Response) throws -> T {
         
         // 200 응답 체크
         guard let httpResponse = (response.response as? HTTPURLResponse), (200 ..< 300).contains(httpResponse.statusCode) else {
-            throw NSError(domain: "Invalid Status", code: -999)
+            throw StarlinkError.inValidStatusCode(errorInfo(response: response))
         }
         
         // data 언래핑
         guard let data = response.data else {
-            throw NSError(domain: "nullPointData", code: -999)
+            throw StarlinkError.nullPointData(errorInfo(response: response))
         }
         
         do {
@@ -115,7 +135,17 @@ extension SpaceXRequest {
             return model
             
         } catch {
-            throw NSError(domain: "inValidJSONData", code: -999)
+            throw StarlinkError.inValidJSONData(errorInfo(response: response))
         }
+    }
+    
+    private func errorInfo(response: Starlink.Response) -> ErrorInfo {
+        var message: ErrorMessage? = nil
+        if let data = response.data {
+            if let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []), let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted), let errorMessage = try? JSONDecoder().decode(ErrorMessage.self, from: jsonData) {
+                message = errorMessage
+            }
+        }
+        return ErrorInfo(code: "\((response.response as? HTTPURLResponse)?.statusCode ?? -999)", error: response.error, message: message)
     }
 }

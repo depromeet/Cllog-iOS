@@ -1,14 +1,13 @@
 //
-//  SpaceX.Mehtod.swift
-//  SpaceXTests
+//  Method.swift
+//  Starlink
 //
-//  Created by saeng lin on 1/27/25.
-//  Copyright © 2025 SampleCompany. All rights reserved.
+//  Created by saeng lin on 2/15/25.
 //
 
 import Foundation
 
-public extension SpaceX {
+public extension Starlink {
     enum Method: String, Sendable, Hashable {
         case get = "GET"
         case post = "POST"
