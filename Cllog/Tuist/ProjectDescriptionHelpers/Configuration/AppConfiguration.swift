@@ -19,7 +19,7 @@ public struct AppConfiguration {
     let bundleIdentifier: String = "com.supershy.climbinglog.product"
     let displayName: String = "클로그"
     let destination: Set<Destination> = [.iPhone, .iPad]
-    var entitlements: Entitlements? = nil
+    var entitlements: Entitlements? = "CllogProduction.entitlements"
     let deploymentTarget: DeploymentTargets = .iOS("17.0")
     
     public var configurationName: ConfigurationName {
