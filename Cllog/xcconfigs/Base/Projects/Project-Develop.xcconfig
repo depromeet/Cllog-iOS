@@ -2,3 +2,10 @@
 OTHER_SWIFT_FLAGS[config=TEST][sdk=*] = $(inherited) -DDevelop
 GCC_PREPROCESSOR_DEFINITIONS = Test=0 Develop=1 Production=0
 DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+
+// Development 환경 설정
+PRODUCT_BUNDLE_IDENTIFIER = com.supershy.climbinglog.dev
+CODE_SIGN_IDENTITY = Apple Development
+PROVISIONING_PROFILE_SPECIFIER = match Development com.supershy.climbinglog.dev
+DEVELOPMENT_TEAM = SUMATJC294
+
