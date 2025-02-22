@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol StarlinkTracking: Sendable {
-    func didRequest(_ request: Starlink.Request)
+    func didRequest(_ request: Starlink.Request, urlRequest: URLRequest)
     func willRequest(_ request: Starlink.Request, _ response: Starlink.Response)
 }
 
@@ -16,7 +16,7 @@ public struct StarlinkLogTraking: StarlinkTracking {
     
     /// 로그 요청
     /// - Parameter request: 요청 정보
-    public func didRequest(_ request: Starlink.Request) {
+    public func didRequest(_ request: Starlink.Request, urlRequest: URLRequest) {
         #if DEBUG
         var log: String = ""
         let formatter = DateFormatter()
@@ -25,6 +25,15 @@ public struct StarlinkLogTraking: StarlinkTracking {
         let formattedDate = formatter.string(from: request.requestTime)
 
         log += "👉 [\(request.path)]\n[요청시간] \(formattedDate)"
+        
+        var headerLog = "\n📄 Header\n{"
+        urlRequest.allHTTPHeaderFields?.forEach({ key, value in
+            headerLog += "\n    \(key): \(value),"
+        })
+        
+        headerLog += "\n}"
+        log += headerLog
+        
         var paramsLog = "\n📄 params\n{"
         request.params?.forEach({ key, value in
             paramsLog += "\n    \(key): \(value),"
