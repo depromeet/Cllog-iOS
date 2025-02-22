@@ -12,6 +12,7 @@ let project = Project.configure(
     moduleType: .service(name: "Cllog"),
     product: .staticFramework,
     dependencies: [
+        .Features.ClLogCapture.feature,
         .Features.Main.feature,
         .Data.data(.cllog)
     ]

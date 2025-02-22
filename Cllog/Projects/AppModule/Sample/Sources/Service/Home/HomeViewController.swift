@@ -9,6 +9,7 @@
 import UIKit
 
 import DesignKit
+import ClLogCaptureFeature
 
 extension HomeViewController {
     
@@ -23,7 +24,16 @@ final class HomeViewController: UIViewController {
         super.viewDidLoad()
         
         self.view.backgroundColor = .clLogUI.background
+    }
+    
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
-        
+        Task { @MainActor in
+            do {
+                try await ClLogCapture().start(on: self)
+            } catch { }
+        }
     }
 }
