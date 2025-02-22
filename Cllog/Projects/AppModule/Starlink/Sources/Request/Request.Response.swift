@@ -35,18 +35,18 @@ extension Starlink.Request {
             
             var urlRequest = URLRequest(url: url)
             urlRequest.httpMethod = "\(method)"
-        
+            
             for interceptor in self.interceptors {
                 urlRequest = try await interceptor.adapt(urlRequest)
             }
-
+            
             urlRequest.setHeaders(headers)
             
             return try await session.data(for: urlRequest, delegate: nil)
             
         case .post, .put, .delete:
             let requestBody = try? JSONSerialization.data(withJSONObject: params ?? [:], options: [])
-   
+            
             var urlRequest = URLRequest(url: urlConversion)
             
             urlRequest.httpMethod = "\(method)"
@@ -58,7 +58,7 @@ extension Starlink.Request {
             
             urlRequest.setHeaders(headers)
             
-            return try await session.data(for: urlRequest, delegate: nil)
+            return try await session.data(for: urlRequest)
         }
     }
 }
