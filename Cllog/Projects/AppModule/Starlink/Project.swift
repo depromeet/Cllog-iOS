@@ -14,6 +14,9 @@ let project = Project.configure(
     moduleType: .module(name: "Starlink"),
     product: .staticFramework,
     dependencies: [
-        .Library.alamofire
+        .Library.alamofire,
+        .Library.pulse,
+        .Library.pulseUI,
+        .Library.pulseProxy
     ]
 )

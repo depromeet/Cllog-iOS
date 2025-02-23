@@ -9,5 +9,5 @@
 import Foundation
 
 public protocol StarlinkInterceptor {
-    func adapt(_ urlRequest: URLRequest) async throws -> URLRequest
+    func adapt(_ urlRequest: inout URLRequest) async throws -> URLRequest
 }

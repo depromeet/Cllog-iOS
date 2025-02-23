@@ -35,30 +35,34 @@ extension Starlink.Request {
             
             var urlRequest = URLRequest(url: url)
             urlRequest.httpMethod = "\(method)"
-        
+            
             for interceptor in self.interceptors {
-                urlRequest = try await interceptor.adapt(urlRequest)
+                urlRequest = try await interceptor.adapt(&urlRequest)
             }
-
+            
             urlRequest.setHeaders(headers)
+            
+            self.trakers.allTrackers().forEach { $0.didRequest(self, urlRequest: urlRequest) }
             
             return try await session.data(for: urlRequest, delegate: nil)
             
         case .post, .put, .delete:
             let requestBody = try? JSONSerialization.data(withJSONObject: params ?? [:], options: [])
-   
+            
             var urlRequest = URLRequest(url: urlConversion)
             
             urlRequest.httpMethod = "\(method)"
             urlRequest.httpBody = requestBody
             
             for interceptor in self.interceptors {
-                urlRequest = try await interceptor.adapt(urlRequest)
+                urlRequest = try await interceptor.adapt(&urlRequest)
             }
             
             urlRequest.setHeaders(headers)
             
-            return try await session.data(for: urlRequest, delegate: nil)
+            self.trakers.allTrackers().forEach { $0.didRequest(self, urlRequest: urlRequest) }
+            
+            return try await session.data(for: urlRequest)
         }
     }
 }
@@ -82,7 +86,6 @@ extension Starlink.Request: StarlinkRequest {
     public func reponseAsync<T: Decodable>() async throws -> T {
         
         do {
-            self.trakers.allTrackers().forEach { $0.didRequest(self) }
             
             let (data, urlResponse) = try await self.perform()
             let response = Starlink.Response(response: urlResponse, data: data, error: nil)

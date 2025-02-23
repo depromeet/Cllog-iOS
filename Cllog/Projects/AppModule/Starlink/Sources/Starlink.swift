@@ -7,17 +7,15 @@
 
 import Foundation
 
+import Pulse
+
 extension Starlink {
     
     // default
     public static var session: Starlink {
         let configure = Starlink.default()
         return Starlink(
-            session: URLSession(
-                configuration: configure.configure(),
-                delegate: configure.delegate,
-                delegateQueue: configure.queue
-            )
+            session: URLSessionProxy(configuration: .default, delegate: configure.delegate)
         )
         .option([
             StarlinkLogTraking()
