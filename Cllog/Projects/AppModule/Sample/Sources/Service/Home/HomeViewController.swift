@@ -9,6 +9,11 @@
 import UIKit
 
 import DesignKit
+import Starlink
+import Pulse
+import PulseUI
+import PulseProxy
+import SwiftUI
 
 extension HomeViewController {
     
@@ -23,7 +28,5 @@ final class HomeViewController: UIViewController {
         super.viewDidLoad()
         
         self.view.backgroundColor = .clLogUI.background
-        
-        
     }
 }

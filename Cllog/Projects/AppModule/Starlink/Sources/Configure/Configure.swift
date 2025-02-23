@@ -7,6 +7,8 @@
 
 import Foundation
 
+import Pulse
+
 public protocol StarlinkConfiguration: Sendable {
     var queue: OperationQueue? { get }
     var delegate: URLSessionDelegate? { get }
@@ -15,7 +17,7 @@ public protocol StarlinkConfiguration: Sendable {
 
 extension StarlinkConfiguration {
     public var queue: OperationQueue? { nil }
-    public var delegate: URLSessionDelegate? { nil }
+    public var delegate: URLSessionDelegate? { StarlinkDelegate() }
 }
 
 public extension Starlink {
