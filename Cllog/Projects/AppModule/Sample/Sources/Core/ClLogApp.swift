@@ -8,6 +8,8 @@
 
 import UIKit
 
+import Starlink
+
 @main
 class ClLogApp {
     
@@ -16,6 +18,11 @@ class ClLogApp {
         ClLogPhase.main()
         
         // DI 세팅
+        
+        ConsoleWindow.shared.message(
+            label: "[\(Self.self)]\(#function)",
+            level: .info,
+            message: "[\(Self.self)][Phase] => \(ClLogPhase.current)")
         
         AppDelegate.main()
     }

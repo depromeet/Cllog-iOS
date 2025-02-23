@@ -42,6 +42,21 @@ public class ConsoleWindow {
         overlayWindow?.isHidden = true
         overlayWindow = nil
     }
+    
+    /// ConsoleMessage
+    /// - Parameters:
+    ///   - label: label
+    ///   - level: 정보레벨
+    ///   - message: 메세지
+    public func message(label: String = "", level: LoggerStore.Level = .debug, message: String) {
+        LoggerStore.shared.storeMessage(
+            label: label,
+            level: level,
+            message: message
+        )
+        
+        print("\(message)")
+    }
 }
 
 class ConsoleViewController: UIViewController {
