@@ -14,5 +14,11 @@ let project = Project.configure(
     dependencies: [
         .Core.designKit(.cllog),
         .Domains.Domain.domain(.cllog),
+        .Library.firebaseAuth,
+        .Library.firebaseAnalytics,
+        .Library.firebaseMessaging,
+        .Library.firebaseCrashlytics,
+        .Library.firebasePerformance,
+        .Library.firebaseRemoteConfig,
     ]
 )
