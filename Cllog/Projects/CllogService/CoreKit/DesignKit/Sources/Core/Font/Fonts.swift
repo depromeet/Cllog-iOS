@@ -11,7 +11,7 @@ import Foundation
 import SwiftUICore
 
 public struct ClLogFont {
-    enum Pretendard: String {
+    enum Pretendard: String, CaseIterable {
         case thin = "Pretendard-Thin"
         case extraLight = "Pretendard-ExtraLight"
         case light = "Pretendard-Light"
@@ -21,16 +21,13 @@ public struct ClLogFont {
         case bold = "Pretendard-Bold"
         case extraBold = "Pretendard-ExtraBold"
         case black = "Pretendard-Black"
-        
-        public static let all = [
-            thin, extraLight, light, regular, medium, semiBold, bold, extraBold, black
-        ]
     }
 }
 
 extension ClLogFont {
+    /// 폰트 등록
     public static func register() {
-        Pretendard.all.forEach { font in
+        Pretendard.allCases.forEach { font in
             guard let fontURL = fontURL(for: font) else {
                 fatalError("❌ 폰트 파일을 찾을 수 없음: \(font.rawValue)")
             }
