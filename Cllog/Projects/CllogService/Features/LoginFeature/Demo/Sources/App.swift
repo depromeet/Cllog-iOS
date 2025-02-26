@@ -1,12 +1,11 @@
 import SwiftUI
+import LoginFeature
 
 @main
-struct App: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
+struct LoginApp: App {
     var body: some Scene {
         WindowGroup {
-            
+            LoginView()
         }
     }
 }
