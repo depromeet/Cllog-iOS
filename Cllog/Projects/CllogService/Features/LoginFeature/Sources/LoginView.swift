@@ -13,8 +13,11 @@ import AuthenticationServices
 import ComposableArchitecture
 
 public struct LoginView: View {
+    private let store: StoreOf<LoginFeature>
     
-    public init() {}
+    public init(store: StoreOf<LoginFeature>) {
+        self.store = store
+    }
     
     public var body: some View {
         ZStack {
