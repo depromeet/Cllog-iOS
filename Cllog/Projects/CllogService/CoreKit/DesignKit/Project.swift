@@ -12,7 +12,7 @@ let project = Project.configure(
     moduleType: .module(name: "DesignKit"),
     product: .framework,
     dependencies: [
-        .Library.snapKit,
+        .Library.tca
     ],
     hasResources: true
 )
