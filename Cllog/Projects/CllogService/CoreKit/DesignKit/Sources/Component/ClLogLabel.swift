@@ -12,7 +12,7 @@ import SwiftUI
 // MARK: - UIKit
 public class ClLogLabel: UILabel {
     var title: String
-    public var fontModel: FontModel
+    var fontModel: FontModel
     
     public init(
         title: String,
@@ -61,8 +61,8 @@ public class ClLogLabel: UILabel {
 
 // MARK: - SwiftUI
 public struct ClLogLabelView: UIViewRepresentable {
-    let title: String
-    let fontModel: FontModel
+    private let title: String
+    private let fontModel: FontModel
 
     public init(
         title: String,

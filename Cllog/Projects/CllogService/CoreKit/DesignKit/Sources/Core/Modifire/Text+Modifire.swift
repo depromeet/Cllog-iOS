@@ -9,7 +9,7 @@
 import SwiftUI
 
 public struct ClLogFontModifier: ViewModifier {
-    let fontModel: FontModel
+    private let fontModel: FontModel
 
     public init(_ fontModel: FontModel) {
         self.fontModel = fontModel
