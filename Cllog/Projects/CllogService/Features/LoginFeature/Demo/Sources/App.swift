@@ -1,12 +1,20 @@
 import SwiftUI
+import LoginFeature
+
+import ComposableArchitecture
 
 @main
-struct App: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+struct LoginApp: App {
+    
+    static let store = Store(initialState: LoginFeature.State()) {
+        LoginFeature()
+    }
     
     var body: some Scene {
         WindowGroup {
-            
+            LoginView(
+                store: LoginApp.store
+            )
         }
     }
 }
