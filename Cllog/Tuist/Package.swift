@@ -10,7 +10,7 @@ import ProjectDescriptionHelpers
             "SnapKit": .framework,
             "Alamofire": .framework,
             "Then": .framework,
-            "Pulse": .framework,
+            "Pulse": .framework
         ],
         baseSettings: Settings.settings(configurations: XCConfig.framework)
     )
