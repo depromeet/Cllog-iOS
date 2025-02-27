@@ -309,7 +309,7 @@ extension Project {
         
         let targets = [interfaceTarget, frameworkTarget, demoTarget, testsTarget, testTarget]
         
-        let scheme = Scheme.configureDemoAppScheme(schemeName: "\(name)Demo")
+        let scheme = Scheme.configureDemoAppScheme(schemeName: name)
         
         // 프로젝트 생성
         return Project(

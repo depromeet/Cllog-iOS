@@ -12,7 +12,6 @@ let project = Project.configure(
     moduleType: .domain(name: "Domain"),
     product: .staticFramework,
     dependencies: [
-        .Domains.Login.domain,
         .Domains.Sample.domain,
     ]
 )

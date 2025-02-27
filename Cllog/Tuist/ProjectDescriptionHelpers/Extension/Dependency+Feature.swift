@@ -9,7 +9,6 @@ import ProjectDescription
 
 public extension TargetDependency {
     struct Features {
-        public struct Login {}
         public struct Root {}
         public struct Main {}
     }
@@ -40,20 +39,6 @@ public extension TargetDependency.Features.Root {
 
 public extension TargetDependency.Features.Main {
     static let name = "Main"
-    
-    static let feature = TargetDependency.Features.project(
-        name: "\(name)Feature",
-        service: .cllog
-    )
-    
-    static let interface = TargetDependency.project(
-        target: "\(name)FeatureInterface",
-        path: .relativeToFeature(path: "\(name)Feature", service: .cllog)
-    )
-}
-
-public extension TargetDependency.Features.Login {
-    static let name = "Login"
     
     static let feature = TargetDependency.Features.project(
         name: "\(name)Feature",
