@@ -50,7 +50,12 @@ public class ClLogLabel: UILabel {
                                             attributes: attributes)
         
         self.attributedText = attrString
-        self.lineBreakMode = .byTruncatingTail
+        self.lineBreakMode = .byWordWrapping
+    }
+    
+    public override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        return CGSize(width: size.width, height: size.height)
     }
 }
 
@@ -71,10 +76,9 @@ public struct ClLogLabelView: UIViewRepresentable {
         
         let label = ClLogLabel(title: title, fontModel: fontModel)
         label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
         label.translatesAutoresizingMaskIntoConstraints = false
         
-        label.setContentHuggingPriority(.required, for: .vertical)
+        label.setContentHuggingPriority(.defaultHigh, for: .vertical)
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
         return label
