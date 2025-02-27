@@ -1,6 +1,6 @@
 //SWIFT_ACTIVE_COMPILATION_CONDITIONS=DEV
-OTHER_SWIFT_FLAGS[config=TEST][sdk=*] = $(inherited) -DDevelop
-GCC_PREPROCESSOR_DEFINITIONS = Test=0 Develop=1 Production=0
+OTHER_SWIFT_FLAGS[config=Dev][sdk=*] = $(inherited) -DDev
+GCC_PREPROCESSOR_DEFINITIONS = Test=0 Dev=1 Prod=0
 DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
 
 // Development 환경 설정
