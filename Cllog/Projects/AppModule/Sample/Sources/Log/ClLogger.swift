@@ -7,3 +7,20 @@
 //
 
 import Foundation
+
+import Starlink
+import Pulse
+
+enum ClLogger {
+    
+    public static func message(
+        label: String = "",
+        level: LoggerStore.Level = .debug,
+        message: String
+    ) {
+        ConsoleWindow.shared.message(
+            label: label,
+            level: .info,
+            message: message)
+    }
+}

@@ -21,6 +21,7 @@ let project = Project.configure(
         .SPM.firebaseCrashlytics,
         .SPM.firebasePerformance,
         .SPM.firebaseRemoteConfig,
+        
     ],
     packages: [
         .remote(url: "https://github.com/firebase/firebase-ios-sdk.git", requirement: .exact("11.8.1"))

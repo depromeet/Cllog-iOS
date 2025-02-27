@@ -45,5 +45,11 @@ import Foundation
         } else {
             ClLogPhase.current = .production
         }
+        
+        ClLogger.message(
+            label: "[\(Self.self)]\(#function)",
+            level: .info,
+            message: "[\(Self.self)][Phase] => \(ClLogPhase.current)"
+        )
     }
 }
