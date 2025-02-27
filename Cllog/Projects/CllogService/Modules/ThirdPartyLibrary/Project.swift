@@ -12,6 +12,7 @@ let project = Project.configure(
     moduleType: .module(name: "ThirdPartyLibrary"),
     product: .staticFramework,
     dependencies: [
-        .Library.then
+        .Library.then,
+        .Library.swinject
     ]
 )

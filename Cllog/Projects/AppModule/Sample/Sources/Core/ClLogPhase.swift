@@ -44,5 +44,11 @@ import Foundation
         #elseif Prod
         ClLogPhase.current = .production
         #endif
+        
+        ClLogger.message(
+            label: "[\(Self.self)]\(#function)",
+            level: .info,
+            message: "[\(Self.self)][Phase] => \(ClLogPhase.current)"
+        )
     }
 }

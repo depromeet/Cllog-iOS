@@ -15,15 +15,15 @@ class ClLogApp {
     
     static func main() {
         
+        // Phase 세팅
         ClLogPhase.main()
         
         // DI 세팅
+        ClLogDI.register(assemblies: [
+            
+        ])
         
-        ConsoleWindow.shared.message(
-            label: "[\(Self.self)]\(#function)",
-            level: .info,
-            message: "[\(Self.self)][Phase] => \(ClLogPhase.current)")
-        
+        // App Start
         AppDelegate.main()
     }
 }
