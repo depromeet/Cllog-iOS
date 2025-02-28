@@ -8,7 +8,7 @@
 
 import UIKit
 
-import Starlink
+import DesignKit
 
 @main
 class ClLogApp {
@@ -20,7 +20,7 @@ class ClLogApp {
         
         // DI 세팅
         ClLogDI.register(assemblies: [
-            
+            ClLogFont()
         ])
         
         // App Start
