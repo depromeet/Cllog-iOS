@@ -11,7 +11,6 @@ import ProjectDescriptionHelpers
             "Alamofire": .framework,
             "Then": .framework,
             "Pulse": .framework,
-            "Firebase": .framework,
             "KakaoOpenSDK": .framework,
             "Swinject": .framework
         ],
@@ -27,9 +26,8 @@ let package = Package(
         .package(url: "https://github.com/Alamofire/Alamofire.git", "5.9.1"..."6.0.0"),
         .package(url: "https://github.com/devxoul/Then.git", exact: "3.0.0"),
         .package(url: "https://github.com/kean/Pulse.git", exact: "5.1.2"),
-        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", exact: "11.8.1"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.17.1"),
         .package(url: "https://github.com/kakao/kakao-ios-sdk", exact: "2.23.0"),
-        .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.9.1")
+        .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.9.1"),
     ]
 )
