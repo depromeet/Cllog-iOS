@@ -22,6 +22,7 @@ public extension TargetDependency.Library {
     static let alamofire = TargetDependency.external(name: "Alamofire")
     static let then = TargetDependency.external(name: "Then")
     static let swinject = TargetDependency.external(name: "Swinject")
+    static let KakaoSDKUser = TargetDependency.external(name: "KakaoSDKUser")
     
     // 네트워크
     static let pulse = TargetDependency.external(name: "Pulse")
