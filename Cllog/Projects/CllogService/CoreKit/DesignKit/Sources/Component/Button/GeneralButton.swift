@@ -67,7 +67,7 @@ public struct GeneralButtonConfiguration {
 }
 
 // MARK: Button Style
-public enum GeneralButtonStyle: String {
+public enum GeneralButtonStyle {
     case large
     case medium
     case small
