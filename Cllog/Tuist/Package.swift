@@ -13,6 +13,7 @@ import ProjectDescriptionHelpers
             "Pulse": .framework,
             "Firebase": .framework,
             "KakaoOpenSDK": .framework,
+            "Swinject": .framework
         ],
         baseSettings: Settings.settings(configurations: XCConfig.framework)
     )
@@ -29,6 +30,6 @@ let package = Package(
         .package(url: "https://github.com/firebase/firebase-ios-sdk.git", exact: "11.8.1"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.17.1"),
         .package(url: "https://github.com/kakao/kakao-ios-sdk", exact: "2.23.0"),
-
+        .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.9.1")
     ]
 )

@@ -38,12 +38,17 @@ import Foundation
     }
     
     static func main() {
-        
         // otherLink를 추가해서 #if로 구현해도 괜찮음
-        if let bundleID = Bundle.main.bundleIdentifier, bundleID == "com.supershy.climbinglog.dev" {
-            ClLogPhase.current = .dev
-        } else {
-            ClLogPhase.current = .production
-        }
+        #if Dev
+        ClLogPhase.current = .dev
+        #elseif Prod
+        ClLogPhase.current = .production
+        #endif
+        
+        ClLogger.message(
+            label: "[\(Self.self)]\(#function)",
+            level: .info,
+            message: "[\(Self.self)][Phase] => \(ClLogPhase.current)"
+        )
     }
 }

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-
 import DesignKit
 import Starlink
 import Pulse
@@ -29,11 +28,7 @@ final class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.view.backgroundColor = .clLogUI.background
-        
         setupLoginView()
-        
     }
     
     // TODO: SplashView에서 해당 작업 진행
@@ -52,4 +47,3 @@ final class HomeViewController: UIViewController {
         hostingController.didMove(toParent: self)
     }
 }
-

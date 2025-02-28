@@ -12,6 +12,7 @@ extension Project {
         moduleType: ModuleType,
         product: Product,
         dependencies: [TargetDependency],
+        packages: [Package] = [],
         hasTests: Bool = true,
         hasResources: Bool = false
     ) -> Project {
@@ -45,6 +46,7 @@ extension Project {
             return Project(
                 name: configuration.projectName,
                 organizationName: configuration.organizationName,
+                packages: packages,
                 settings: configuration.setting,
                 targets: targets,
                 schemes: schemes
