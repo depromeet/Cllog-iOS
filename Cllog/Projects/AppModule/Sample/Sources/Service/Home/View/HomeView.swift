@@ -49,7 +49,20 @@ struct HomeView: View {
                         Text("1"),
                         captureView,
                         Text("3")
-                    ], store: Store(initialState: MainFeature.State(), reducer: {
+                    ], store: Store(
+                        initialState: MainFeature.State(
+                            tabTitles: [],
+                            selectedImageNames: [
+                                "icn_folder_selected",
+                                "icn_camera_selected",
+                                "icn_report_selected"
+                            ],
+                            unselectedImageNames: [
+                                "icn_folder_unselected",
+                                "icn_camera_unselected",
+                                "icn_report_unselected"
+                            ]
+                        ), reducer: {
                         MainFeature()
                     }))
                 
