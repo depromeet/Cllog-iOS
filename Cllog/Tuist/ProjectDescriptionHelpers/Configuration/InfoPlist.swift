@@ -27,7 +27,18 @@ public struct InfoPlist {
                     ],
                 ]
             ]
-        ]
+        ],
+        "LSApplicationQueriesSchemes" : [
+            "kakaokompassauth",
+        ],
+        "CFBundleURLTypes": [
+            [
+                "CFBundleTypeRole": "Editor",
+                "CFBundleURLSchemes": [
+                    "kakao$(KAKAO_NATIVE_APP_KEY)",
+                ]
+            ]
+        ],
     ]
     
     static func appInfoPlist(_ appConfiguration: AppConfiguration) -> [String: Plist.Value] {

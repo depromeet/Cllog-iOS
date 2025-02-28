@@ -116,9 +116,8 @@ public extension GeneralButton {
 
 // MARK: - Preview
 #Preview {
-    ClLogFont.register()
     
-    return VStack {
+    VStack {
         Text("Large")
             .foregroundStyle(Color.clLogUI.white)
             .font(.h1)

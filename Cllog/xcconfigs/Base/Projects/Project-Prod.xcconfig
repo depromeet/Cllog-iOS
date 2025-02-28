@@ -8,3 +8,6 @@ PRODUCT_BUNDLE_IDENTIFIER = com.supershy.climbinglog.product
 CODE_SIGN_IDENTITY = Apple Development
 PROVISIONING_PROFILE_SPECIFIER = match Development com.supershy.climbinglog.product
 DEVELOPMENT_TEAM = SUMATJC294
+
+// Kakao
+KAKAO_NATIVE_APP_KEY = TODO_PRODUCTION_NATIVE_APP_KEY
