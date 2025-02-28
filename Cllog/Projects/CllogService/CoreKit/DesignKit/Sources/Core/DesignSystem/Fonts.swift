@@ -13,7 +13,7 @@ import SwiftUICore
 import Swinject
 
 public struct ClLogFont {
-    fileprivate enum Pretendard: String, CaseIterable {
+    enum Pretendard: String, CaseIterable {
         case thin = "Pretendard-Thin"
         case extraLight = "Pretendard-ExtraLight"
         case light = "Pretendard-Light"
