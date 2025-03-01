@@ -9,22 +9,14 @@
 import SwiftUI
 
 public struct CameraButton: View {
-    private var configuration: CameraButtonConfiguration
+    private var type: CameraButtonType
     private var onTapped: () -> Void
     
     public init(
-        _ onTapped: @escaping () -> Void
-    ) {
-        self.onTapped = onTapped
-        self.configuration = CameraButtonConfiguration(
-            type: .time("")
-        )
-    }
-    fileprivate init(
-        _ configuration: CameraButtonConfiguration,
+        type: CameraButtonType,
         onTapped: @escaping () -> Void
     ) {
-        self.configuration = configuration
+        self.type = type
         self.onTapped = onTapped
     }
     
@@ -32,71 +24,16 @@ public struct CameraButton: View {
         Button {
             onTapped()
         } label: {
-            configuration.type.element
+            makeBody()
         }
     }
 }
 
-public struct CameraButtonConfiguration {
-    var type: CameraButtonType
-}
-
-public enum CameraButtonType {
-    case flashOn
-    case flashOff
-    case ratio
-    case angle
-    case time(String)
-    case close
-    case edit
-    case end
-    
+extension CameraButton {
     @ViewBuilder
-    var element: some View {
-        switch self {
-        case .flashOn:
-            Image.clLogUI.flashOn
-                .resizable()
-                .frame(width: 20, height: 20)
-                .foregroundStyle(Color.clLogUI.white)
-                .background(
-                    Circle()
-                        .fill(Color.clLogUI.gray800.opacity(0.55))
-                        .frame(width: 40, height: 40)
-                )
-                .frame(width: 40, height: 40)
-        case .flashOff:
-            Image.clLogUI.flashOff
-                .resizable()
-                .frame(width: 20, height: 20)
-                .foregroundStyle(Color.clLogUI.white)
-                .background(
-                    Circle()
-                        .fill(Color.clLogUI.gray800.opacity(0.55))
-                        .frame(width: 40, height: 40)
-                )
-                .frame(width: 40, height: 40)
-        case .ratio:
-            Text("9:16")
-                .font(.b2)
-                .foregroundStyle(Color.clLogUI.white)
-                .background(
-                    Circle()
-                        .fill(Color.clLogUI.gray800.opacity(0.55))
-                        .frame(width: 40, height: 40)
-                )
-                .frame(width: 40, height: 40)
-        case .angle:
-            Text("1x")
-                .font(.b2)
-                .foregroundStyle(Color.clLogUI.white)
-                .background(
-                    Circle()
-                        .fill(Color.clLogUI.gray800.opacity(0.55))
-                        .frame(width: 40, height: 40)
-                )
-                .frame(width: 40, height: 40)
-        case .time(let text):
+    private func makeBody() -> some View {
+        switch type {
+        case .text(let text):
             Text(text)
                 .font(.b2)
                 .foregroundStyle(Color.clLogUI.white)
@@ -104,29 +41,10 @@ public enum CameraButtonType {
                 .padding(.horizontal, 8)
                 .background(Color.clLogUI.gray800.opacity(0.55))
                 .clipShape(RoundedRectangle(cornerRadius: 99))
-        case .close:
-            Image.clLogUI.close
-                .frame(width: 24, height: 24)
-                .foregroundStyle(Color.clLogUI.white)
-                .background(
-                    Circle()
-                        .fill(Color.clLogUI.gray800.opacity(0.55))
-                        .frame(width: 40, height: 40)
-                )
-                .frame(width: 40, height: 40)
-        case .edit:
-            Text("편집")
-                .font(.b2)
-                .foregroundStyle(Color.clLogUI.white)
-                .background(
-                    Circle()
-                        .fill(Color.clLogUI.gray800.opacity(0.55))
-                        .frame(width: 40, height: 40)
-                )
-                .frame(width: 40, height: 40)
-        case .end:
-            Text("종료")
-                .font(.b2)
+        case .image(let image):
+            image
+                .resizable()
+                .frame(width: 20, height: 20)
                 .foregroundStyle(Color.clLogUI.white)
                 .background(
                     Circle()
@@ -138,58 +56,28 @@ public enum CameraButtonType {
     }
 }
 
-// MARK: - Button Extension
-public extension CameraButton {
-    func type(_ type: CameraButtonType) -> CameraButton {
-        
-        var newConfig = self.configuration
-        
-        newConfig.type = type
-            
-        return CameraButton(newConfig, onTapped: self.onTapped)
-    }
+public enum CameraButtonType {
+    case text(String)
+    case image(Image)
 }
 
 #Preview {
     VStack(spacing: 5) {
-        CameraButton() {
+        CameraButton(type: .image(.clLogUI.flashOn)) {
             
         }
-        .type(.flashOn)
         
-        CameraButton() {
+        CameraButton(type: .text("9:16")) {
             
         }
-        .type(.flashOff)
         
-        CameraButton() {
+        CameraButton(type: .text("00:00:00")) {
             
         }
-        .type(.ratio)
         
-        CameraButton() {
+        CameraButton(type: .text("편집")) {
             
         }
-        .type(.angle)
-        
-        CameraButton() {
-            
-        }
-        .type(.time("00:00:00"))
-        
-        CameraButton() {
-            
-        }
-        .type(.close)
-        
-        CameraButton() {
-            
-        }
-        .type(.edit)
-        
-        CameraButton() {
-            
-        }
-        .type(.end)
+                     
     }
 }
