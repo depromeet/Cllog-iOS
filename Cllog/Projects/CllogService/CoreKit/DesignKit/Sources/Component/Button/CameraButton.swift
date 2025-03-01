@@ -39,19 +39,21 @@ extension CameraButton {
                 .foregroundStyle(Color.clLogUI.white)
                 .padding(.vertical, 9.5)
                 .padding(.horizontal, 8)
-                .background(Color.clLogUI.gray800.opacity(0.55))
-                .clipShape(RoundedRectangle(cornerRadius: 99))
-        case .image(let image):
-            image
-                .resizable()
-                .frame(width: 20, height: 20)
-                .foregroundStyle(Color.clLogUI.white)
                 .background(
-                    Circle()
+                    Capsule()
                         .fill(Color.clLogUI.gray800.opacity(0.55))
-                        .frame(width: 40, height: 40)
                 )
-                .frame(width: 40, height: 40)
+        case .image(let image):
+            ZStack {
+                Circle()
+                    .fill(Color.clLogUI.gray800.opacity(0.55))
+                    .frame(width: 40, height: 40)
+                
+                image
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundStyle(Color.clLogUI.white)
+            }
         }
     }
 }
@@ -78,6 +80,5 @@ public enum CameraButtonType {
         CameraButton(type: .text("편집")) {
             
         }
-                     
     }
 }
