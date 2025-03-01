@@ -28,19 +28,27 @@ final class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupLoginView()
+        
+        configure()
     }
     
-    // TODO: SplashView에서 해당 작업 진행
-    // SplashView -> Home 또는 Login으로 이동
-    private func setupLoginView() {
-        // TODO: Domain 주입
-        let feature = LoginFeature()
-        let loginView = LoginView(store: Store(initialState: LoginFeature.State()) {
-            feature
-        })
+    private func configure() {
+        let homeView = HomeView(
+            on: self,
+            store: StoreOf<HomeFeature>(
+                initialState: HomeFeature.State(),
+                reducer: {
+                    return HomeFeature { logger in
+                        ClLogger.message(
+                            level: .debug,
+                            message: logger
+                        )
+                    }
+                })
+        )
         
-        let hostingController = UIHostingController(rootView: loginView)
+        let hostingController = UIHostingController(
+            rootView: homeView)
         addChild(hostingController)
         hostingController.view.frame = view.bounds
         view.addSubview(hostingController.view)

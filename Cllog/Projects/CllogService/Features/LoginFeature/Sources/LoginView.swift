@@ -7,15 +7,22 @@
 //
 
 import SwiftUI
+import UIKit
 import DesignKit
 import AuthenticationServices
 
 import ComposableArchitecture
 
 public struct LoginView: View {
-    private let store: StoreOf<LoginFeature>
     
-    public init(store: StoreOf<LoginFeature>) {
+    private let store: StoreOf<LoginFeature>
+    private weak var on: UIViewController?
+    
+    public init(
+        on: UIViewController?,
+        store: StoreOf<LoginFeature>
+    ) {
+        self.on = on
         self.store = store
     }
     
