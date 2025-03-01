@@ -17,11 +17,6 @@ public struct StampButton: View {
     private let type: StampType
     private var onTapped: () -> Void
     
-    fileprivate let frameSize: CGFloat = 40
-    fileprivate let padding: CGFloat = 10
-    fileprivate let cornerRadius: CGFloat = 20
-    fileprivate let lineWidth: CGFloat = 3
-    
     public init(
         type: StampType = .default,
         onTapped: @escaping () -> Void
@@ -37,20 +32,20 @@ public struct StampButton: View {
             Image.clLogUI.stamp
                 .resizable()
                 .frame(
-                    width: frameSize,
-                    height: frameSize
+                    width: 40,
+                    height: 40
                 )
                 .foregroundStyle(Color.clLogUI.primary)
-                .padding(padding)
+                .padding(10)
                 .background(Color.clLogUI.green800)
-                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                .clipShape(RoundedRectangle(cornerRadius: 20))
                 .overlay(
                     Group {
                         if case .lined = type {
-                            RoundedRectangle(cornerRadius: cornerRadius)
+                            RoundedRectangle(cornerRadius: 20)
                                 .strokeBorder(
                                     Color.clLogUI.primary,
-                                    lineWidth: lineWidth
+                                    lineWidth: 3
                                 )
                         }
                     }
