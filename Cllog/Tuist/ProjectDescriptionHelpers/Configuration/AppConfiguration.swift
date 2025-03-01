@@ -21,6 +21,8 @@ public struct AppConfiguration {
     let destination: Set<Destination> = [.iPhone, .iPad]
     var entitlements: Entitlements? = "CllogProduction.entitlements"
     let deploymentTarget: DeploymentTargets = .iOS("17.0")
+    let kakaoNativeAppKey: String = "$(KAKAO_NATIVE_APP_KEY)"
+
     
     public var configurationName: ConfigurationName {
         return "Cllog"

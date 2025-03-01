@@ -13,6 +13,7 @@ struct LoginApp: App {
     var body: some Scene {
         WindowGroup {
             LoginView(
+                on: nil,
                 store: LoginApp.store
             )
         }
