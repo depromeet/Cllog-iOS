@@ -9,7 +9,7 @@
 import SwiftUI
 
 public struct RecodingButton: View {
-    
+    @Environment(\.isEnabled) private var isEnabled: Bool
     @Binding private var isRecoding: Bool
     private let onTapped: () -> Void
     
@@ -33,6 +33,11 @@ public struct RecodingButton: View {
             } else {
                 Image.clLogUI.recodeButton
                     .resizable()
+                    .foregroundStyle(
+                        isEnabled ?
+                        Color.clLogUI.white :
+                        Color.clLogUI.gray400
+                    )
                     .frame(width: 70, height: 70)
                     .animation(.easeInOut(duration: 0.5), value: isRecoding)
             }
@@ -48,6 +53,7 @@ private struct RecodingTestView: View {
         RecodingButton(isRecoding: $isRecoding) {
             isRecoding.toggle()
         }
+        .disabled(false)
     }
 }
 
