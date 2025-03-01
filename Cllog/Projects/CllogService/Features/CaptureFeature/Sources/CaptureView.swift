@@ -8,6 +8,8 @@
 
 import SwiftUI
 
+import DesignKit
+
 import ComposableArchitecture
 
 public struct CaptureView: View {
@@ -25,10 +27,49 @@ public struct CaptureView: View {
     
     public var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            Text("CaptureView")
-                .onAppear {
-                    viewStore.send(.onAppear)
+            ZStack {
+
+                Color.gray
+                    .ignoresSafeArea()
+                
+                VStack {
+                    HStack(spacing: 16) {
+                        Button(action: {
+//                            viewStore.send(.toggleFlash)
+                        }) {
+                            Image.clLogUI.btn_flash_off
+                        }
+                        
+                        Spacer()
+                    }
+                    .padding(.leading, 16)
+                    .padding(.top, 106)
+                    
+                    Spacer()
+                    
+                    Text("영상기록")
+                        .foregroundColor(.white)
+                        .font(.headline)
+                        .padding(.bottom, 8)
+                    
+                    Button(action: {
+                        withAnimation { [viewStore]
+                            viewStore.send(.startRecording)
+                        }
+                    }) {
+                        ZStack {
+                            Image.clLogUI.recording_off
+                                .frame(width: 64, height: 64)
+                        }
+                    }
+                    .padding(.bottom, 40)
                 }
+            }
+            .animation(.easeInOut, value: viewStore.state.isRecording)
+            .toolbar(viewStore.state.isRecording ? .hidden : .visible, for: .tabBar)
+            .onAppear {
+                viewStore.send(.onAppear)
+            }
         }
     }
 }

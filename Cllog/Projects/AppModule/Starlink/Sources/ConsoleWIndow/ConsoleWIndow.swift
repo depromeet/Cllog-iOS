@@ -23,8 +23,7 @@ public class ConsoleWindow {
         
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
     
-        let newWindowFrame = CGRect(origin: .init(x: 40, y: 40), size: CGSize(width: 300, height: 400))
-        
+        let newWindowFrame = CGRect(origin: .init(x: 0, y: 70), size: CGSize(width: 300, height: 400))
 
         let newWindow = UIWindow(windowScene: windowScene)
         newWindow.frame = newWindowFrame

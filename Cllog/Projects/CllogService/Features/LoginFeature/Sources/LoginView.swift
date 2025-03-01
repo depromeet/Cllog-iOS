@@ -31,7 +31,7 @@ public struct LoginView: View {
             Color.black
             
             VStack {
-                Image("clogLogo", bundle: .clLogUIBundle)
+                Image.clLogUI.clogLogo
                 
                 Spacer()
                     .frame(height: 20)
@@ -47,7 +47,7 @@ public struct LoginView: View {
                     // action
                 } label: {
                     HStack(spacing: 16) {
-                        Image("kakaoLogo", bundle: .clLogUIBundle)
+                        Image.clLogUI.kakaoLogo
                             .resizable()
                             .frame(width: 20, height: 20)
                         

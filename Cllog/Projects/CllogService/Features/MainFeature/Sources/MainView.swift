@@ -18,7 +18,7 @@ public struct MainView: View {
     private let tabViews: [AnyView]
     private let store: StoreOf<MainFeature>
     
-    @State private var selectedTab = 0
+    @State private var selectedTab = 1
     
     public init(
         on: UIViewController?,

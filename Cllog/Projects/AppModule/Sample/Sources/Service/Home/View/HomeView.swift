@@ -43,28 +43,17 @@ struct HomeView: View {
                 }
                 
             case .main:
-                MainView(
-                    on: on,
-                    tabViews: [
-                        Text("1"),
-                        captureView,
-                        Text("3")
-                    ], store: Store(
-                        initialState: MainFeature.State(
-                            tabTitles: [],
-                            selectedImageNames: [
-                                "icn_folder_selected",
-                                "icn_camera_selected",
-                                "icn_report_selected"
-                            ],
-                            unselectedImageNames: [
-                                "icn_folder_unselected",
-                                "icn_camera_unselected",
-                                "icn_report_unselected"
-                            ]
-                        ), reducer: {
-                        MainFeature()
-                    }))
+                NavigationView {
+                    MainView(
+                        on: on,
+                        tabViews: [
+                            Text("1"),
+                            CaptureView(on: on, store: store.scope(state: \.captureStore, action: \.captureTabaction)),
+                            Text("3")
+                        ],
+                        store: store.scope(state: \.tabMainStore, action: \.mainTabaction)
+                    )
+                }
                 
             case .none:
                 // Intro, splash
@@ -74,23 +63,5 @@ struct HomeView: View {
                     }
             }
         }
-    }
-    
-    @ViewBuilder
-    private var captureView: some View {
-        CaptureView(
-            on: on,
-            store: Store(
-                initialState: CaptureFeature.State(),
-                reducer: {
-                    CaptureFeature { log in
-                        ClLogger.message(
-                            level: .debug,
-                            message: log
-                        )
-                    }
-                }
-            )
-        )
     }
 }

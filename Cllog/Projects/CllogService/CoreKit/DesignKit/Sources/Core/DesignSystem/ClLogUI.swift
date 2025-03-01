@@ -42,3 +42,4 @@ extension ClLogUISupporttable {
 
 extension UIColor: ClLogUISupporttable {}
 extension Color: ClLogUISupporttable {}
+extension Image: ClLogUISupporttable {}

@@ -18,6 +18,8 @@ public struct MainFeature {
         var selectedImageNames: [String]
         var unselectedImageNames: [String]
         
+        var isRecord: Bool = false
+        
         public init(
             tabTitles: [String],
             selectedImageNames: [String],
@@ -31,12 +33,17 @@ public struct MainFeature {
     
     public enum Action {
         case onAppear
+        case startRecord
     }
     
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .onAppear:
+                return .none
+                
+            case .startRecord:
+                state.isRecord = true
                 return .none
             }
         }
