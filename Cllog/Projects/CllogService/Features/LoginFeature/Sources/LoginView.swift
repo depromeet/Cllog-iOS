@@ -44,7 +44,7 @@ public struct LoginView: View {
                 // TODO: 필요에 따라 LoginView로 변경
                 // MARK: Kakao Login Button
                 Button {
-                    // action
+                    store.send(.kakaoLoginButtonTapped)
                 } label: {
                     HStack(spacing: 16) {
                         Image("kakaoLogo", bundle: .clLogUIBundle)
