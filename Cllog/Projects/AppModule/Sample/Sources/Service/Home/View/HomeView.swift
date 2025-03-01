@@ -35,9 +35,10 @@ struct HomeView: View {
                 LoginView(
                     on: on,
                     store: Store(
-                        initialState: LoginFeature.State()) {
-                            LoginFeature()
-                        }
+                        initialState: LoginFeature.State()
+                    ) {
+                        ClLogDI.container.resolve(LoginFeature.self)!
+                    }
                 ).onAppear {
                     viewStore.send(.setDestination(.main))
                 }

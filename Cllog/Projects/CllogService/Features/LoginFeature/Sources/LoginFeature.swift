@@ -7,14 +7,16 @@
 //
 
 import ComposableArchitecture
+import LoginDomain
 import KakaoSDKUser
-import Foundation
 
 @Reducer
 public struct LoginFeature {
-    // TODO: UseCase
+    private let useCase: LoginUseCase
     
-    public init() { }
+    public init(useCase: LoginUseCase) {
+        self.useCase = useCase
+    }
     
     @ObservableState
     public struct State: Equatable {
