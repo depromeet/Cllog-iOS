@@ -32,7 +32,7 @@ extension ClLogUI where Base == UIImage {
     public static var share: UIImage { asset(#function) }
     public static var stamp: UIImage { asset(#function) }
     public static var up: UIImage { asset(#function) }
-    
+    public static var dotVertical: UIImage { asset(#function) }
 }
 
 extension ClLogUI where Base == Image {
@@ -58,6 +58,7 @@ extension ClLogUI where Base == Image {
     public static var share: Image { asset(#function) }
     public static var stamp: Image { asset(#function) }
     public static var up: Image { asset(#function) }
+    public static var dotVertical: Image { asset(#function) }
 }
 
 extension ClLogUI where Base == UIImage {
