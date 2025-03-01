@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol LoginUseCase {
-    func execute(token: String, idToken: String?) async throws
+    func execute(idToken: String) async throws
 }
 
 public struct DefaultLoginUseCase: LoginUseCase {
@@ -19,7 +19,7 @@ public struct DefaultLoginUseCase: LoginUseCase {
     
     private let loginRepository: LoginRepository
     
-    public func execute(token: String, idToken: String?) async throws {
-        try await loginRepository.login(token: token, idToken: idToken)
+    public func execute(idToken: String) async throws {
+        try await loginRepository.login(idToken)
     }
 }

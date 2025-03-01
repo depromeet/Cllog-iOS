@@ -30,6 +30,7 @@ public struct LoginFeature {
         case kakaoLoginButtonTapped
         case appleLoginButtonTapped
         case successLogin
+        case failLogin
     }
     
     public var body: some ReducerOf<Self> {
@@ -38,8 +39,15 @@ public struct LoginFeature {
             switch action {
             case .kakaoLoginButtonTapped:
                 return .run { send in
-                    let _ = try await executeKakaoLogin()
-                    await send(.successLogin)
+                    do {
+                        guard let idToken = try await executeKakaoLogin() else {
+                            return await send(.failLogin)
+                        }
+                        try await useCase.execute(idToken: idToken)
+                        await send(.successLogin)
+                    } catch {
+                        await send(.failLogin)
+                    }
                 }
                 
             case .appleLoginButtonTapped:
@@ -47,6 +55,8 @@ public struct LoginFeature {
                 
             case .successLogin:
                 // 로그인 성공
+                return .none
+            case .failLogin:
                 return .none
             }
         }
@@ -65,14 +75,11 @@ public struct LoginFeature {
     private func loginWithKakaoTalk() async throws -> String? {
         try await withCheckedThrowingContinuation { continuation in
             UserApi.shared.loginWithKakaoTalk { oauthToken, error in
-                if let error = error {
-                    print("🚨", error.localizedDescription)
+                if let error {
                     continuation.resume(throwing: error)
-                } else if let token = oauthToken {
-                    print("✅ accessToken:", token.accessToken)
-                    print("✅ id token:", token.idToken)
-                    continuation.resume(returning: token.idToken)
                 }
+                
+                continuation.resume(returning: oauthToken?.idToken)
             }
         }
     }
@@ -81,14 +88,11 @@ public struct LoginFeature {
     private func loginWithKakaoAccount() async throws -> String? {
         try await withCheckedThrowingContinuation { continuation in
             UserApi.shared.loginWithKakaoAccount { oauthToken, error in
-                if let error = error {
-                    print("🚨", error.localizedDescription)
+                if let error {
                     continuation.resume(throwing: error)
-                } else if let token = oauthToken {
-                    print("✅", token.accessToken)
-                    print("✅", token.idToken)
-                    continuation.resume(returning: token.idToken)
                 }
+                
+                continuation.resume(returning: oauthToken?.idToken)
             }
         }
     }

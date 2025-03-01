@@ -9,5 +9,5 @@
 import Foundation
 
 public protocol LoginRepository {
-    func login(token: String, idToken: String?) async throws
+    func login(_ idToken: String) async throws
 }
