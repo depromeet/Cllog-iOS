@@ -10,8 +10,8 @@ import Starlink
 import Networker
 
 public protocol AuthDataSource {
-    func kakaoLogin(idToken: String) async throws -> AuthTokenResponseDTO
-    func appleLogin(code: String, codeVerifier: String) async throws -> AuthTokenResponseDTO
+    func kakaoLogin(idToken: String) async throws -> AuthTokenDTO
+    func appleLogin(code: String, codeVerifier: String) async throws -> AuthTokenDTO
 }
 
 public final class DefaultAuthDataSource: AuthDataSource {
@@ -21,10 +21,10 @@ public final class DefaultAuthDataSource: AuthDataSource {
         self.provider = provider
     }
     
-    public func kakaoLogin(idToken: String) async throws-> AuthTokenResponseDTO {
+    public func kakaoLogin(idToken: String) async throws-> AuthTokenDTO {
         let request = KakaoLoginReqeustDTO(idToken: idToken)
         
-        let response: BaseResponseDTO<AuthTokenResponseDTO> = try await provider.request(
+        let response: BaseResponseDTO<AuthTokenDTO> = try await provider.request(
             LoginTarget.kakaoLogin(request)
         )
         
@@ -37,10 +37,10 @@ public final class DefaultAuthDataSource: AuthDataSource {
         
     }
     
-    public func appleLogin(code: String, codeVerifier: String) async throws -> AuthTokenResponseDTO {
+    public func appleLogin(code: String, codeVerifier: String) async throws -> AuthTokenDTO {
         let request = ApleLoginRequestDTO(code: code, codeVerifier: codeVerifier)
         
-        let response: BaseResponseDTO<AuthTokenResponseDTO> = try await provider.request(
+        let response: BaseResponseDTO<AuthTokenDTO> = try await provider.request(
             LoginTarget.appleLogin(request)
         )
         guard let data = response.data else {
