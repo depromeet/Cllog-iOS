@@ -16,6 +16,23 @@ extension ClLogUI where Base == UIImage {
     public static var recodeButton: UIImage { asset(#function) }
     public static var recordingButton: UIImage { asset(#function) }
     
+    // icon
+    public static var alert: UIImage { asset(#function) }
+    public static var back: UIImage { asset(#function) }
+    public static var camera: UIImage { asset(#function) }
+    public static var close: UIImage { asset(#function) }
+    public static var down: UIImage { asset(#function) }
+    public static var flashOff: UIImage { asset(#function) }
+    public static var flashOn: UIImage { asset(#function) }
+    public static var folder: UIImage { asset(#function) }
+    public static var list: UIImage { asset(#function) }
+    public static var location: UIImage { asset(#function) }
+    public static var report: UIImage { asset(#function) }
+    public static var right: UIImage { asset(#function) }
+    public static var share: UIImage { asset(#function) }
+    public static var stamp: UIImage { asset(#function) }
+    public static var up: UIImage { asset(#function) }
+    public static var dotVertical: UIImage { asset(#function) }
 }
 
 extension ClLogUI where Base == Image {
@@ -24,6 +41,24 @@ extension ClLogUI where Base == Image {
     public static var kakaoLogo: Image { asset(#function) }
     public static var recodeButton: Image { asset(#function) }
     public static var recordingButton: Image { asset(#function) }
+    
+    // icon
+    public static var alert: Image { asset(#function) }
+    public static var back: Image { asset(#function) }
+    public static var camera: Image { asset(#function) }
+    public static var close: Image { asset(#function) }
+    public static var down: Image { asset(#function) }
+    public static var flashOff: Image { asset(#function) }
+    public static var flashOn: Image { asset(#function) }
+    public static var folder: Image { asset(#function) }
+    public static var list: Image { asset(#function) }
+    public static var location: Image { asset(#function) }
+    public static var report: Image { asset(#function) }
+    public static var right: Image { asset(#function) }
+    public static var share: Image { asset(#function) }
+    public static var stamp: Image { asset(#function) }
+    public static var up: Image { asset(#function) }
+    public static var dotVertical: Image { asset(#function) }
 }
 
 extension ClLogUI where Base == UIImage {
