@@ -8,39 +8,33 @@
 
 import Foundation
 import LoginDomain
-import Alamofire
+import Starlink
 
 public struct DefaultLoginRepository: LoginRepository {
+    
     public init() {}
     
-
     public func login(_ idToken: String) async throws {
-        let parameters: [String: String] = [
-            "idToken": idToken,
-        ]
+        let url = "https://dev-api.climb-log.my/api/v1/auth/kakao"
         
-        // Alamofire 요청 보내기
-        let url = URL(string: "https://dev-api.climb-log.my/api/v1/auth/kakao")!
-        
-        // TODO: Starlink로 변경
-        AF.request(
-            url,
-            method: .post,
-            parameters: parameters,
-            encoder: JSONParameterEncoder.default
-        )
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: BaseResponseDTO<AuthTokenResponseDTO>.self) {
-            response in
-            switch response.result {
-            case .success(let token):
-                guard let data = token.data else { return }
-                // TODO: Keychain 저장
-                print("access token", data.accessToken)
-                print("refresh toekn", data.refreshToken)
-            case .failure(let error):
-                print(error.localizedDescription)
+        do {
+            let response: BaseResponseDTO<AuthTokenResponseDTO> = try await
+            // FIXME: params 변경
+            Starlink.session.request(
+                url,
+                params: Starlink.SafeDictionary<String, Any>(storage: ["id_token": idToken]),
+                method: .post
+            )
+            .reponseAsync()
+            // TODO: Access Token keychain 저장
+            guard let token = response.data else {
+                throw StarlinkError.inValidJSONData(.none)
             }
+            print("✅ access token", token.accessToken)
+            print("✅ refresh token", token.refreshToken)
+            
+        } catch {
+            throw error
         }
     }
 }
