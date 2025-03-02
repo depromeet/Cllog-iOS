@@ -40,7 +40,7 @@ struct HomeView: View {
                         ClLogDI.container.resolve(LoginFeature.self)!
                     }
                 ).onAppear {
-                    viewStore.send(.setDestination(.main))
+                    viewStore.send(.setDestination(.login))
                 }
                 
             case .main:

@@ -1,15 +1,14 @@
 //
 //  EndpointType.swift
-//  Data
+//  Networker
 //
 //  Created by soi on 3/2/25.
 //  Copyright © 2025 Supershy. All rights reserved.
 //
 
-import Foundation
 import Starlink
 
-protocol EndpointType {
+public protocol EndpointType {
     var baseURL: String { get }
     var path: String { get }
     var method: Starlink.Method { get }

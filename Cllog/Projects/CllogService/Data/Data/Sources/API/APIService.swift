@@ -7,6 +7,7 @@
 //
 
 import Starlink
+import Networker
 
 final class APIService {
     static let shared = APIService()
@@ -31,13 +32,13 @@ final class APIService {
             }
         }
         
-        let response: BaseResponseDTO<T> = try await reqeust.reponseAsync()
+        let response: T = try await reqeust.reponseAsync()
         
-        guard let data = response.data else {
-            throw StarlinkError.inValidJSONData(nil)
-        }
+//        guard let data = response.data else {
+//            throw StarlinkError.inValidJSONData(nil)
+//        }
         
-        return data
+        return response
     }
     
     private func request(

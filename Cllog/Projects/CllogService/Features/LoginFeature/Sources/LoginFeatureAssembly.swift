@@ -15,8 +15,14 @@ public struct LoginFeatureAssembly: Assembly {
     
     public func assemble(container: Container) {
         
-        container.register(LoginRepository.self) { _ in
-            DefaultLoginRepository()
+        container.register(LoginRepository.self) { resolver in
+            guard let dataSource = resolver.resolve(LoginDataSource.self) else {
+                fatalError("LoginDataSource dependency could not be resolved")
+            }
+           
+            DefaultLoginRepository(
+                dataSoruce: dataSource
+            )
         }
         
         container.register(LoginUseCase.self) { resolver in

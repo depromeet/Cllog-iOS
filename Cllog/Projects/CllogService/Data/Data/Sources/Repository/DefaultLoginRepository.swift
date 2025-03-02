@@ -10,14 +10,18 @@ import Foundation
 import LoginDomain
 
 public struct DefaultLoginRepository: LoginRepository {
+    private let dataSource: LoginDataSource
     
-    public init() {}
+    public init(dataSource: LoginDataSource) {
+        self.dataSource = dataSource
+    }
     
     public func login(_ idToken: String) async throws {
         
         do {
             let response: AuthTokenResponseDTO = try await
-            APIService.shared.request(LoginAPI.kakaoLogin(idToken: idToken))
+            dataSource.kakaoLogin(idToken: idToken)
+//            APIService.shared.request(LoginDataSource.kakaoLogin(idToken: idToken))
             
             // TODO: Access Token keychain 저장
             print("✅ access token", response.accessToken)
@@ -31,7 +35,8 @@ public struct DefaultLoginRepository: LoginRepository {
     public func login(code: String, codeVerifier: String) async throws {
         do {
             let response: AuthTokenResponseDTO = try await
-            APIService.shared.request(LoginAPI.appleLogin(code: code, codeVerifier: codeVerifier))
+            dataSource.appleLogin(code: code, codeVerifier: codeVerifier)
+//            APIService.shared.request(LoginDataSource.appleLogin(code: code, codeVerifier: codeVerifier))
             
             // TODO: Access Token keychain 저장
             print("✅ access token", response.accessToken)
