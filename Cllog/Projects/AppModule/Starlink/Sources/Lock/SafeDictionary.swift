@@ -28,3 +28,20 @@ extension Starlink {
     }
 
 }
+
+extension Starlink.SafeDictionary where Key == String, Value: Any {
+    
+    public func toDictionary() -> [Key: Value] {
+        return lock.read { storage }
+    }
+    
+    public convenience init?(encodable: Encodable) {
+        let encoder = JSONEncoder()
+        guard let data = try? encoder.encode(encodable),
+              let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return nil
+        }
+        guard let storage = dict as? [String: Value] else { return nil }
+        self.init(storage: storage)
+    }
+}
