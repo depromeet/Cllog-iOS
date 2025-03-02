@@ -7,3 +7,13 @@
 //
 
 import Foundation
+import Starlink
+
+// TODO: Encodable Parameter
+protocol EndpointType {
+    var baseURL: String { get }
+    var path: String { get }
+    var method: Starlink.Method { get }
+    var parameters: Starlink.SafeDictionary<String, Any>? { get }
+    var headers: [Starlink.Header]? { get }
+}
