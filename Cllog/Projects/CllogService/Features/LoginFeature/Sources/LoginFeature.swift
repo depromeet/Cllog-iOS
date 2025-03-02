@@ -28,7 +28,7 @@ public struct LoginFeature {
     
     public enum Action {
         case kakaoLoginButtonTapped
-        case appleLoginButtonTapped
+        case appleLoginCompleted(authorizationCode: String?)
         case successLogin
         case failLogin
     }
@@ -50,9 +50,21 @@ public struct LoginFeature {
                     }
                 }
                 
-            case .appleLoginButtonTapped:
-                return .none
-                
+            case .appleLoginCompleted(let authorizationCode):
+                return .run { send in
+                    guard let authorizationCode = authorizationCode else {
+                        await send(.failLogin)
+                        return
+                    }
+                    
+                    do {
+                        try await useCase.execute(code: authorizationCode, codeVerifier: authorizationCode)
+                        await send(.successLogin)
+                    } catch {
+                        await send(.failLogin)
+                    }
+                }
+
             case .successLogin:
                 // 로그인 성공
                 return .none

@@ -71,7 +71,15 @@ public struct LoginView: View {
                 SignInWithAppleButton { request in
                     
                 } onCompletion: { result in
-                    
+                    switch result {
+                    case .success(let authorization):
+                        let credential = authorization.credential as? ASAuthorizationAppleIDCredential
+                        let authorizationCode = String(data: credential?.authorizationCode ?? Data(), encoding: .utf8)
+                        store.send(.appleLoginCompleted(authorizationCode: authorizationCode))
+                        
+                    case .failure(let error):
+                        store.send(.failLogin)
+                    }
                 }
                 .signInWithAppleButtonStyle(.white)
                 .frame(height: 56)

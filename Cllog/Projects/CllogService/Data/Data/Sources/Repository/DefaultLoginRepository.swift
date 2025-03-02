@@ -27,4 +27,18 @@ public struct DefaultLoginRepository: LoginRepository {
             throw error
         }
     }
+    
+    public func login(code: String, codeVerifier: String) async throws {
+        do {
+            let response: AuthTokenResponseDTO = try await
+            APIService.shared.request(LoginAPI.appleLogin(code: code, codeVerifier: codeVerifier))
+            
+            // TODO: Access Token keychain 저장
+            print("✅ access token", response.accessToken)
+            print("✅ refresh token", response.refreshToken)
+            
+        } catch {
+            throw error
+        }
+    }
 }

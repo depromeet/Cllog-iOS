@@ -9,11 +9,11 @@
 import Foundation
 import Starlink
 
-// TODO: Encodable Parameter
 protocol EndpointType {
     var baseURL: String { get }
     var path: String { get }
     var method: Starlink.Method { get }
-    var parameters: Starlink.SafeDictionary<String, Any>? { get }
+    var parameters: ParameterType? { get }
+    var encodable: Encodable? { get }
     var headers: [Starlink.Header]? { get }
 }
