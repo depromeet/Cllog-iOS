@@ -14,7 +14,7 @@ public extension TargetDependency {
 }
 
 public extension TargetDependency.Framework {
-    static let Starlink = TargetDependency.project(target: "Starlink", path: "../../../../Projects/AppModule/Starlink")
+    static let Starlink = TargetDependency.project(target: "Starlink", path: .releativeStarlink(.cllog))
 }
 
 public extension TargetDependency.Library {
