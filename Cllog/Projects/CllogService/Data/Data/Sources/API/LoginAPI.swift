@@ -10,6 +10,7 @@ import Starlink
 
 enum LoginAPI {
     case kakaoLogin(idToken: String)
+    case appleLogin(code: String, codeVerifier: String)
 }
 
 extension LoginAPI: EndpointType {
@@ -20,19 +21,31 @@ extension LoginAPI: EndpointType {
     var path: String {
         switch self {
         case .kakaoLogin: "/auth/kakao"
+        case .appleLogin: "/auth/apple"
         }
     }
     
     var method: Starlink.Method {
         switch self {
         case .kakaoLogin: .post
+        case .appleLogin: .post
         }
     }
     
-    var parameters: Starlink.SafeDictionary<String, Any>? {
+    var parameters: ParameterType? {
         switch self {
         case .kakaoLogin(let idToken):
-            Starlink.SafeDictionary<String, Any>(storage: ["id_token": idToken])
+                .dictionary(Starlink.SafeDictionary<String, Any>(storage: ["id_token": idToken]))
+        case .appleLogin(let code, let codeVerifier):
+                .encodable(AuthTokenRequestDTO(code: code, codeVerifier: codeVerifier))
+        }
+    }
+    
+    var encodable: Encodable? {
+        switch self {
+        case .kakaoLogin: nil
+        case .appleLogin(let code, let codeVerifier):
+            AuthTokenRequestDTO(code: code, codeVerifier: codeVerifier)
         }
     }
     
