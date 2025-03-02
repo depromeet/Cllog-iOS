@@ -10,9 +10,9 @@ import Foundation
 import LoginDomain
 
 public struct DefaultLoginRepository: LoginRepository {
-    private let dataSource: LoginDataSource
+    private let dataSource: AuthDataSource
     
-    public init(dataSource: LoginDataSource) {
+    public init(dataSource: AuthDataSource) {
         self.dataSource = dataSource
     }
     

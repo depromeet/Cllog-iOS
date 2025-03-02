@@ -11,6 +11,8 @@ import Pulse
 
 // 로그인 후 토큰이 필요한 요청을 처리하는 Provider
 public final class AuthProvider: Provider {
+    public init () {}
+    
     public func request<T: Decodable>(_ endpoint: EndpointType) async throws -> T {
         let url = endpoint.baseURL + endpoint.path
         

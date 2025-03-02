@@ -11,6 +11,7 @@ import Pulse
 
 // 로그인 전 토큰 없이 API 요청을 처리하는 Provider
 public final class UnAuthProvider: Provider {
+    public init () {}
     
     public func request<T: Decodable>(_ endpoint: EndpointType) async throws -> T {
         let url = endpoint.baseURL + endpoint.path

@@ -9,12 +9,12 @@
 import Starlink
 import Networker
 
-public protocol LoginDataSource {
+public protocol AuthDataSource {
     func kakaoLogin(idToken: String) async throws -> AuthTokenResponseDTO
     func appleLogin(code: String, codeVerifier: String) async throws -> AuthTokenResponseDTO
 }
 
-public final class DefaultLoginDataSource: LoginDataSource {
+public final class DefaultAuthDataSource: AuthDataSource {
     private let provider: Provider
     
     public init(provider: Provider) {
@@ -22,8 +22,10 @@ public final class DefaultLoginDataSource: LoginDataSource {
     }
     
     public func kakaoLogin(idToken: String) async throws-> AuthTokenResponseDTO {
+        let request = KakaoTokenReqeustDTO(idToken: idToken)
+        
         let response: BaseResponseDTO<AuthTokenResponseDTO> = try await provider.request(
-            LoginTarget.kakaoLogin(idToken: idToken)
+            LoginTarget.kakaoLogin(request)
         )
         
         guard let data = response.data else {
@@ -36,8 +38,10 @@ public final class DefaultLoginDataSource: LoginDataSource {
     }
     
     public func appleLogin(code: String, codeVerifier: String) async throws -> AuthTokenResponseDTO {
+        let request = AuthTokenRequestDTO(code: code, codeVerifier: codeVerifier)
+        
         let response: BaseResponseDTO<AuthTokenResponseDTO> = try await provider.request(
-            LoginTarget.appleLogin(code: code, codeVerifier: codeVerifier)
+            LoginTarget.appleLogin(request)
         )
         guard let data = response.data else {
             throw StarlinkError.inValidJSONData(nil)
@@ -49,43 +53,42 @@ public final class DefaultLoginDataSource: LoginDataSource {
 }
 
 enum LoginTarget {
-    case kakaoLogin(idToken: String)
-    case appleLogin(code: String, codeVerifier: String)
+    case kakaoLogin(KakaoTokenReqeustDTO)
+    case appleLogin(AuthTokenRequestDTO)
 }
 
 extension LoginTarget: EndpointType {
-    var baseURL: String {
-        "https://dev-api.climb-log.my/api"
-    }
-    
     var path: String {
         switch self {
-        case .kakaoLogin: "/v1/auth/kakao"
-        case .appleLogin: "/v1/auth/apple"
+        case .kakaoLogin: 
+            return "/api/v1/auth/kakao"
+        case .appleLogin:
+            return "/api/v1/auth/apple"
         }
     }
     
     var method: Starlink.Method {
         switch self {
-        case .kakaoLogin: .post
-        case .appleLogin: .post
+        case .kakaoLogin, .appleLogin:
+            return .post
         }
     }
     
     var parameters: ParameterType? {
         switch self {
-        case .kakaoLogin(let idToken):
-                .dictionary(Starlink.SafeDictionary<String, Any>(storage: ["id_token": idToken]))
-        case .appleLogin(let code, let codeVerifier):
-                .encodable(AuthTokenRequestDTO(code: code, codeVerifier: codeVerifier))
+        case .kakaoLogin(let request):
+            return .encodable(request)
+        case .appleLogin(let request):
+            return .encodable(request)
         }
     }
     
     var encodable: Encodable? {
         switch self {
-        case .kakaoLogin: nil
-        case .appleLogin(let code, let codeVerifier):
-            AuthTokenRequestDTO(code: code, codeVerifier: codeVerifier)
+        case .kakaoLogin(let request):
+            return request
+        case .appleLogin(let request):
+            return request
         }
     }
     
