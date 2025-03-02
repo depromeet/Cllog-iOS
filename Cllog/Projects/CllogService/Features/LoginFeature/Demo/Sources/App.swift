@@ -7,7 +7,7 @@ import ComposableArchitecture
 struct LoginApp: App {
     
     static let store = Store(initialState: LoginFeature.State()) {
-        LoginFeature()
+        LoginFeature(useCase: <#any LoginUseCase#>)
     }
     
     var body: some Scene {

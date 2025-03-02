@@ -11,7 +11,7 @@ import Foundation
 import Starlink
 import Pulse
 
-enum ClLogger {
+public enum ClLogger {
     
     public static func message(
         label: String = "",

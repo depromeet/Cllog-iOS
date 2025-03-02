@@ -13,6 +13,7 @@ import LoginFeature
 import CaptureFeature
 
 import ComposableArchitecture
+import LoginDomain
 
 struct HomeView: View {
     
@@ -37,7 +38,7 @@ struct HomeView: View {
                     store: Store(
                         initialState: LoginFeature.State()
                     ) {
-                        ClLogDI.container.resolve(LoginFeature.self)!
+                        LoginFeature(useCase: ClLogDI.container.resolve(LoginUseCase.self)!)
                     }
                 ).onAppear {
                     viewStore.send(.setDestination(.login))

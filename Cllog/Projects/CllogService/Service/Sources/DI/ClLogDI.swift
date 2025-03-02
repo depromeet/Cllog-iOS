@@ -10,13 +10,13 @@ import Foundation
 
 import Swinject
 
-enum ClLogDI: Sendable {
+public enum ClLogDI: Sendable {
     
-    static let container = Container()
+    public static let container = Container()
     
     /// Service 단위로 DI 주입
     /// - Parameter assemblies: 서비스 DI 객체
-    static func register(assemblies: [Assembly]) {
+    public static func register(assemblies: [Assembly]) {
         assemblies.forEach { assembly in
             
             assembly.assemble(container: container)

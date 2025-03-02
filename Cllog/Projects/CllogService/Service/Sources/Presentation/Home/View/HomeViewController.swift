@@ -17,16 +17,16 @@ import ComposableArchitecture
 
 import LoginFeature
 
-extension HomeViewController {
+public extension HomeViewController {
     
     static func instance() -> HomeViewController {
         return HomeViewController()
     }
 }
 
-final class HomeViewController: UIViewController {
+public final class HomeViewController: UIViewController {
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         
         configure()

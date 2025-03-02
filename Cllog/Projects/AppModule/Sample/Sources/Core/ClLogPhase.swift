@@ -8,6 +8,8 @@
 
 import Foundation
 
+import CllogService
+
 @frozen public enum ClLogPhase: String, Sendable {
     
     case dev = "dev"
