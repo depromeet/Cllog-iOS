@@ -8,6 +8,7 @@
 import Foundation
 
 public enum StarlinkError: Swift.Error, Equatable {
+    case inValidParams(ErrorInfo?)
     case inValidURLPath(ErrorInfo?)
     case nullPointStatusCode(ErrorInfo?)
     case nullPointData(ErrorInfo?)
@@ -62,6 +63,8 @@ public enum StarlinkError: Swift.Error, Equatable {
 extension StarlinkError: CustomStringConvertible {
     public var description: String {
         switch self {
+        case .inValidParams(let info):
+            return info?.message?.message ?? "❌ 유효하지 않은 Params 입니다."
         case .inValidURLPath(let info):
             return info?.message?.message ?? "❌ 유효하지 않은 URL 경로입니다."
         case .nullPointStatusCode(let info):

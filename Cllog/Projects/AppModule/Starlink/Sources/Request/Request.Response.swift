@@ -47,8 +47,13 @@ extension Starlink.Request {
             return try await session.data(for: urlRequest, delegate: nil)
             
         case .post, .put, .delete:
-            let requestBody = try? JSONSerialization.data(withJSONObject: params ?? [:], options: [])
             
+            let params = params?.toDictionary() ?? [:]
+            guard JSONSerialization.isValidJSONObject(params) else {
+                throw StarlinkError.inValidParams(ErrorInfo(code: "-999", error: nil, message: nil))
+            }
+
+            let requestBody = try JSONSerialization.data(withJSONObject: params, options: [])
             var urlRequest = URLRequest(url: urlConversion)
             
             urlRequest.httpMethod = "\(method)"
@@ -57,7 +62,7 @@ extension Starlink.Request {
             for interceptor in self.interceptors {
                 urlRequest = try await interceptor.adapt(&urlRequest)
             }
-            
+            urlRequest.setHeader(.init(name: "Content-Type", value: "application/json"))
             urlRequest.setHeaders(headers)
             
             self.trakers.allTrackers().forEach { $0.didRequest(self, urlRequest: urlRequest) }

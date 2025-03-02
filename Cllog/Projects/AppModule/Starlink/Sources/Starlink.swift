@@ -58,7 +58,7 @@ public final class Starlink: @unchecked Sendable {
     /// - Returns: Starlink
     public func request(
         _ urlConversion: URLConversion,
-        params: SafeDictionary<String, Any>? = nil,
+        params: SafeDictionary<String, Any>?,
         method: Starlink.Method,
         headers: [Starlink.Header] = []
     ) -> StarlinkRequest {
@@ -66,6 +66,35 @@ public final class Starlink: @unchecked Sendable {
             session: session,
             path: urlConversion,
             params: params,
+            method: method,
+            headers: headers,
+            trakers: trackers,
+            interceptors: interceptors
+        )
+        return request
+    }
+    
+    /// Starlink.Request ( URL Session을 요청하는 Request 생성 )
+    /// - Parameters:
+    ///   - urlConversion: URL 포맷
+    ///   - params: Encodable
+    ///   - method: 메소드
+    ///   - tracking: 로그 Tracker
+    /// - Returns: Starlink
+    public func request(
+        _ urlConversion: URLConversion,
+        encodable: Encodable?,
+        method: Starlink.Method,
+        headers: [Starlink.Header] = []
+    ) -> StarlinkRequest {
+        var safeParams: SafeDictionary<String, Any>? = nil
+        if let params = encodable {
+            safeParams = SafeDictionary(encodable: params)
+        }
+        let request = Starlink.Request(
+            session: session,
+            path: urlConversion,
+            params: safeParams,
             method: method,
             headers: headers,
             trakers: trackers,
