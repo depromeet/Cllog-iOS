@@ -58,6 +58,10 @@ enum LoginTarget {
 }
 
 extension LoginTarget: EndpointType {
+    var baseURL: String {
+        return "https://dev-api.climb-log.my"
+    }
+    
     var path: String {
         switch self {
         case .kakaoLogin: 
