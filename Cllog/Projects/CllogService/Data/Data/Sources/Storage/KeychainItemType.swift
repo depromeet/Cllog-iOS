@@ -11,8 +11,8 @@ import Foundation
 enum KeychainItemType: RawRepresentable, CaseIterable {
     typealias RawValue = CFString
 
-    case generic
-    case password
+    case genericPassword
+    case internetPassword
     case certificate
     case cryptography
     case identity
@@ -20,9 +20,9 @@ enum KeychainItemType: RawRepresentable, CaseIterable {
     init?(rawValue: CFString) {
         switch rawValue {
         case kSecClassGenericPassword:
-            self = .generic
+            self = .genericPassword
         case kSecClassInternetPassword:
-            self = .password
+            self = .internetPassword
         case kSecClassCertificate:
             self = .certificate
         case kSecClassKey:
@@ -36,9 +36,9 @@ enum KeychainItemType: RawRepresentable, CaseIterable {
 
     var rawValue: CFString {
         switch self {
-        case .generic:
+        case .genericPassword:
             return kSecClassGenericPassword
-        case .password:
+        case .internetPassword:
             return kSecClassInternetPassword
         case .certificate:
             return kSecClassCertificate

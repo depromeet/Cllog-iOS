@@ -11,18 +11,13 @@ import Foundation
 final class KeychainManager {
     typealias KeychainDictionary = [String: Any]
     typealias ItemAttributes = [CFString : Any]
-
+    
+    static let shared = KeychainManager()
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
     private var attributes: ItemAttributes?
     
-    public class var standard: KeychainManager {
-        return KeychainManager()
-    }
-    
-    init(attributes: ItemAttributes? = nil) {
-        self.attributes = attributes
-    }
+    private init() {}
     
     func saveItem<T: Encodable>(_ item: T, itemClass: KeychainItemType, key: String) throws {
         let itemData = try encoder.encode(item)

@@ -15,14 +15,24 @@ enum AppData {
     
     enum KeychainKey: String, CaseIterable {
         case token
+        
+        var itemClass: KeychainItemType {
+            switch self {
+            case .token: .genericPassword
+            }
+        }
     }
     
-    @Keychain(key: KeychainKey.token.rawValue, itemClass: .generic)
+    @Keychain(key: KeychainKey.token.rawValue, itemClass: KeychainKey.token.itemClass)
     static var token: AuthTokenDTO?
     
     static func clearLocalData() {
         UserDefaultKey.allCases.forEach {
             UserDefaults.standard.removeObject(forKey: $0.rawValue)
+        }
+        
+        KeychainKey.allCases.forEach {
+            try? KeychainManager.shared.deleteItem(ofClass: $0.itemClass, key: $0.rawValue)
         }
     }
 }

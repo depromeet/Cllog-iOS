@@ -13,14 +13,13 @@ struct Keychain<T: Codable> {
      
     let key: String
     let itemClass: KeychainItemType
-    let keychain: KeychainManager
+    let keychain = KeychainManager.shared
     
     private var currentValue: T?
     
-    init(key: String, itemClass: KeychainItemType, keychain: KeychainManager = .standard) {
+    init(key: String, itemClass: KeychainItemType) {
         self.key = key
         self.itemClass = itemClass
-        self.keychain = keychain
     }
     
     public var wrappedValue: T? {
