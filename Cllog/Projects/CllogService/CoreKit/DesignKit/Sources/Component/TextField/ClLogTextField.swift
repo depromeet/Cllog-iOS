@@ -100,7 +100,7 @@ public enum TextFieldState {
         case .normal, .disable:
             return .clLogUI.gray900
         case .error:
-            return .clLogUI.fail.opacity(0.1)
+            return .clLogUI.textFail
         }
     }
     
