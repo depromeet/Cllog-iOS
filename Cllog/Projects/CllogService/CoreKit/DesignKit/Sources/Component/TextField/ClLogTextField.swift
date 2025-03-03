@@ -51,8 +51,6 @@ extension ClLogTextField {
         ZStack {
             // TextField
             TextField("", text: $text)
-                .font(.b1)
-                .foregroundStyle(configuration.state.foregroundColor)
                 .padding(.horizontal, 16)
                 .tint(configuration.state.foregroundColor)
                 .focused($isTextFieldFocused)
@@ -60,12 +58,12 @@ extension ClLogTextField {
             // PlaceHolder
             if !isTextFieldFocused {
                 Text(displayPlaceHolder)
-                .font(.b1)
-                .foregroundStyle(configuration.state.foregroundColor)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
             }
         }
+        .font(.b1)
+        .foregroundStyle(configuration.state.foregroundColor)
         .frame(height: 48)
         .background(configuration.state.backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -123,9 +121,19 @@ public struct TextFieldConfiguration {
 }
 
 public struct ContainerClLogTextField: View {
-    @State var textNormal: String
-    @State var textDisable: String
-    @State var textError: String
+    @State private var textNormal: String
+    @State private var textDisable: String
+    @State private var textError: String
+    
+    init(
+        textNormal: String,
+        textDisable: String,
+        textError: String
+    ) {
+        self.textNormal = textNormal
+        self.textDisable = textDisable
+        self.textError = textError
+    }
     
     public var body: some View {
         GroupBox(label: Text("Normal")) {
