@@ -34,6 +34,15 @@ public struct MainView: View {
     }
     
     public var body: some View {
+        bodyView
+            .overlay {
+                if store.showOverlay {
+                    overlayerView
+                }
+            }
+    }
+    
+    private var bodyView: some View {
         TabView(selection: $selectedTab) {
             ForEach(Array(tabViews.enumerated()), id: \.offset) { index, view in
                 view

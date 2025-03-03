@@ -49,23 +49,11 @@ struct HomeView: View {
                     Text("1"),
                     captureView,
                     Text("3")
-                ],
-                overlayerView: Text("123"),
-                store: Store(initialState: MainFeature.State(
-                    tabTitles: [],
-                    selectedImageNames: [
-                        "icn_folder_selected",
-                        "icn_camera_selected",
-                        "icn_report_selected"
-                    ],
-                    unselectedImageNames: [
-                        "icn_folder_unselected",
-                        "icn_camera_unselected",
-                        "icn_report_unselected"
-                    ]
-                ), reducer: {
-                    ClLogDI.container.resolve(MainFeature.self)
-                }))
+                ], overlayerView: RecordView(
+                    on: on,
+                    store: store.scope(state: \.recordState, action: \.recordFeatureAction)
+                ), store:
+                    store.scope(state: \.mainState, action: \.mainFeatureAction))
             
         case .none:
             // Intro, splash
@@ -80,12 +68,7 @@ struct HomeView: View {
     private var captureView: some View {
         CaptureView(
             on: on,
-            store: Store(
-                initialState: CaptureFeature.State(),
-                reducer: {
-                    ClLogDI.container.resolve(CaptureFeature.self)
-                }
-            )
+            store: store.scope(state: \.captureState, action: \.captureFeatureAction)
         )
     }
 }

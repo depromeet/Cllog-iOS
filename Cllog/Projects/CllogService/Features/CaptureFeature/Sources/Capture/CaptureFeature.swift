@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 import Domain
 import CaptureDomain
@@ -26,6 +27,8 @@ public struct CaptureFeature {
         public var destination: Destination? = nil
         public var viewState: ViewState = .normal
         
+        public var isRecording: Bool = false
+        
         public init() {}
         
     }
@@ -34,6 +37,17 @@ public struct CaptureFeature {
         case onAppear
         case excuteCapture
         case noneExcuteCaptue
+        
+        case onStartRecord
+        case onStopRecord
+        
+        case sendAction(Action.Send)
+        
+        public enum Send {
+            // 레코드 상태를 전달
+            case onRecord(Bool)
+        }
+        
     }
     
     public enum ViewState {
@@ -58,7 +72,6 @@ public struct CaptureFeature {
     
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
-            logConsoleUseCase.executeInfo(label: "\(Self.self)", message: "action :: \(action)")
             switch action {
             case .onAppear:
                 return .run { send in
@@ -76,6 +89,26 @@ public struct CaptureFeature {
                 
             case .noneExcuteCaptue:
                 state.viewState = .noneCapturePermission
+                return .none
+                
+            case .onStartRecord:
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    state.isRecording = true
+                }
+                
+                return .run { [state] send in
+                    await send(.sendAction(.onRecord(state.isRecording)))
+                }
+                
+            case .onStopRecord:
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    state.isRecording = false
+                }
+                
+                return .none
+                
+            case .sendAction:
+                // 상위로 이벤트 전달 - 동작 x
                 return .none
             }
         }

@@ -56,6 +56,15 @@ public struct CaptureFeatureAssembly: Assembly {
                 captureUseCase: captureUseCase
             )
         }
+        
+        container.register(RecordFeature.self) { resolver in
+            guard let logConsoleUseCase  = resolver.resolve(LogConsoleUseCase.self) else {
+                fatalError("Could not resolve LogConsoleUseCase")
+            }
+            return RecordFeature(
+                logConsoleUsecase: logConsoleUseCase
+            )
+        }
     }
     
 }
