@@ -10,6 +10,7 @@ import UIKit
 
 import DesignKit
 import LoginFeature
+import CllogService
 
 @main
 class ClLogApp {
@@ -22,7 +23,7 @@ class ClLogApp {
         // DI 세팅
         ClLogDI.register(assemblies: [
             ClLogFont(),
-            LoginFeatureAssembly(),
+            ClLogServiceAssembly(),
         ])
         
         // App Start

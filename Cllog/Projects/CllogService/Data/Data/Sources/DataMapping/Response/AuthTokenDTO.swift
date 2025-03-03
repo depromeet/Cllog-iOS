@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct AuthTokenResponseDTO: Decodable {
+public struct AuthTokenDTO: Codable {
     let accessToken: String
     let refreshToken: String
 }

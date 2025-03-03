@@ -8,7 +8,7 @@
 
 import Starlink
 
-enum ParameterType {
+public enum ParameterType {
     case dictionary(Starlink.SafeDictionary<String, Any>)
     case encodable(Encodable)
 }

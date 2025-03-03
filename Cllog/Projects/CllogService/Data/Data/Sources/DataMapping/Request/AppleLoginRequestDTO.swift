@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct AuthTokenRequestDTO: Encodable {
+public struct AppleLoginRequestDTO: Encodable {
     let code: String
     let codeVerifier: String
 }

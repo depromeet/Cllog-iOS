@@ -10,35 +10,32 @@ import Foundation
 import LoginDomain
 
 public struct DefaultLoginRepository: LoginRepository {
+    private let authDataSource: AuthDataSource
+    private let tokenDataSource: TokenDataSource
     
-    public init() {}
+    public init(
+        authDataSource: AuthDataSource,
+        tokenDataSource: TokenDataSource
+    ) {
+        self.authDataSource = authDataSource
+        self.tokenDataSource = tokenDataSource
+    }
     
     public func login(_ idToken: String) async throws {
+        let response: AuthTokenDTO = try await authDataSource.kakaoLogin(
+            idToken: idToken
+        )
         
-        do {
-            let response: AuthTokenResponseDTO = try await
-            APIService.shared.request(LoginAPI.kakaoLogin(idToken: idToken))
-            
-            // TODO: Access Token keychain 저장
-            print("✅ access token", response.accessToken)
-            print("✅ refresh token", response.refreshToken)
-            
-        } catch {
-            throw error
-        }
+        // Token 저장
+        tokenDataSource.saveToken(response)
     }
     
     public func login(code: String, codeVerifier: String) async throws {
-        do {
-            let response: AuthTokenResponseDTO = try await
-            APIService.shared.request(LoginAPI.appleLogin(code: code, codeVerifier: codeVerifier))
-            
-            // TODO: Access Token keychain 저장
-            print("✅ access token", response.accessToken)
-            print("✅ refresh token", response.refreshToken)
-            
-        } catch {
-            throw error
-        }
+        let response: AuthTokenDTO = try await authDataSource.appleLogin(
+            code: code,
+            codeVerifier: codeVerifier
+        )
+        // Token 저장
+        tokenDataSource.saveToken(response)
     }
 }
