@@ -53,7 +53,7 @@ extension ClLogTextField {
                 .font(.b1)
                 .foregroundStyle(configuration.state.foregroundColor)
                 .padding(.horizontal, 16)
-                .tint(Color.clLogUI.gray50)
+                .tint(configuration.state.foregroundColor)
                 .focused($isTextFieldFocused)
             
             if !isTextFieldFocused {
