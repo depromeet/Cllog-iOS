@@ -18,13 +18,7 @@ enum ClLogDI: Sendable {
     /// - Parameter assemblies: 서비스 DI 객체
     static func register(assemblies: [Assembly]) {
         assemblies.forEach { assembly in
-            
             assembly.assemble(container: container)
-            
-            ClLogger.message(
-                level: .info,
-                message: "[Assembly][register] => \(assembly)"
-            )
         }
     }
 }

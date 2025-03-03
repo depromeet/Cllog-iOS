@@ -37,14 +37,7 @@ final class HomeViewController: UIViewController {
             on: self,
             store: StoreOf<HomeFeature>(
                 initialState: HomeFeature.State(),
-                reducer: {
-                    return HomeFeature { logger in
-                        ClLogger.message(
-                            level: .debug,
-                            message: logger
-                        )
-                    }
-                })
+                reducer: { ClLogDI.container.resolve(HomeFeature.self) })
         )
         
         let hostingController = UIHostingController(

@@ -8,12 +8,16 @@
 
 import Foundation
 
+import Domain
+import CaptureDomain
+
 import ComposableArchitecture
 
 @Reducer
 public struct CaptureFeature {
     
-    private let logger: (String) -> Void
+    private let logConsoleUseCase: LogConsoleUseCase
+    private let captureUseCase: CaptureUseCase
     
     public struct State: Equatable {
         public init() {}
@@ -29,14 +33,16 @@ public struct CaptureFeature {
     }
     
     public init (
-        logger: @escaping @Sendable (String) -> Void
+        logConsoleUseCase: LogConsoleUseCase,
+        captureUseCase: CaptureUseCase
     ) {
-        self.logger = logger
+        self.logConsoleUseCase = logConsoleUseCase
+        self.captureUseCase = captureUseCase
     }
     
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
-            logger("\(Self.self) action :: \(action)")
+            logConsoleUseCase.executeInfo(label: "\(Self.self)", message: "action :: \(action)")
             switch action {
             case .onAppear:
                 return .none

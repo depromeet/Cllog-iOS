@@ -6,11 +6,16 @@
 //  Copyright © 2025 Supershy. All rights reserved.
 //
 
+import Domain
+
 import ComposableArchitecture
 
 @Reducer
 public struct HomeFeature {
     
+    private let logConsoleUseCase: LogConsoleUseCase
+    
+    @ObservableState
     public struct State: Equatable {
         public var destination: Destination? = nil
     }
@@ -25,17 +30,15 @@ public struct HomeFeature {
         case main
     }
     
-    private let logger: (String) -> Void
-    
     public init(
-        logger: @escaping @Sendable (String) -> Void
+        logConsoleUseCase: any LogConsoleUseCase
     ) {
-        self.logger = logger
+        self.logConsoleUseCase = logConsoleUseCase
     }
     
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
-            logger("\(Self.self) action :: \(action)")
+            logConsoleUseCase.executeInfo(label: "\(Self.self)", message: "action :: \(action)")
             switch action {
             case .onAppear:
                 // auto login fetch

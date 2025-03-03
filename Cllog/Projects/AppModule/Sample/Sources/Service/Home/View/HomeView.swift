@@ -29,38 +29,36 @@ struct HomeView: View {
     }
     
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            switch viewStore.state.destination {
-            case .login:
-                LoginView(
-                    on: on,
-                    store: Store(
-                        initialState: LoginFeature.State()
-                    ) {
-                        ClLogDI.container.resolve(LoginFeature.self)!
-                    }
-                ).onAppear {
-                    viewStore.send(.setDestination(.main))
+        switch store.state.destination {
+        case .login:
+            LoginView(
+                on: on,
+                store: Store(
+                    initialState: LoginFeature.State()
+                ) {
+                    ClLogDI.container.resolve(LoginFeature.self)!
                 }
-                
-            case .main:
-                MainView(
-                    on: on,
-                    tabViews: [
-                        Text("1"),
-                        captureView,
-                        Text("3")
-                    ], store: Store(initialState: MainFeature.State(), reducer: {
-                        MainFeature()
-                    }))
-                
-            case .none:
-                // Intro, splash
-                Text("Splash")
-                    .onAppear {
-                        viewStore.send(.onAppear)
-                    }
+            ).onAppear {
+                store.send(.setDestination(.main))
             }
+            
+        case .main:
+            MainView(
+                on: on,
+                tabViews: [
+                    Text("1"),
+                    captureView,
+                    Text("3")
+                ], store: Store(initialState: MainFeature.State(), reducer: {
+                    MainFeature()
+                }))
+            
+        case .none:
+            // Intro, splash
+            Text("Splash")
+                .onAppear {
+                    store.send(.onAppear)
+                }
         }
     }
     
@@ -71,12 +69,7 @@ struct HomeView: View {
             store: Store(
                 initialState: CaptureFeature.State(),
                 reducer: {
-                    CaptureFeature { log in
-                        ClLogger.message(
-                            level: .debug,
-                            message: log
-                        )
-                    }
+                    ClLogDI.container.resolve(CaptureFeature.self)
                 }
             )
         )
