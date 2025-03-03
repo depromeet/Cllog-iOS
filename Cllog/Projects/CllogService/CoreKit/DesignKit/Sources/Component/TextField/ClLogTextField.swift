@@ -49,6 +49,7 @@ public struct ClLogTextField: View {
 extension ClLogTextField {
     fileprivate func makeBody() -> some View {
         ZStack {
+            // TextField
             TextField("", text: $text)
                 .font(.b1)
                 .foregroundStyle(configuration.state.foregroundColor)
@@ -56,6 +57,7 @@ extension ClLogTextField {
                 .tint(configuration.state.foregroundColor)
                 .focused($isTextFieldFocused)
             
+            // PlaceHolder
             if !isTextFieldFocused {
                 Text(displayPlaceHolder)
                 .font(.b1)
@@ -81,7 +83,7 @@ extension ClLogTextField {
         .disabled(configuration.state == .disable)
     }
     
-    func setState(_ state: TextFieldState) -> ClLogTextField {
+    func state(_ state: TextFieldState) -> ClLogTextField {
         var newConfig = self.configuration
         
         newConfig.state = state
@@ -127,18 +129,27 @@ public struct ContainerClLogTextField: View {
     
     public var body: some View {
         GroupBox(label: Text("Normal")) {
-            ClLogTextField(placeHolder: "암장을 입력해 주세요", text: $textNormal)
-                .setState(.normal)
+            ClLogTextField(
+                placeHolder: "암장을 입력해 주세요",
+                text: $textNormal
+            )
+            .state(.normal)
         }
         
         GroupBox(label: Text("Error")) {
-            ClLogTextField(placeHolder: "암장을 입력해 주세요", text: $textDisable)
-                .setState(.error)
+            ClLogTextField(
+                placeHolder: "암장을 입력해 주세요",
+                text: $textDisable
+            )
+            .state(.error)
         }
         
         GroupBox(label: Text("Disable")) {
-            ClLogTextField(placeHolder: "암장을 입력해 주세요", text: $textError)
-                .setState(.disable)
+            ClLogTextField(
+                placeHolder: "암장을 입력해 주세요",
+                text: $textError
+            )
+            .state(.disable)
         }
     }
 }
