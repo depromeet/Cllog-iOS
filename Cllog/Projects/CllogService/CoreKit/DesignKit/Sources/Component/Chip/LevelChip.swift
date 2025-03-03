@@ -59,7 +59,11 @@ public enum Level {
 }
 
 public struct LevelChip: View {
-    let level: Level
+    private let level: Level
+    
+    public init(level: Level) {
+        self.level = level
+    }
     
     public var body: some View {
         HStack(spacing: 5) {
