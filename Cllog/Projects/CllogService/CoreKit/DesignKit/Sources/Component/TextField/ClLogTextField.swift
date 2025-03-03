@@ -14,6 +14,12 @@ public struct ClLogTextField: View {
     @FocusState private var isTextFieldFocused: Bool
     private var configuration: TextFieldConfiguration
     
+    private var displayPlaceHolder: String {
+        guard text.isEmpty else { return text }
+        
+        return configuration.state == .error ? "잘못된 입력" : placeHolder
+    }
+    
     public init(
         placeHolder: String,
         text: Binding<String>
@@ -45,16 +51,13 @@ extension ClLogTextField {
         ZStack {
             TextField("", text: $text)
                 .font(.b1)
-                .foregroundStyle(Color.clLogUI.gray50)
+                .foregroundStyle(configuration.state.foregroundColor)
                 .padding(.horizontal, 16)
                 .tint(Color.clLogUI.gray50)
                 .focused($isTextFieldFocused)
             
             if !isTextFieldFocused {
-                Text(
-                    configuration.state == .error ?
-                    "잘못된 입력" : placeHolder
-                )
+                Text(displayPlaceHolder)
                 .font(.b1)
                 .foregroundStyle(configuration.state.foregroundColor)
                 .frame(maxWidth: .infinity, alignment: .leading)
