@@ -78,6 +78,7 @@ extension ClLogTextField {
                 }
             }
         )
+        .disabled(configuration.state == .disable)
     }
     
     func setState(_ state: TextFieldState) -> ClLogTextField {
@@ -125,24 +126,29 @@ public struct ContainerClLogTextField: View {
     @State var textError: String
     
     public var body: some View {
-        ClLogTextField(placeHolder: "암장을 입력해 주세요", text: $textNormal)
-            .setState(.normal)
+        GroupBox(label: Text("Normal")) {
+            ClLogTextField(placeHolder: "암장을 입력해 주세요", text: $textNormal)
+                .setState(.normal)
+        }
         
-        ClLogTextField(placeHolder: "암장을 입력해 주세요", text: $textDisable)
-            .setState(.error)
+        GroupBox(label: Text("Error")) {
+            ClLogTextField(placeHolder: "암장을 입력해 주세요", text: $textDisable)
+                .setState(.error)
+        }
         
-        ClLogTextField(placeHolder: "암장을 입력해 주세요", text: $textError)
-            .setState(.disable)
+        GroupBox(label: Text("Disable")) {
+            ClLogTextField(placeHolder: "암장을 입력해 주세요", text: $textError)
+                .setState(.disable)
+        }
     }
 }
 
 #Preview {
-    VStack {
+    VStack(spacing: 20) {
         ContainerClLogTextField(
             textNormal: "",
             textDisable: "",
             textError: ""
         )
     }
-    .padding(.horizontal, 40)
 }
