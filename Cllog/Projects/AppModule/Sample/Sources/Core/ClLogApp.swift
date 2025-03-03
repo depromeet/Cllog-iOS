@@ -9,6 +9,8 @@
 import UIKit
 
 import DesignKit
+
+import MainFeature
 import LoginFeature
 import CaptureFeature
 
@@ -24,8 +26,11 @@ class ClLogApp {
         ClLogDI.register(assemblies: [
             ClLogger(),
             ClLogFont(),
+            
+            // Feature
             HomeFeatureAssembly(),
             LoginFeatureAssembly(),
+            MainFeatureAssembly(),
             CaptureFeatureAssembly()
         ])
         

@@ -49,8 +49,22 @@ struct HomeView: View {
                     Text("1"),
                     captureView,
                     Text("3")
-                ], store: Store(initialState: MainFeature.State(), reducer: {
-                    MainFeature()
+                ],
+                overlayerView: Text("123"),
+                store: Store(initialState: MainFeature.State(
+                    tabTitles: [],
+                    selectedImageNames: [
+                        "icn_folder_selected",
+                        "icn_camera_selected",
+                        "icn_report_selected"
+                    ],
+                    unselectedImageNames: [
+                        "icn_folder_unselected",
+                        "icn_camera_unselected",
+                        "icn_report_unselected"
+                    ]
+                ), reducer: {
+                    ClLogDI.container.resolve(MainFeature.self)
                 }))
             
         case .none:

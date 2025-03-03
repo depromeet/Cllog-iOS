@@ -11,14 +11,24 @@ import ComposableArchitecture
 @Reducer
 public struct MainFeature {
     
-    public init(
-        
-    ) {
-        
-    }
+    public init() {}
     
+    @ObservableState
     public struct State: Equatable {
-        public init() { }
+        var tabTitles: [String]
+        var selectedImageNames: [String]
+        var unselectedImageNames: [String]
+        var showOverlay = false
+        
+        public init(
+            tabTitles: [String],
+            selectedImageNames: [String],
+            unselectedImageNames: [String]
+        ) {
+            self.tabTitles = tabTitles
+            self.selectedImageNames = selectedImageNames
+            self.unselectedImageNames = unselectedImageNames
+        }
     }
     
     public enum Action {
