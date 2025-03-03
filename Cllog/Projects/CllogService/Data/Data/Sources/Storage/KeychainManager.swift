@@ -16,6 +16,10 @@ final class KeychainManager {
     private let decoder = JSONDecoder()
     private var attributes: ItemAttributes?
     
+    public class var standard: KeychainManager {
+        return KeychainManager()
+    }
+    
     init(attributes: ItemAttributes? = nil) {
         self.attributes = attributes
     }

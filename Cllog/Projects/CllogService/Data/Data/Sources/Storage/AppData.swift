@@ -9,14 +9,20 @@
 import Foundation
 
 enum AppData {
-    enum Key: String {
+    enum UserDefaultKey: String, CaseIterable {
+        case didCompleteOnboarding
+    }
+    
+    enum KeychainKey: String, CaseIterable {
         case token
     }
     
-    @UserDefault(key: Key.token.rawValue, defaultValue: nil)
+    @Keychain(key: KeychainKey.token.rawValue, itemClass: .generic)
     static var token: AuthTokenDTO?
     
     static func clearLocalData() {
-        UserDefaults.standard.removeObject(forKey: Key.token.rawValue)
+        UserDefaultKey.allCases.forEach {
+            UserDefaults.standard.removeObject(forKey: $0.rawValue)
+        }
     }
 }

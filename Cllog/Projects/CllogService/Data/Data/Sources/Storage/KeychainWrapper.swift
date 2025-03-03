@@ -17,7 +17,13 @@ struct Keychain<T: Codable> {
     
     private var currentValue: T?
     
-    var wrappedValue: T? {
+    init(key: String, itemClass: KeychainItemType, keychain: KeychainManager = .standard) {
+        self.key = key
+        self.itemClass = itemClass
+        self.keychain = keychain
+    }
+    
+    public var wrappedValue: T? {
         get {
             return getItem()
         }
