@@ -63,7 +63,7 @@ private extension RecordView {
     
     @ViewBuilder
     var recordView: some View {
-        Color.gray
+        ClLogSessionView()
             .ignoresSafeArea()
 
         VStack {

@@ -84,6 +84,7 @@ private extension CaptureView {
     }
     
     var sessionView: some View {
-        Color.gray.ignoresSafeArea()
+        ClLogSessionView()
+            .ignoresSafeArea()
     }
 }
