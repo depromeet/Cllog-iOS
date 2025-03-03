@@ -27,27 +27,3 @@ struct UserDefault<T> {
         }
     }
 }
-
-@propertyWrapper
-struct UserDefaultArray<T: Codable> {
-    private let key: String
-    private let defaultValue: T
-    private let defaults: UserDefaults = .standard
-
-    public init(key: String, defaultValue: T) {
-        self.key = key
-        self.defaultValue = defaultValue
-    }
-
-    public var wrappedValue: T {
-        get {
-            guard let data = defaults.data(forKey: key) else { return defaultValue }
-            let value = try? JSONDecoder().decode(T.self, from: data)
-            return value ?? defaultValue
-        }
-        set {
-            let data = try? JSONEncoder().encode(newValue)
-            defaults.set(data, forKey: key)
-        }
-    }
-}
