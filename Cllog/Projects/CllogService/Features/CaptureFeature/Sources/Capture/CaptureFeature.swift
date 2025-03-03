@@ -17,15 +17,29 @@ import ComposableArchitecture
 public struct CaptureFeature {
     
     private let logConsoleUseCase: LogConsoleUseCase
+    private let permissionUseCase: CapturePermissionUseCase
     private let captureUseCase: CaptureUseCase
     
+    @ObservableState
     public struct State: Equatable {
-        public init() {}
+        
         public var destination: Destination? = nil
+        public var viewState: ViewState = .normal
+        
+        public init() {}
+        
     }
     
     public enum Action {
         case onAppear
+        case excuteCapture
+        case noneExcuteCaptue
+    }
+    
+    public enum ViewState {
+        case normal // 아직 권한을 체크하지 않는 상태
+        case noneCapturePermission // 카메라이 없는 상태
+        case capture // 카메라 권한이 있는 상태
     }
     
     public enum Destination {
@@ -34,9 +48,11 @@ public struct CaptureFeature {
     
     public init (
         logConsoleUseCase: LogConsoleUseCase,
+        permissionUseCase: CapturePermissionUseCase,
         captureUseCase: CaptureUseCase
     ) {
         self.logConsoleUseCase = logConsoleUseCase
+        self.permissionUseCase = permissionUseCase
         self.captureUseCase = captureUseCase
     }
     
@@ -45,6 +61,21 @@ public struct CaptureFeature {
             logConsoleUseCase.executeInfo(label: "\(Self.self)", message: "action :: \(action)")
             switch action {
             case .onAppear:
+                return .run { send in
+                    do {
+                        try await permissionUseCase.execute()
+                        await send(.excuteCapture)
+                    } catch {
+                        await send(.noneExcuteCaptue)
+                    }
+                }
+                
+            case .excuteCapture:
+                state.viewState = .capture
+                return .none
+                
+            case .noneExcuteCaptue:
+                state.viewState = .noneCapturePermission
                 return .none
             }
         }

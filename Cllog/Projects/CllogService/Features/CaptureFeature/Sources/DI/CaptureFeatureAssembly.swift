@@ -22,6 +22,10 @@ public struct CaptureFeatureAssembly: Assembly {
             CaptureRecordRepositry()
         }
         
+        container.register(CapturePermissionUseCase.self) { _ in
+            CapturePermission()
+        }
+        
         container.register(CaptureUseCase.self) { resolver in
             
             guard let capturerepository = resolver.resolve(CaptureRepository.self) else {
@@ -39,11 +43,16 @@ public struct CaptureFeatureAssembly: Assembly {
             }
             
             guard let logConsoleUseCase  = resolver.resolve(LogConsoleUseCase.self) else {
-                fatalError("Could not resolve LogUseCase")
+                fatalError("Could not resolve LogConsoleUseCase")
+            }
+            
+            guard let permissionUseCase = resolver.resolve(CapturePermissionUseCase.self) else {
+                fatalError("Could not resolve CapturePermissionUseCase")
             }
             
             return CaptureFeature(
                 logConsoleUseCase: logConsoleUseCase,
+                permissionUseCase: permissionUseCase,
                 captureUseCase: captureUseCase
             )
         }

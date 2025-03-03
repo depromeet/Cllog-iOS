@@ -24,11 +24,23 @@ public struct CaptureView: View {
     }
     
     public var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        
+        switch store.viewState {
+        case .normal:
+            // 카메라 권한이 받기 전 화면
             Text("CaptureView")
                 .onAppear {
-                    viewStore.send(.onAppear)
+                    store.send(.onAppear)
                 }
+            
+        case .capture:
+            // 카메라 권한이 있는 상태
+            Text("sdf")
+            
+        case .noneCapturePermission:
+            // 카메라 권한이 없는 상태
+            Text("none capture permission")
         }
+        
     }
 }
