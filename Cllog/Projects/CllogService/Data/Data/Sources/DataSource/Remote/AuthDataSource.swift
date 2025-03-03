@@ -38,7 +38,7 @@ public final class DefaultAuthDataSource: AuthDataSource {
     }
     
     public func appleLogin(code: String, codeVerifier: String) async throws -> AuthTokenDTO {
-        let request = ApleLoginRequestDTO(code: code, codeVerifier: codeVerifier)
+        let request = AppleLoginRequestDTO(code: code, codeVerifier: codeVerifier)
         
         let response: BaseResponseDTO<AuthTokenDTO> = try await provider.request(
             LoginTarget.appleLogin(request)
@@ -54,7 +54,7 @@ public final class DefaultAuthDataSource: AuthDataSource {
 
 enum LoginTarget {
     case kakaoLogin(KakaoLoginReqeustDTO)
-    case appleLogin(ApleLoginRequestDTO)
+    case appleLogin(AppleLoginRequestDTO)
 }
 
 extension LoginTarget: EndpointType {
