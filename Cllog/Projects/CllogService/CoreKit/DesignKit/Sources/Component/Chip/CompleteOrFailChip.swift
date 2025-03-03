@@ -9,8 +9,8 @@
 import SwiftUI
 
 public struct CompleteOrFailChip: View {
-    let challengeResult: ChallengeResult
-    let isActive: Bool
+    private let challengeResult: ChallengeResult
+    private let isActive: Bool
     
     private var color: Color {
         if isActive {
@@ -18,6 +18,11 @@ public struct CompleteOrFailChip: View {
         } else {
             Color.clLogUI.gray600
         }
+    }
+    
+    public init(challengeResult: ChallengeResult, isActive: Bool) {
+        self.challengeResult = challengeResult
+        self.isActive = isActive
     }
     
     public var body: some View {
