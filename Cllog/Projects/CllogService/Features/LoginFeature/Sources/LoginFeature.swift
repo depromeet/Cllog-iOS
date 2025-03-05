@@ -12,11 +12,10 @@ import KakaoSDKUser
 
 @Reducer
 public struct LoginFeature {
-    private let useCase: LoginUseCase
     
-    public init(useCase: LoginUseCase) {
-        self.useCase = useCase
-    }
+    public init() {}
+    
+    @Dependency(\.loginUseCase) private var useCase
     
     @ObservableState
     public struct State: Equatable {

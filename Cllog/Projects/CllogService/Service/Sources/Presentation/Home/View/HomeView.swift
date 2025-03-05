@@ -38,7 +38,9 @@ struct HomeView: View {
                     store: Store(
                         initialState: LoginFeature.State()
                     ) {
-                        LoginFeature(useCase: ClLogDI.container.resolve(LoginUseCase.self)!)
+                        LoginFeature()
+                    } withDependencies: {
+                        $0.loginUseCase = ClLogDI.container.resolve(LoginUseCase.self)!
                     }
                 ).onAppear {
                     viewStore.send(.setDestination(.login))
