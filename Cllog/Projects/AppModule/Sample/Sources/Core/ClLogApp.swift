@@ -11,6 +11,7 @@ import UIKit
 import DesignKit
 import LoginFeature
 import CllogService
+import Shared
 
 @main
 class ClLogApp {

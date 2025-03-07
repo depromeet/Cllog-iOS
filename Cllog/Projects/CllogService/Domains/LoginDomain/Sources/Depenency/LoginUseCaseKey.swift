@@ -7,19 +7,15 @@
 //
 
 import ComposableArchitecture
+import Shared
 
 enum LoginUseCaseKey: DependencyKey {
-    static var liveValue: LoginUseCase? = nil
+    static let liveValue = ClLogDI.container.resolve(LoginUseCase.self)!
 }
 
 extension DependencyValues {
     public var loginUseCase: LoginUseCase {
-        get {
-            guard let useCase = self[LoginUseCaseKey.self] else {
-                fatalError("Login UseCase 주입 필요")
-            }
-            return useCase
-        }
+        get { self[LoginUseCaseKey.self] }
         set { self[LoginUseCaseKey.self] = newValue }
     }
 }

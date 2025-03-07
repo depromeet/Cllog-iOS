@@ -43,8 +43,9 @@ public final class HomeViewController: UIViewController {
                             level: .debug,
                             message: logger
                         )
-                    }
-                })
+                    } 
+                }
+            )
         )
         
         let hostingController = UIHostingController(
