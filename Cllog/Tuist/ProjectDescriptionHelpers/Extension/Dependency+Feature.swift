@@ -9,9 +9,9 @@ import ProjectDescription
 
 public extension TargetDependency {
     struct Features {
-        public struct CalendarFeature {}
-        public struct FolderFeature {}
-        public struct FolderTabFeature {}
+        public struct Calendar {}
+        public struct Folder {}
+        public struct FolderTab {}
         public struct Capture {}
         public struct Login {}
         public struct Root {}
@@ -84,8 +84,8 @@ public extension TargetDependency.Features.Capture {
     )
 }
 
-public extension TargetDependency.Features.FolderTabFeature {
-    static let name = "FolderTabFeature"
+public extension TargetDependency.Features.FolderTab {
+    static let name = "FolderTab"
     
     static let feature = TargetDependency.Features.project(
         name: "\(name)Feature",
@@ -98,8 +98,8 @@ public extension TargetDependency.Features.FolderTabFeature {
     )
 }
 
-public extension TargetDependency.Features.FolderFeature {
-    static let name = "FolderFeature"
+public extension TargetDependency.Features.Folder {
+    static let name = "Folder"
     
     static let feature = TargetDependency.Features.project(
         name: "\(name)Feature",
@@ -112,8 +112,8 @@ public extension TargetDependency.Features.FolderFeature {
     )
 }
 
-public extension TargetDependency.Features.CalendarFeature {
-    static let name = "CalendarFeature"
+public extension TargetDependency.Features.Calendar {
+    static let name = "Calendar"
     
     static let feature = TargetDependency.Features.project(
         name: "\(name)Feature",

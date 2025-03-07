@@ -8,12 +8,17 @@
 
 import SwiftUI
 
+import Core
 import ComposableArchitecture
 
-struct FolderView: View {
+public struct FolderView: ViewProtocol {
     let store: StoreOf<FolderFeature>
     
-    var body: some View {
+    public init(store: StoreOf<FolderFeature>) {
+        self.store = store
+    }
+    
+    public var body: some View {
         Text("Folder")
     }
 }

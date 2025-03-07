@@ -14,15 +14,16 @@ import ComposableArchitecture
 public struct FolderFeature {
     
     @ObservableState
-    struct State {
-        
+    public struct State {
+        public init() {}
     }
     
-    enum Action {
+    public enum Action {
         
     }
+    public init() {}
     
-    var body: some Reducer<State, Action> {
+    public var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
             default:

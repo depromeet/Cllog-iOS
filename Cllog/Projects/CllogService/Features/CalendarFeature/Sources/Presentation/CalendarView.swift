@@ -8,12 +8,17 @@
 
 import SwiftUI
 
+import Core
 import ComposableArchitecture
 
-struct CalendarView: View {
-    let store: StoreOf<FolderFeature>
+public struct CalendarView: ViewProtocol {
+    let store: StoreOf<CalendarFeature>
     
-    var body: some View {
+    public init(store: StoreOf<CalendarFeature>) {
+        self.store = store
+    }
+    
+    public var body: some View {
         Text("CelendarView")
     }
 }

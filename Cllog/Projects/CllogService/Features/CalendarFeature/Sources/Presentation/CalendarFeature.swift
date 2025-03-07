@@ -14,15 +14,17 @@ import ComposableArchitecture
 public struct CalendarFeature {
     
     @ObservableState
-    struct State {
+    public struct State {
+        public init() {}
+    }
+    
+    public enum Action {
         
     }
     
-    enum Action {
-        
-    }
+    public init() {}
     
-    var body: some Reducer<State, Action> {
+    public var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
             default:
