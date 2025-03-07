@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 // MARK: - Model
 public struct Dialog: Equatable {
@@ -142,38 +143,66 @@ struct DialogModifier: ViewModifier {
 
 // MARK: - View Extension
 public extension View {
-    func presentDialog(_ dialog: Binding<Dialog?>) -> some View {
+    func presentDialog<Action>(
+        _ item: Binding<Store<AlertState<Action>, Action>?>,
+        style: DialogStyle = .default
+    ) -> some View {
+        let store = item.wrappedValue
+        let alertState = store?.withState { $0 }
+        
+    }
+    
+    private func _dialog(
+        isPresented: Binding<Bool>,
+        title: String,
+        message: String?,
+        actions:
+    ) -> some View {
         self.modifier(
             DialogModifier(dialog: dialog)
         )
     }
 }
 
-// MARK: - Preview
-struct ContainerDialogView : View {
-    @State var dialog: Dialog? = nil
+// MARK: - Preview & Example
+struct DialogExampleView : View {
+    @Bindable var store: StoreOf<DialogExampleFeature>
 
     var body: some View {
         Button {
-            dialog = Dialog(
-                title: "안녕하세요",
-                subTitle: "부제목입니다.길어요오오오오오오오오오오오ㅗ옹ㅇ랴더랴더랴더랴",
-                confirmText: "확인",
-                cancelText: "취소",
-                style: .delete
-            ) {
-                    print("확인")
-                } cancelTapped: {
-                    print("취소")
-                }
+            store.send(.showDialogTapped)
         } label: {
             Text("show dialog")
         }
-        .presentDialog($dialog)
+    }
+}
+
+@Reducer
+struct DialogExampleFeature {
+    @ObservableState
+    struct State {
+        
+    }
+    
+    enum Action: BindableAction {
+        case binding(BindingAction<State>)
+        case showDialogTapped
+    }
+    
+    public var body: some Reducer<State, Action> {
+        BindingReducer()
+        Reduce { state, action in
+            switch action {
+            default:
+                return .none
+            }
+        }
     }
 }
 
 
 #Preview {
-    ContainerDialogView()
+    DialogExampleView(store: .init(initialState: DialogExampleFeature.State(), reducer: {
+        DialogExampleFeature()
+    }))
 }
