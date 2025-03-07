@@ -135,8 +135,7 @@ extension Project {
                     organizationName: configuration.organizationName,
                     targets: targets,
                     dependencies: dependencies,
-                    schemes: schemes,
-                    settings: configuration.setting
+                    schemes: schemes
                 )
             }
             
@@ -230,8 +229,7 @@ extension Project {
         organizationName: String,
         targets: [Target],
         dependencies: [TargetDependency],
-        schemes: [Scheme],
-        settings: Settings
+        schemes: [Scheme]
     ) -> Project {
         
         // Interface 타겟
@@ -270,7 +268,7 @@ extension Project {
             product: .app,
             bundleId: "\(configuration.bundleIdentifier).\(name.lowercased())Demo",
             deploymentTargets: configuration.deploymentTarget,
-            infoPlist: .default,
+            infoPlist: .extendingDefault(with: configuration.infoPlist),
             sources: ["Demo/Sources/**"],
             resources: [.glob(pattern: "Demo/Resources/**", excluding: [])],
             dependencies: [
@@ -317,7 +315,7 @@ extension Project {
         return Project(
             name: name,
             organizationName: organizationName,
-            settings: settings,
+            settings: configuration.commonSettings,
             targets: targets,
             schemes: [scheme]
         )
