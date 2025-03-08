@@ -5,6 +5,7 @@ let project = Project.configure(
     moduleType: .feature(name: "Login", type: .micro),
     product: .staticFramework,
     dependencies: [
-        .Core.core(.cllog)
+        .Core.core(.cllog),
+        .Library.KakaoSDKUser,
     ]
 )

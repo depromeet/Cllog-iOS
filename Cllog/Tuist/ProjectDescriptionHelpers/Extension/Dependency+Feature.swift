@@ -9,6 +9,9 @@ import ProjectDescription
 
 public extension TargetDependency {
     struct Features {
+        public struct Calendar {}
+        public struct Folder {}
+        public struct FolderTab {}
         public struct Capture {}
         public struct Login {}
         public struct Root {}
@@ -69,6 +72,48 @@ public extension TargetDependency.Features.Login {
 
 public extension TargetDependency.Features.Capture {
     static let name = "Capture"
+    
+    static let feature = TargetDependency.Features.project(
+        name: "\(name)Feature",
+        service: .cllog
+    )
+    
+    static let interface = TargetDependency.project(
+        target: "\(name)FeatureInterface",
+        path: .relativeToFeature(path: "\(name)Feature", service: .cllog)
+    )
+}
+
+public extension TargetDependency.Features.FolderTab {
+    static let name = "FolderTab"
+    
+    static let feature = TargetDependency.Features.project(
+        name: "\(name)Feature",
+        service: .cllog
+    )
+    
+    static let interface = TargetDependency.project(
+        target: "\(name)FeatureInterface",
+        path: .relativeToFeature(path: "\(name)Feature", service: .cllog)
+    )
+}
+
+public extension TargetDependency.Features.Folder {
+    static let name = "Folder"
+    
+    static let feature = TargetDependency.Features.project(
+        name: "\(name)Feature",
+        service: .cllog
+    )
+    
+    static let interface = TargetDependency.project(
+        target: "\(name)FeatureInterface",
+        path: .relativeToFeature(path: "\(name)Feature", service: .cllog)
+    )
+}
+
+public extension TargetDependency.Features.Calendar {
+    static let name = "Calendar"
     
     static let feature = TargetDependency.Features.project(
         name: "\(name)Feature",

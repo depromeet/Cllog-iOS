@@ -24,8 +24,19 @@ extension ClLogUI where Base == UIColor {
     public static var gray800: UIColor { asset(#function) }
     public static var gray900: UIColor { asset(#function) }
     public static var primary: UIColor { asset(#function) }
+    public static var green100: UIColor { asset(#function) }
+    public static var green200: UIColor { asset(#function) }
+    public static var green300: UIColor { asset(#function) }
+    public static var green400: UIColor { asset(#function) }
+    public static var green500: UIColor { asset(#function) }
+    public static var green600: UIColor { asset(#function) }
+    public static var green700: UIColor { asset(#function) }
+    public static var green800: UIColor { asset(#function) }
+    public static var green900: UIColor { asset(#function) }
     public static var dim: UIColor { asset(#function) }
-    
+    public static var complete: UIColor { asset(#function) }
+    public static var fail: UIColor { asset(#function) }
+    public static var textFail: UIColor { asset(#function) }
 }
 
 extension ClLogUI where Base == Color {
@@ -43,7 +54,19 @@ extension ClLogUI where Base == Color {
     public static var gray800: Color { asset(#function) }
     public static var gray900: Color { asset(#function) }
     public static var primary: Color { asset(#function) }
+    public static var green100: Color { asset(#function) }
+    public static var green200: Color { asset(#function) }
+    public static var green300: Color { asset(#function) }
+    public static var green400: Color { asset(#function) }
+    public static var green500: Color { asset(#function) }
+    public static var green600: Color { asset(#function) }
+    public static var green700: Color { asset(#function) }
+    public static var green800: Color { asset(#function) }
+    public static var green900: Color { asset(#function) }
     public static var dim: Color { asset(#function) }
+    public static var complete: Color { asset(#function) }
+    public static var fail: Color { asset(#function) }
+    public static var textFail: Color { asset(#function) }
 }
 
 extension ClLogUI where Base == UIColor {

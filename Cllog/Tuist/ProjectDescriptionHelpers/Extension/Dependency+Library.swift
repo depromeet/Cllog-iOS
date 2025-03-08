@@ -14,7 +14,7 @@ public extension TargetDependency {
 }
 
 public extension TargetDependency.Framework {
-    static let Starlink = TargetDependency.project(target: "Starlink", path: "../../../../Projects/AppModule/Starlink")
+    static let Starlink = TargetDependency.project(target: "Starlink", path: .releativeStarlink(.cllog))
 }
 
 public extension TargetDependency.Library {
@@ -22,6 +22,7 @@ public extension TargetDependency.Library {
     static let alamofire = TargetDependency.external(name: "Alamofire")
     static let then = TargetDependency.external(name: "Then")
     static let swinject = TargetDependency.external(name: "Swinject")
+    static let KakaoSDKUser = TargetDependency.external(name: "KakaoSDKUser")
     
     // 네트워크
     static let pulse = TargetDependency.external(name: "Pulse")

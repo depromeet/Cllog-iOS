@@ -44,7 +44,7 @@ public struct LoginView: View {
                 // TODO: 필요에 따라 LoginView로 변경
                 // MARK: Kakao Login Button
                 Button {
-                    // action
+                    store.send(.kakaoLoginButtonTapped)
                 } label: {
                     HStack(spacing: 16) {
                         Image.clLogUI.kakaoLogo
@@ -71,7 +71,15 @@ public struct LoginView: View {
                 SignInWithAppleButton { request in
                     
                 } onCompletion: { result in
-                    
+                    switch result {
+                    case .success(let authorization):
+                        let credential = authorization.credential as? ASAuthorizationAppleIDCredential
+                        let authorizationCode = String(data: credential?.authorizationCode ?? Data(), encoding: .utf8)
+                        store.send(.appleLoginCompleted(authorizationCode: authorizationCode))
+                        
+                    case .failure(let error):
+                        store.send(.failLogin)
+                    }
                 }
                 .signInWithAppleButtonStyle(.white)
                 .frame(height: 56)
@@ -89,5 +97,3 @@ public struct LoginView: View {
         .ignoresSafeArea()
     }
 }
-
-

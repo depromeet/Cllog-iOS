@@ -13,6 +13,7 @@ let project = Project.configure(
     product: .staticFramework,
     dependencies: [
         .Library.then,
-        .Library.swinject
+        .Library.swinject,
+        .Library.tca
     ]
 )

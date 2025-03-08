@@ -8,6 +8,8 @@
 
 import UIKit
 import SwiftUI
+import KakaoSDKAuth
+import CllogService
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -30,4 +32,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillResignActive(_ scene: UIScene) {}
     func sceneWillEnterForeground(_ scene: UIScene) {}
     func sceneDidEnterBackground(_ scene: UIScene) {}
+    
+    func scene(
+        _ scene: UIScene,
+        openURLContexts URLContexts: Set<UIOpenURLContext>
+    ) {
+        if let url = URLContexts.first?.url,
+           AuthApi.isKakaoTalkLoginUrl(url) {
+            _ = AuthController.handleOpenUrl(url: url)
+        }
+    }
 }

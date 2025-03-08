@@ -9,6 +9,7 @@ import UIKit
 
 import Firebase
 import DesignKit
+import KakaoSDKCommon
  
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -17,6 +18,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         FirebaseApp.configure()
+        
+        if let kakaoNativeAppKey = Bundle.main.object(forInfoDictionaryKey: "KakaoNativeAppKey") as? String {
+            KakaoSDK.initSDK(appKey: kakaoNativeAppKey)
+        }
+        
         return true
     }
 
