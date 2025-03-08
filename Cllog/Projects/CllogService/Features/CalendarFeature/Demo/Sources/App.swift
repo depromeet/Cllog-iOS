@@ -1,12 +1,19 @@
 import SwiftUI
 
+import CalendarFeature
+
 @main
-struct App: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
+struct CalendarDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            
+            CalendarMainView(
+                store: .init(
+                    initialState: CalendarMainFeature.State(),
+                    reducer: {
+                        CalendarMainFeature()
+                    }
+                )
+            )
         }
     }
 }

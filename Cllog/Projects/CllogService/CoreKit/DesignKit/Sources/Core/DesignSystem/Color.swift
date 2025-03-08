@@ -37,6 +37,7 @@ extension ClLogUI where Base == UIColor {
     public static var complete: UIColor { asset(#function) }
     public static var fail: UIColor { asset(#function) }
     public static var textFail: UIColor { asset(#function) }
+    public static var background: UIColor { asset(#function) }
 }
 
 extension ClLogUI where Base == Color {
@@ -67,6 +68,7 @@ extension ClLogUI where Base == Color {
     public static var complete: Color { asset(#function) }
     public static var fail: Color { asset(#function) }
     public static var textFail: Color { asset(#function) }
+    public static var background: Color { asset(#function) }
 }
 
 extension ClLogUI where Base == UIColor {

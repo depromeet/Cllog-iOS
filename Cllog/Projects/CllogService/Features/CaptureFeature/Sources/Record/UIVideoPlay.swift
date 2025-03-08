@@ -36,8 +36,8 @@ final class UIVideoPlay: UIView {
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
                                                object: player.currentItem,
                                                queue: .main) { [weak self] _ in
-            playerLayer.removeFromSuperlayer()
-            self?.configure()
+            player.replaceCurrentItem(with: player.currentItem)
+            player.play()
         }
     }
 }
