@@ -97,11 +97,10 @@ extension LoginView {
             ForEach(loginTypes, id: \.self) { type in
                 switch type {
                 case .kakao:
-                    Button {
-                        store.send(.kakaoLoginButtonTapped)
-                    } label: {
-                        makeLoginButton(type: type)
-                    }
+                    makeLoginButton(type: type)
+                        .onTapGesture {
+                            store.send(.kakaoLoginButtonTapped)
+                        }
                 case .apple:
                     
                     makeLoginButton(type: type)
@@ -119,6 +118,7 @@ extension LoginView {
                                     store.send(.failLogin)
                                 }
                             }
+                            .opacity(0.1)
                             .blendMode(.overlay)
                         }
                 }
