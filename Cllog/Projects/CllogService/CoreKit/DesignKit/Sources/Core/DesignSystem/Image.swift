@@ -78,9 +78,6 @@ extension ClLogUI where Base == Image {
     }
     
     // Login
-    public static var appleLogo: Image { Image(#function, bundle: .clLogUIBundle)}
-    public static var clogLogo: Image { Image(#function, bundle: .clLogUIBundle)}
-    public static var kakaoLogo: Image { Image(#function, bundle: .clLogUIBundle)}
     
     // Folder
     public static var icn_folder_selected: Image { Image(#function, bundle: .clLogUIBundle) }

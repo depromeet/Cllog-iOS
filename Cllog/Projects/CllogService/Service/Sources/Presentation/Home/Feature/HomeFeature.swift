@@ -16,7 +16,7 @@ import CaptureFeature
 public struct HomeFeature {
     
     public struct State: Equatable {
-        public var destination: Destination? = nil
+        public var destination: Destination = .splash
         
         // mainStore
         public var tabMainStore = MainFeature.State(
@@ -51,6 +51,7 @@ public struct HomeFeature {
     public enum Destination {
         case login
         case main
+        case splash
     }
     
     private let logger: (String) -> Void
@@ -101,6 +102,8 @@ public struct HomeFeature {
                     }
                 default: return .none
                 }
+            case .setDestination(_):
+                return .none
             }
         }
     }
