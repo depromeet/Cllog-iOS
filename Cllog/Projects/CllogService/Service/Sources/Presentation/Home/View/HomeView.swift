@@ -35,14 +35,11 @@ struct HomeView: View {
             case .login:
                 LoginView(
                     on: on,
-                    store: Store(
-                        initialState: LoginFeature.State()
-                    ) {
-                        LoginFeature(useCase: ClLogDI.container.resolve(LoginUseCase.self)!)
-                    }
-                ).onAppear {
-                    viewStore.send(.setDestination(.login))
-                }
+                    store: store.scope(
+                        state: \.login,
+                        action: \.loginAction
+                    )
+                )
                 
             case .main:
                 MainView(
@@ -51,16 +48,19 @@ struct HomeView: View {
                         Text("1"),
                         captureView,
                         Text("3")
-                    ], store: Store(initialState: MainFeature.State(), reducer: {
-                        MainFeature()
-                    }))
+                    ], store: Store(
+                        initialState: MainFeature.State(),
+                        reducer: {
+                            MainFeature()
+                        }
+                    )
+                )
                 
-            case .none:
+            case .splash:
                 // Intro, splash
-                Text("Splash")
-                    .onAppear {
-                        viewStore.send(.onAppear)
-                    }
+                Text("Splash").onAppear {
+                    store.send(.onAppear)
+                }
             }
         }
     }

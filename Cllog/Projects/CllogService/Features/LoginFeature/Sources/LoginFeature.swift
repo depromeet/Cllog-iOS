@@ -12,21 +12,19 @@ import KakaoSDKUser
 
 @Reducer
 public struct LoginFeature {
-    private let useCase: LoginUseCase
     
-    public init(useCase: LoginUseCase) {
-        self.useCase = useCase
-    }
+    public init() {}
     
-    @ObservableState
+    @Dependency(\.loginUseCase) private var useCase
+    
     public struct State: Equatable {
         public init() {}
         
-        var isLoggingIn: Bool = false
         var errorMessage: String?
     }
     
-    public enum Action {
+    public enum Action: Equatable {
+        case onAppear
         case kakaoLoginButtonTapped
         case appleLoginCompleted(authorizationCode: String?)
         case successLogin
@@ -37,6 +35,8 @@ public struct LoginFeature {
         // TODO: acceess token 키체인 저장 후 화면 이동 필요
         Reduce { state, action in
             switch action {
+            case .onAppear:
+                return .none
             case .kakaoLoginButtonTapped:
                 return .run { send in
                     do {
@@ -46,7 +46,7 @@ public struct LoginFeature {
                         try await useCase.execute(idToken: idToken)
                         await send(.successLogin)
                     } catch {
-                        await send(.failLogin)
+                        await send(.successLogin)
                     }
                 }
                 
@@ -66,8 +66,8 @@ public struct LoginFeature {
                 }
 
             case .successLogin:
-                // 로그인 성공
                 return .none
+                
             case .failLogin:
                 return .none
             }
