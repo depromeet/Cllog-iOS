@@ -20,11 +20,6 @@ public enum ClLogDI: Sendable {
         assemblies.forEach { assembly in
             
             assembly.assemble(container: container)
-            
-            ClLogger.message(
-                level: .info,
-                message: "[Assembly][register] => \(assembly)"
-            )
         }
     }
 }

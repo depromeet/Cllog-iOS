@@ -97,5 +97,3 @@ public struct LoginView: View {
         .ignoresSafeArea()
     }
 }
-
-

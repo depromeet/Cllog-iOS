@@ -7,22 +7,28 @@
 //
 
 import ComposableArchitecture
+import LoginFeature
 
 @Reducer
 public struct HomeFeature {
     
     public struct State: Equatable {
-        public var destination: Destination? = nil
+        var destination: Destination = .splash
+        var login = LoginFeature.State()
+
+        
+    }
+    
+    enum Destination: Equatable {
+        case splash
+        case login
+        case main
     }
     
     public enum Action {
         case onAppear
-        case setDestination(Destination)
-    }
-    
-    public enum Destination {
-        case login
-        case main
+        case loginAction(LoginFeature.Action)
+        case loginCompleted
     }
     
     private let logger: (String) -> Void
@@ -34,19 +40,34 @@ public struct HomeFeature {
     }
     
     public var body: some ReducerOf<Self> {
+        Scope(state: \.login, action: \.loginAction) {
+            LoginFeature()
+        }
+        
         Reduce { state, action in
             logger("\(Self.self) action :: \(action)")
             switch action {
             case .onAppear:
-                // auto login fetch
-                state.destination = .login
+                state.destination = checkLoginStatus() ? .main : .login
                 return .none
                 
-            case .setDestination(let destination):
-                state.destination = destination
+            case .loginAction(.successLogin):
+                state.destination = .main
+                return .none
+                
+            case .loginAction:
+                return .none
+                
+            case .loginCompleted:
                 return .none
             }
         }
+    }
+
+    
+    func checkLoginStatus() -> Bool {
+        // TODO: 로그인 여부 확인
+        return false
     }
 }
 
