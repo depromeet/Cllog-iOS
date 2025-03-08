@@ -25,30 +25,24 @@ public struct FolderView: ViewProtocol {
     }
     
     public var body: some View {
-        makeBody()
+        makeBodyView()
             .padding(.vertical, 18)
             .background(Color.clLogUI.gray800)
     }
 }
 
 extension FolderView {
-    private func makeBody() -> some View {
+    private func makeBodyView() -> some View {
         ScrollView {
             VStack (alignment: .leading) {
-                HStack(spacing: 7) {
-                    Text("나의 클라이밍 기록")
-                        .font(.h3)
-                        .foregroundStyle(Color.clLogUI.white)
-                    
-                    if store.countOfFilteredStories != 0 {
-                        Text("\(store.countOfFilteredStories)")
-                            .font(.h3)
-                            .foregroundStyle(Color.clLogUI.gray300)
-                    }
-                }
-                .padding(.horizontal, 16)
+                makeTitleView()
+                    .padding(.horizontal, 16)
                 
-                makeChipView()
+                ScrollView(.horizontal) {
+                    makeChipView()
+                }
+                .scrollIndicators(.hidden)
+                .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
@@ -58,57 +52,68 @@ extension FolderView {
         .scrollIndicators(.hidden)
     }
     
+    private func makeTitleView() -> some View {
+        HStack(spacing: 7) {
+            Text("나의 클라이밍 기록")
+                .font(.h3)
+                .foregroundStyle(Color.clLogUI.white)
+            
+            if store.countOfFilteredStories != 0 {
+                Text("\(store.countOfFilteredStories)")
+                    .font(.h3)
+                    .foregroundStyle(Color.clLogUI.gray300)
+            }
+        }
+    }
+    
     private func makeChipView() -> some View {
         let chips = FolderFeature.SelectedChip.allCases
-        return ScrollView(.horizontal) {
-            HStack {
-                Spacer()
-                    .frame(width: 16)
-                
-                ForEach(chips, id: \.self) { chip in
-                    let isSelectedChip = store.selectedChip.contains(chip)
-                    switch chip {
-                    case .complete:
-                        CompleteOrFailChip(
-                            challengeResult: .complete,
-                            isActive: isSelectedChip
-                        ).onTapGesture {
-                            store.send(.completeChipTapped)
-                        }
-                    case .fail:
-                        CompleteOrFailChip(
-                            challengeResult: .fail,
-                            isActive: isSelectedChip
-                        ).onTapGesture {
-                            store.send(.failChipTapped)
-                        }
-                        
-                    case .grade:
-                        TitleWithImageChip(
-                            title: isSelectedChip ? store.selectedGrade : "난이도",
-                            imageName: isSelectedChip ? "x" : "icon_down",
-                            forgroundColor: isSelectedChip ? Color.clLogUI.gray800 :  Color.clLogUI.gray200,
-                            backgroundColor: isSelectedChip ? Color.clLogUI.primary : Color.clLogUI.gray600,
-                            tapHandler: {
-                                store.send(.gradeChipTapped)
-                            }
-                        )
-                        
-                    case .crag:
-                        TitleWithImageChip(
-                            title: isSelectedChip ? store.selectedCragName : "암장",
-                            imageName: isSelectedChip ? "x" : "icon_down",
-                            forgroundColor: isSelectedChip ? Color.clLogUI.gray800 :  Color.clLogUI.gray200,
-                            backgroundColor: isSelectedChip ? Color.clLogUI.primary : Color.clLogUI.gray600,
-                            tapHandler: {
-                                store.send(.cragChipTapped(cragName: "엄청나게 긴긴긴긴긴 암장 이름입 니 다~!"))
-                            }
-                        )
+        return HStack {
+            Spacer()
+                .frame(width: 16)
+            
+            ForEach(chips, id: \.self) { chip in
+                let isSelectedChip = store.selectedChip.contains(chip)
+                switch chip {
+                case .complete:
+                    CompleteOrFailChip(
+                        challengeResult: .complete,
+                        isActive: isSelectedChip
+                    ).onTapGesture {
+                        store.send(.completeChipTapped)
                     }
+                case .fail:
+                    CompleteOrFailChip(
+                        challengeResult: .fail,
+                        isActive: isSelectedChip
+                    ).onTapGesture {
+                        store.send(.failChipTapped)
+                    }
+                    
+                case .grade:
+                    TitleWithImageChip(
+                        title: isSelectedChip ? store.selectedGrade : "난이도",
+                        imageName: isSelectedChip ? "x" : "icon_down",
+                        forgroundColor: isSelectedChip ? Color.clLogUI.gray800 :  Color.clLogUI.gray200,
+                        backgroundColor: isSelectedChip ? Color.clLogUI.primary : Color.clLogUI.gray600,
+                        tapHandler: {
+                            store.send(.gradeChipTapped)
+                        }
+                    )
+                    
+                case .crag:
+                    TitleWithImageChip(
+                        title: isSelectedChip ? store.selectedCragName : "암장",
+                        imageName: isSelectedChip ? "x" : "icon_down",
+                        forgroundColor: isSelectedChip ? Color.clLogUI.gray800 :  Color.clLogUI.gray200,
+                        backgroundColor: isSelectedChip ? Color.clLogUI.primary : Color.clLogUI.gray600,
+                        tapHandler: {
+                            store.send(.cragChipTapped(cragName: "엄청나게 긴긴긴긴긴 암장 이름입 니 다~!"))
+                        }
+                    )
                 }
             }
         }
-        .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
     }
     
     func makeThumbnailView() -> some View {
