@@ -12,8 +12,9 @@ import Pulse
 // 로그인 후 토큰이 필요한 요청을 처리하는 Provider
 public final class AuthProvider: Provider {
     private let tokenInterceptor: TokenInterceptor
-    public init (token: TokenDTO) {
-        tokenInterceptor = TokenInterceptor(token: token)
+    
+    public init(tokenProvider: @escaping () -> TokenDTO?) {
+        self.tokenInterceptor = TokenInterceptor(provider: tokenProvider)
     }
     
     public func request<T: Decodable>(_ endpoint: EndpointType) async throws -> T {

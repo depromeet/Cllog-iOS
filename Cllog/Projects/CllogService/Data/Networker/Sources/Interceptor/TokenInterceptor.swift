@@ -10,17 +10,19 @@ import Foundation
 import Starlink
 
 public class TokenInterceptor: StarlinkInterceptor{
-    let token: TokenDTO
+    private let tokenProvider: () -> TokenDTO?
     
-    public init(token: TokenDTO) {
-        self.token = token
+    public init(provider: @escaping () -> TokenDTO?) {
+        tokenProvider = provider
     }
     
     public func adapt(_ urlRequest: inout URLRequest) async throws -> URLRequest {
-        urlRequest.setValue(
-            token.accessToken,
-            forHTTPHeaderField: "Authorization"
-        )
-        return urlRequest
+        guard let token = tokenProvider() else {
+            return urlRequest
+        }
+        
+        var request = urlRequest
+        request.setValue(token.accessToken, forHTTPHeaderField: "Authorization")
+        return request
     }
 }

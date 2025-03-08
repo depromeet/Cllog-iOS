@@ -9,6 +9,12 @@
 import Foundation
 
 public struct TokenDTO {
+    
+    public init(accessToken: String, refreshToken: String) {
+        self.accessToken = accessToken
+        self.refreshToken = refreshToken
+    }
+    
     let accessToken: String
     let refreshToken: String
 }
