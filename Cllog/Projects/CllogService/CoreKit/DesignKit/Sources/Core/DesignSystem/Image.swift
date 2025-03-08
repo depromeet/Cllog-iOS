@@ -59,6 +59,7 @@ extension ClLogUI where Base == Image {
     public static var stamp: Image { asset(#function) }
     public static var up: Image { asset(#function) }
     public static var dotVertical: Image { asset(#function) }
+    public static var icn_close: Image { asset(#function) }
 }
 
 extension ClLogUI where Base == UIImage {

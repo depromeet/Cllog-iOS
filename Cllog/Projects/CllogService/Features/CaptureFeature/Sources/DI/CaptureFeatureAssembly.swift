@@ -26,6 +26,10 @@ public struct CaptureFeatureAssembly: Assembly {
             CapturePermission()
         }
         
+        container.register(ClLogSessionViewModelInterface.self) { _ in
+            ClLogSessionViewModel()
+        }
+        
         container.register(CaptureUseCase.self) { resolver in
             
             guard let capturerepository = resolver.resolve(CaptureRepository.self) else {
@@ -61,7 +65,11 @@ public struct CaptureFeatureAssembly: Assembly {
             guard let logConsoleUseCase  = resolver.resolve(LogConsoleUseCase.self) else {
                 fatalError("Could not resolve LogConsoleUseCase")
             }
+            guard let viewModel = resolver.resolve(ClLogSessionViewModelInterface.self) else {
+                fatalError("Could not resolve ClLogSessionViewModelInterface")
+            }
             return RecordFeature(
+                sessionViewModel: viewModel,
                 logConsoleUsecase: logConsoleUseCase
             )
         }

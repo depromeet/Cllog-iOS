@@ -10,16 +10,35 @@ import SwiftUI
 
 public struct ClLogSessionView: UIViewRepresentable {
     
-    public typealias UIViewType = ClLogSessionUIView
+    @Binding private var isRecording: Bool
+    private let fileOutputClousure: (URL, (any Error)?) -> Void
+    private let path: URL
+    
+    public init(
+        isRecording: Binding<Bool>,
+        fileOutputClousure: @escaping (URL, (any Error)?) -> Void
+    ) {
+        self._isRecording = isRecording
+        self.path = URL(fileURLWithPath: NSTemporaryDirectory() + UUID().uuidString + ".mov")
+        self.fileOutputClousure = fileOutputClousure
+    }
     
     public func makeUIView(context: Context) -> ClLogSessionUIView {
-        return ClLogSessionUIView(
-            frame: UIScreen.main.bounds
-        )
+        return ClLogSessionUIView(fileOutputclosure: fileOutputClousure)
     }
     
-    public func updateUIView(_ uiView: ClLogSessionUIView, context: Context) {
-        
+    public func updateUIView(
+        _ uiView: ClLogSessionUIView,
+        context: Context
+    ) {
+        if isRecording {
+            if !uiView.isRecording {
+                uiView.startRecording(to: path)
+            }
+        } else {
+            if uiView.isRecording {
+                uiView.stopRecording()
+            }
+        }
     }
-    
 }
