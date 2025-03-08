@@ -17,9 +17,13 @@ extension Provider {
         url: String,
         endPoint: EndpointType,
         session: Sessionable,
-        parameters: Starlink.SafeDictionary<String, Any>? = nil
+        parameters: Starlink.SafeDictionary<String, Any>? = nil,
+        interceptors: [any StarlinkInterceptor] = []
     ) -> StarlinkRequest {
-        return Starlink.init(session: session).request(
+        return Starlink.init(
+            session: session,
+            interceptors: interceptors
+        ).request(
             url,
             params: parameters,
             method: endPoint.method,
@@ -31,9 +35,13 @@ extension Provider {
         url: String,
         endPoint: EndpointType,
         session: Sessionable,
-        parameters: Encodable
+        parameters: Encodable,
+        interceptors: [any StarlinkInterceptor] = []
     ) -> StarlinkRequest {
-        return Starlink.init(session: session).request(
+        return Starlink.init(
+            session: session,
+            interceptors: interceptors
+        ).request(
             url,
             encodable: parameters,
             method: endPoint.method,

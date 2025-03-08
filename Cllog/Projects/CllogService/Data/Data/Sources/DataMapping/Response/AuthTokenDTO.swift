@@ -7,8 +7,16 @@
 //
 
 import Foundation
+import Networker
 
 public struct AuthTokenDTO: Codable {
     let accessToken: String
     let refreshToken: String
+    
+    func toToken() -> TokenDTO {
+        TokenDTO(
+            accessToken: accessToken,
+            refreshToken: refreshToken
+        )
+    }
 }

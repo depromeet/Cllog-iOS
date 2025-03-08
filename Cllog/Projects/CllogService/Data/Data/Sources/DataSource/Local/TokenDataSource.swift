@@ -7,10 +7,11 @@
 //
 
 import Foundation
+import Networker
 
 public protocol TokenDataSource {
     func saveToken(_ token: AuthTokenDTO)
-    func loadToken() -> AuthTokenDTO?
+    func loadToken() -> TokenDTO?
     func clearToken()
 }
 
@@ -21,8 +22,8 @@ public struct DefaultTokenDataSource: TokenDataSource {
         AppData.token = token
     }
     
-    public func loadToken() -> AuthTokenDTO? {
-        AppData.token
+    public func loadToken() -> TokenDTO? {
+        AppData.token?.toToken()
     }
     
     public func clearToken() {
