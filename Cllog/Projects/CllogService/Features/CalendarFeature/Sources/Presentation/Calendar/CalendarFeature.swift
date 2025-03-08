@@ -1,12 +1,10 @@
 //
 //  CalendarFeature.swift
-//  CalendarFeatureFeature
+//  CalendarFeature
 //
-//  Created by Junyoung on 3/7/25.
+//  Created by Junyoung on 3/8/25.
 //  Copyright © 2025 Supershy. All rights reserved.
 //
-
-import Foundation
 
 import ComposableArchitecture
 
