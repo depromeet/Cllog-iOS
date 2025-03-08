@@ -14,6 +14,8 @@ final class UIVideoPlay: UIView {
 
     private let fileURL: URL
     
+    private var addPeriodicTimeObserver: Any? = nil
+    
     public init(fileURL: URL) {
         self.fileURL = fileURL
         super.init(frame: UIScreen.main.bounds)
@@ -32,6 +34,13 @@ final class UIVideoPlay: UIView {
         layer.addSublayer(playerLayer)
         
         player.play()
+        
+        addPeriodicTimeObserver = player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: .main) { [weak self] time in
+            
+            let seconds = CMTimeGetSeconds(time).rounded(.up)
+            
+            print("seconds: \(seconds)")
+        }
         
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
                                                object: player.currentItem,

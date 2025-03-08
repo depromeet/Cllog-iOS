@@ -8,9 +8,10 @@
 
 import SwiftUI
 
+import Core
 import ComposableArchitecture
 
-struct CalendarView: View {
+public struct CalendarView: ViewProtocol {
     private let store: StoreOf<CalendarFeature>
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 7), count: 7)
     
@@ -18,7 +19,7 @@ struct CalendarView: View {
         self.store = store
     }
     
-    var body: some View {
+    public var body: some View {
         makeBody()
     }
 }

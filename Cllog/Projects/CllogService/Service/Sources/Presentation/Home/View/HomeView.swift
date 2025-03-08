@@ -49,7 +49,7 @@ struct HomeView: View {
                 tabViews: [
                     FolderTabView(
                         store: .init(initialState: FolderTabFeature.State(), reducer: {
-                            return FolderTabFeature()
+                            FolderTabFeature()
                         }), folderView: FolderView(store: .init(initialState: FolderFeature.State(), reducer: {
                             FolderFeature()
                         })), calendarView: CalendarView(store: .init(initialState: CalendarFeature.State(), reducer: {

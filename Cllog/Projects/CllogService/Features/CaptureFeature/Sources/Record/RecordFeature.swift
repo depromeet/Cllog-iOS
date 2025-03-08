@@ -33,10 +33,11 @@ public struct RecordFeature {
     
     @ObservableState
     public struct State: Equatable {
-        public var viewState: ViewState?
-        public var isRecord: Bool = false
+        var viewState: ViewState?
+        var isRecord: Bool = false
+        var fileURL: URL?
         
-        public var recordDuration: String = "00:01:21"
+        public private(set) var recordDuration: String = "00:01:21"
         
         public init() {}
     }
@@ -91,6 +92,7 @@ public struct RecordFeature {
                 if let error {
                     
                 } else {
+                    state.fileURL = filePath
                     state.viewState = .recorded(fileURL: filePath)
                 }
                 return .none
@@ -99,8 +101,9 @@ public struct RecordFeature {
                 return .none
                 
             case .climbSaveSuccess:
+                guard let fileURL = state.fileURL else { return .none }
                 return .run { [captureUseCase] send in
-                    try? await captureUseCase.execute(fileURL: URL(string: "https://www.naver.com")!)
+                    try? await captureUseCase.execute(fileURL: fileURL)
                 }
                 
             case .climbSaveFailrue:
