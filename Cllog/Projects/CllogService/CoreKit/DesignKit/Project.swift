@@ -12,7 +12,7 @@ let project = Project.configure(
     moduleType: .module(name: "DesignKit"),
     product: .framework,
     dependencies: [
-        .Library.tca
+        .Modules.thirdPartyLibrary(.cllog),
     ],
     hasResources: true
 )

@@ -10,11 +10,19 @@ import SwiftUI
 
 /// 타이틀 & 옆에 이미지 들어간 칩 (ex. 난이도, 암장..)
 public struct TitleWithImageChip: View {
-    let title: String
-    let imageName: String
-    let forgroundColor: Color
-    let backgroundColor: Color
-    let tapHandler: () -> Void
+    private let title: String
+    private let imageName: String
+    private let forgroundColor: Color
+    private let backgroundColor: Color
+    private let tapHandler: () -> Void
+    
+    public init(title: String, imageName: String, forgroundColor: Color, backgroundColor: Color, tapHandler: @escaping () -> Void) {
+        self.title = title
+        self.imageName = imageName
+        self.forgroundColor = forgroundColor
+        self.backgroundColor = backgroundColor
+        self.tapHandler = tapHandler
+    }
     
     public var body: some View {
         HStack(spacing: 0) {

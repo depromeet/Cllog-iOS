@@ -9,6 +9,7 @@
 import UIKit
 import SwiftUI
 import KakaoSDKAuth
+import CllogService
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
