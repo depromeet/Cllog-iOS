@@ -40,24 +40,27 @@ extension FolderView {
                     .font(.h3)
                     .foregroundStyle(Color.clLogUI.white)
                 
-                HStack(spacing: 8) {
-                    CompleteOrFailChip(challengeResult: .complete, isActive: false)
-                    CompleteOrFailChip(challengeResult: .fail, isActive: false)
-                    TitleWithImageChip(
-                        title: "난이도",
-                        imageName: "icon_down",
-                        forgroundColor: Color.clLogUI.gray200,
-                        backgroundColor: Color.clLogUI.gray600,
-                        tapHandler: { print("### 탭") }
-                    )
-                    TitleWithImageChip(
-                        title: "암장",
-                        imageName: "icon_down",
-                        forgroundColor: Color.clLogUI.gray200,
-                        backgroundColor: Color.clLogUI.gray600,
-                        tapHandler: { print("### 탭") }
-                    )
+                ScrollView(.horizontal) {
+                    HStack {
+                        CompleteOrFailChip(challengeResult: .complete, isActive: false)
+                        CompleteOrFailChip(challengeResult: .fail, isActive: false)
+                        TitleWithImageChip(
+                            title: "난이도",
+                            imageName: "icon_down",
+                            forgroundColor: Color.clLogUI.gray200,
+                            backgroundColor: Color.clLogUI.gray600,
+                            tapHandler: { print("### 탭") }
+                        )
+                        TitleWithImageChip(
+                            title: "암장",
+                            imageName: "icon_down",
+                            forgroundColor: Color.clLogUI.gray200,
+                            backgroundColor: Color.clLogUI.gray600,
+                            tapHandler: { print("### 탭") }
+                        )
+                    }
                 }
+                .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
