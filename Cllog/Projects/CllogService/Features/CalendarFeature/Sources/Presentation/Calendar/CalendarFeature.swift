@@ -14,21 +14,31 @@ import Domain
 @Reducer
 public struct CalendarFeature {
     
+    @Dependency(\.monthLimitUseCase) private var monthLimitUseCase
     private let calendar = Calendar.current
     
     @ObservableState
     public struct State {
         var selectedDate: Date = Date()
+        var isDisableNextMonth: Bool = false
         var days: [ClimbeDay] = []
+        var selectedDay: CalendarDate = CalendarDate(year: 0, month: 0, day: 0)
+        
+        var isPresentBottomSheet: Bool = false
+        
         public init() {
             
         }
     }
     
-    public enum Action {
+    public enum Action: BindableAction {
+        case binding(BindingAction<State>)
+        
         case previousMonthTapped
         case nextMonthTapped
         case updateDays([ClimbeDay])
+        case validateNextMonth
+        case dayTapped(ClimbeDay)
         
         case fetchCalendar
         case fetchSuccess([ClimbeDay])
@@ -38,8 +48,11 @@ public struct CalendarFeature {
     public init() {}
     
     public var body: some Reducer<State, Action> {
+        BindingReducer()
         Reduce { state, action in
             switch action {
+            case .binding:
+                return .none
             case .previousMonthTapped:
                 if let newDate = calendar.date(byAdding: .month, value: -1, to: state.selectedDate) {
                     state.selectedDate = newDate
@@ -55,9 +68,41 @@ public struct CalendarFeature {
             case .updateDays(let days):
                 state.days = getDays(for: state.selectedDate, calendarDay: days)
                 return .none
+            case .dayTapped(let day):
+                let calendar = Calendar.current
+                let selectedComponents = calendar.dateComponents([.year, .month, .day], from: day.day)
+                
+                guard let year = selectedComponents.year,
+                      let month = selectedComponents.month,
+                      let day = selectedComponents.day
+                else {
+                    return .none
+                }
+                
+                state.selectedDay = CalendarDate(
+                    year: year,
+                    month: month,
+                    day: day
+                )
+                
+                state.isPresentBottomSheet = true
+                return .none
+            case .validateNextMonth:
+                let calendar = Calendar.current
+                let selectedComponents = calendar.dateComponents([.year, .month], from: state.selectedDate)
+                let currentComponents = calendar.dateComponents([.year, .month], from: Date())
+                
+                state.isDisableNextMonth = monthLimitUseCase.execute(
+                    selectedMonth: selectedComponents,
+                    currentMonth: currentComponents
+                )
+                return .none
                 
             case .fetchCalendar:
-                return fetchCalendar(state.selectedDate)
+                return .merge(
+                    .send(.validateNextMonth),
+                    fetchCalendar(state.selectedDate)
+                )
             case .fetchSuccess(let days):
                 return .send(.updateDays(days))
             case .fetchFailure(let error):
