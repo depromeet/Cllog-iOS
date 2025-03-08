@@ -1,12 +1,18 @@
 import SwiftUI
+import FolderFeature
 
 @main
-struct App: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
+struct FolderDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            
+            FolderView(
+                store: .init(
+                    initialState: FolderFeature.State(),
+                    reducer: {
+                        FolderFeature()
+                    }
+                )
+            )
         }
     }
 }
