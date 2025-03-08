@@ -47,7 +47,7 @@ import CllogService
         ClLogPhase.current = .production
         #endif
         
-        ClLogger.message(
+        ClLogger().message(
             label: "[\(Self.self)]\(#function)",
             level: .info,
             message: "[\(Self.self)][Phase] => \(ClLogPhase.current)"

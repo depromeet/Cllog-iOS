@@ -18,7 +18,6 @@ public enum ClLogDI: Sendable {
     /// - Parameter assemblies: 서비스 DI 객체
     public static func register(assemblies: [Assembly]) {
         assemblies.forEach { assembly in
-            
             assembly.assemble(container: container)
         }
     }
