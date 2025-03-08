@@ -8,8 +8,6 @@
 
 import Foundation
 
-import Starlink
-
 public protocol LogConsoleUseCase {
     func executeInfo(label: String, message: String)
     func executeDebug(label: String, message: String)

@@ -9,10 +9,11 @@
 import SwiftUI
 
 import ComposableArchitecture
+import DesignKit
 
 struct CalendarView: View {
     @Bindable private var store: StoreOf<CalendarFeature>
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 7), count: 7)
+    private let calendarColumns = Array(repeating: GridItem(.flexible(), spacing: 7), count: 7)
     
     public init(store: StoreOf<CalendarFeature>) {
         self.store = store
@@ -40,7 +41,7 @@ extension CalendarView {
     private func selectMonthView() -> some View {
         HStack(spacing: 0) {
             Button {
-                store.send(.previousMonthTapped)
+                store.send(.previousMonthTapped, animation: .default)
             } label: {
                 Image.clLogUI.calendarBefore
                     .resizable()
@@ -53,7 +54,7 @@ extension CalendarView {
                 .foregroundStyle(Color.clLogUI.gray300)
             
             Button {
-                store.send(.nextMonthTapped)
+                store.send(.nextMonthTapped, animation: .default)
             } label: {
                 Image.clLogUI.calendarAfter
                     .resizable()
@@ -83,7 +84,7 @@ extension CalendarView {
             .frame(height: 51)
             
             // 달력
-            LazyVGrid(columns: columns, spacing: 10) {
+            LazyVGrid(columns: calendarColumns, spacing: 10) {
                 ForEach(store.days, id: \.self) { day in
                     DayView(day: day) {
                         store.send(.dayTapped(day))
@@ -110,7 +111,19 @@ extension CalendarView {
             
             Spacer(minLength: 16)
             
-            
+            VStack(alignment: .leading, spacing: 8) {
+                Text("클라이밍파크 강남점")
+                    .font(.b1)
+                    .foregroundStyle(Color.clLogUI.white)
+                
+                VStack {
+                    ForEach(0..<5, id: \.self) { _ in
+                        ClimbingCard() {
+                            
+                        }
+                    }
+                }
+            }
         }
     }
     

@@ -26,11 +26,11 @@ public struct MonthLimit: MonthLimitUseCase {
             return true
         }
         
-        guard selectedYear >= currentYear else {
-            return true
+        if selectedYear == currentYear {
+            return selectedMonth >= currentMonth
+        } else {
+            return false
         }
-        
-        return selectedMonth >= currentMonth
     }
 }
 
