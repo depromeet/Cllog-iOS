@@ -17,6 +17,9 @@ public struct FolderFeature {
     public struct State {
         var selectedChip: Set<SelectedChip> = []
         var selectedCragName = ""
+        var countOfFilteredStories = 30 // FIXME: 서버 연결
+        var selectedGrade = ""
+        
         public init() {}
     }
     
@@ -33,15 +36,20 @@ public struct FolderFeature {
         Reduce { state, action in
             switch action {
             case .completeChipTapped:
+                state.countOfFilteredStories = 20
                 state.selectedChip.formSymmetricDifference([.complete])
                 return .none
             case .failChipTapped:
+                state.countOfFilteredStories = 10
                 state.selectedChip.formSymmetricDifference([.fail])
                 return .none
             case .gradeChipTapped:
+                state.selectedGrade = "파랑"
+                state.countOfFilteredStories = 5
                 state.selectedChip.formSymmetricDifference([.grade])
                 return .none
             case .cragChipTapped(let cragName):
+                state.countOfFilteredStories = 1
                 state.selectedCragName = cragName
                 state.selectedChip.formSymmetricDifference([.crag])
                 return .none

@@ -35,30 +35,25 @@ extension FolderView {
     private func makeBody() -> some View {
         ScrollView {
             VStack (alignment: .leading) {
-                Text("나의 클라이밍 기록 32")
-                    .font(.h3)
-                    .foregroundStyle(Color.clLogUI.white)
-                    .padding(.horizontal, 16)
+                HStack(spacing: 7) {
+                    Text("나의 클라이밍 기록")
+                        .font(.h3)
+                        .foregroundStyle(Color.clLogUI.white)
+                    
+                    if store.countOfFilteredStories != 0 {
+                        Text("\(store.countOfFilteredStories)")
+                            .font(.h3)
+                            .foregroundStyle(Color.clLogUI.gray300)
+                    }
+                }
+                .padding(.horizontal, 16)
                 
                 makeChipView()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
-            LazyVGrid(columns: columns, spacing: 20) {
-                ForEach(items, id: \.self) { item in
-                    ThumbnailView(
-                        imageURLString: "https://www.dictionary.com/e/wp-content/uploads/2018/05/lhtm.jpg",
-                        thumbnailType: .default(
-                            cragName: "클라이밍파크 강남점",
-                            date: "25.02.08 FRI"
-                        ),
-                        challengeResult: .complete,
-                        level: .blue,
-                        time: "00:00:00"
-                    )
-                }
-            }
-            .padding(.horizontal, 16)
+            makeThumbnailView()
+                .padding(.horizontal, 16)
         }
         .scrollIndicators(.hidden)
     }
@@ -90,7 +85,7 @@ extension FolderView {
                         
                     case .grade:
                         TitleWithImageChip(
-                            title: "난이도",
+                            title: isSelectedChip ? store.selectedGrade : "난이도",
                             imageName: isSelectedChip ? "x" : "icon_down",
                             forgroundColor: isSelectedChip ? Color.clLogUI.gray800 :  Color.clLogUI.gray200,
                             backgroundColor: isSelectedChip ? Color.clLogUI.primary : Color.clLogUI.gray600,
@@ -114,6 +109,25 @@ extension FolderView {
             }
         }
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
+    }
+    
+    func makeThumbnailView() -> some View {
+        let items = Array(1...store.countOfFilteredStories)
+        
+        return LazyVGrid(columns: columns, spacing: 20) {
+            ForEach(items, id: \.self) { item in
+                ThumbnailView(
+                    imageURLString: "https://www.dictionary.com/e/wp-content/uploads/2018/05/lhtm.jpg",
+                    thumbnailType: .default(
+                        cragName: "클라이밍파크 강남점",
+                        date: "25.02.08 FRI"
+                    ),
+                    challengeResult: .complete,
+                    level: .blue,
+                    time: "00:00:00"
+                )
+            }
+        }
     }
 }
 
