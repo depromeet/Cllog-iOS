@@ -11,7 +11,6 @@ import SwiftUI
 public enum ThumbnailType {
     case `default`(cragName: String, date: String)
     case calendar
-    case delete(deteButtonHandler: () -> Void)
 }
 
 public struct ThumbnailView: View {
@@ -20,22 +19,25 @@ public struct ThumbnailView: View {
     private let challengeResult: ChallengeResult
     private let level: Level
     private let time: String
+    private let deleteButtonHandler: (() -> Void)?
     
     public init(
         imageURLString: String,
         thumbnailType: ThumbnailType,
         challengeResult: ChallengeResult,
         level: Level,
-        time: String
+        time: String,
+        deleteButtonHandler: (() -> Void)? = nil
     ) {
         self.imageURLString = imageURLString // FIXME: response 확인
         self.thumbnailType = thumbnailType
         self.challengeResult = challengeResult
         self.level = level
         self.time = time
+        self.deleteButtonHandler = deleteButtonHandler
     }
     public var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             // MARK: Time Chip
             ZStack(alignment: .topTrailing) {
                 
@@ -75,7 +77,7 @@ public struct ThumbnailView: View {
                 ThumbnailTimeChip(time)
                     .padding([.trailing, .top], 8)
                 
-                if case .delete(let deleteButtonHandler) = thumbnailType {
+                if let deleteButtonHandler {
                     Button {
                         deleteButtonHandler()
                     } label: {
@@ -83,7 +85,6 @@ public struct ThumbnailView: View {
                     }
                     .padding(-6)
                     .alignmentGuide(.top) { _ in 0 }
-
                 }
             }
             
@@ -98,7 +99,6 @@ public struct ThumbnailView: View {
                 Text(cragName)
                     .font(.b2)
                     .foregroundStyle(Color.clLogUI.gray400)
-                
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -148,12 +148,27 @@ private struct ThumbnailTimeChip: View {
         
         ThumbnailView(
             imageURLString: "https://www.dictionary.com/e/wp-content/uploads/2018/05/lhtm.jpg",
-            thumbnailType: .delete(deteButtonHandler: {
-                // TODO
-            }),
+            thumbnailType: .calendar,
             challengeResult: .complete,
             level: .blue,
-            time: "00:00:00"
+            time: "00:00:00",
+            deleteButtonHandler: {
+                print("delete button tapped")
+            }
+        )
+        
+        ThumbnailView(
+            imageURLString: "https://www.dictionary.com/e/wp-content/uploads/2018/05/lhtm.jpg",
+            thumbnailType: .default(
+                cragName: "클라이밍파크 강남점",
+                date: "25.02.08 FRI"
+            ),
+            challengeResult: .complete,
+            level: .blue,
+            time: "00:00:00",
+            deleteButtonHandler: {
+                print("delete button tapped")
+            }
         )
     }
     .background(
