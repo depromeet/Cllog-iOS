@@ -14,11 +14,13 @@ import Domain
 @Reducer
 public struct CalendarFeature {
     
+    @Dependency(\.monthLimitUseCase) private var monthLimitUseCase
     private let calendar = Calendar.current
     
     @ObservableState
     public struct State {
         var selectedDate: Date = Date()
+        var isDisableNextMonth: Bool = false
         var days: [ClimbeDay] = []
         public init() {
             
@@ -29,6 +31,7 @@ public struct CalendarFeature {
         case previousMonthTapped
         case nextMonthTapped
         case updateDays([ClimbeDay])
+        case validateNextMonth
         
         case fetchCalendar
         case fetchSuccess([ClimbeDay])
@@ -55,9 +58,22 @@ public struct CalendarFeature {
             case .updateDays(let days):
                 state.days = getDays(for: state.selectedDate, calendarDay: days)
                 return .none
+            case .validateNextMonth:
+                let calendar = Calendar.current
+                let selectedComponents = calendar.dateComponents([.year, .month], from: state.selectedDate)
+                let currentComponents = calendar.dateComponents([.year, .month], from: Date())
+                
+                state.isDisableNextMonth = monthLimitUseCase.execute(
+                    selectedMonth: selectedComponents,
+                    currentMonth: currentComponents
+                )
+                return .none
                 
             case .fetchCalendar:
-                return fetchCalendar(state.selectedDate)
+                return .merge(
+                    .send(.validateNextMonth),
+                    fetchCalendar(state.selectedDate)
+                )
             case .fetchSuccess(let days):
                 return .send(.updateDays(days))
             case .fetchFailure(let error):

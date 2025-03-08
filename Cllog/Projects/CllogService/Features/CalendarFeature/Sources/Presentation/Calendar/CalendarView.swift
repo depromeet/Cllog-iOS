@@ -42,7 +42,7 @@ extension CalendarView {
                 Image.clLogUI.calendarBefore
                     .resizable()
                     .frame(width: 20, height: 20)
-                    .foregroundStyle(Color.clLogUI.gray600)
+                    .foregroundStyle(Color.clLogUI.gray300)
             }
             
             Text("\(monthYearString(store.selectedDate))")
@@ -55,8 +55,12 @@ extension CalendarView {
                 Image.clLogUI.calendarAfter
                     .resizable()
                     .frame(width: 20, height: 20)
-                    .foregroundStyle(Color.clLogUI.gray300)
+                    .foregroundStyle(
+                        store.isDisableNextMonth ?
+                        Color.clLogUI.gray600 : Color.clLogUI.gray300
+                    )
             }
+            .disabled(store.isDisableNextMonth)
             
             Spacer()
         }
