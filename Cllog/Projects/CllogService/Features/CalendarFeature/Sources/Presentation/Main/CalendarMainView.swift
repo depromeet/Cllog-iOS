@@ -23,7 +23,7 @@ public struct CalendarMainView: ViewProtocol {
         makeBody()
             .padding(.vertical, 32)
             .padding(.horizontal, 16)
-            .background(Color.clLogUI.gray900)
+            .background(Color.clLogUI.gray800)
     }
 }
 

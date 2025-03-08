@@ -20,7 +20,7 @@ struct UserInfoView: View {
     
     var body: some View {
         makeBody()
-            .background(Color.clLogUI.background)
+            .background(Color.clLogUI.gray900)
             .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 }
