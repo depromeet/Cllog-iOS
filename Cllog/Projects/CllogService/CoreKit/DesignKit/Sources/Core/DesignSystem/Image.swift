@@ -33,6 +33,8 @@ extension ClLogUI where Base == UIImage {
     public static var stamp: UIImage { asset(#function) }
     public static var up: UIImage { asset(#function) }
     public static var dotVertical: UIImage { asset(#function) }
+    public static var calendarAfter: UIImage { asset(#function) }
+    public static var calendarBefore: UIImage { asset(#function) }
 }
 
 extension ClLogUI where Base == Image {
@@ -59,6 +61,8 @@ extension ClLogUI where Base == Image {
     public static var stamp: Image { asset(#function) }
     public static var up: Image { asset(#function) }
     public static var dotVertical: Image { asset(#function) }
+    public static var calendarAfter: Image { asset(#function) }
+    public static var calendarBefore: Image { asset(#function) }
 }
 
 extension ClLogUI where Base == UIImage {

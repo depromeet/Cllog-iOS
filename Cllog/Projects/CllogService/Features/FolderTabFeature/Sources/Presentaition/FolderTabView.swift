@@ -43,7 +43,6 @@ extension FolderTabView {
             
             makeContent()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.clLogUI.gray800)
         }
     }
     
