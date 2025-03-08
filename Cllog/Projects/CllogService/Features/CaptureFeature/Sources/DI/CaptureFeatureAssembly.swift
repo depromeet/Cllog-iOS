@@ -8,6 +8,7 @@
 
 import Swinject
 
+import Networker
 import Domain
 import CaptureDomain
 import Data
@@ -17,9 +18,11 @@ public struct CaptureFeatureAssembly: Assembly {
     public init() {}
     
     public func assemble(container: Swinject.Container) {
-        
-        container.register(CaptureRepository.self) { _ in
-            CaptureRecordRepositry()
+
+        container.register(CaptureRepository.self) { resolver in
+            CaptureRecordRepositry(provider: AuthProvider(
+                tokenProvider: DefaultTokenDataSource().loadToken
+            ))
         }
         
         container.register(CapturePermissionUseCase.self) { _ in
@@ -68,7 +71,11 @@ public struct CaptureFeatureAssembly: Assembly {
             guard let viewModel = resolver.resolve(ClLogSessionViewModelInterface.self) else {
                 fatalError("Could not resolve ClLogSessionViewModelInterface")
             }
+            guard let captureUseCase = resolver.resolve(CaptureUseCase.self) else {
+                fatalError("Could not resolve CaptureUseCase")
+            }
             return RecordFeature(
+                captureUseCase: captureUseCase,
                 sessionViewModel: viewModel,
                 logConsoleUsecase: logConsoleUseCase
             )

@@ -8,7 +8,7 @@
 
 import Starlink
 
-public protocol Provider {
+public protocol Provider: Sendable {
     func request<T: Decodable>(_ endpoint: EndpointType) async throws -> T
 }
 

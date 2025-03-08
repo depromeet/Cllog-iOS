@@ -8,6 +8,10 @@
 
 import SwiftUI
 
+import FolderTabFeature
+import FolderFeature
+import CalendarFeature
+
 import MainFeature
 import LoginFeature
 import CaptureFeature
@@ -43,7 +47,14 @@ struct HomeView: View {
             MainView(
                 on: on,
                 tabViews: [
-                    Text("1"),
+                    FolderTabView(
+                        store: .init(initialState: FolderTabFeature.State(), reducer: {
+                            return FolderTabFeature()
+                        }), folderView: FolderView(store: .init(initialState: FolderFeature.State(), reducer: {
+                            FolderFeature()
+                        })), calendarView: CalendarView(store: .init(initialState: CalendarFeature.State(), reducer: {
+                            CalendarFeature()
+                        }))),
                     captureView,
                     Text("3")
                 ], overlayerView: RecordView(

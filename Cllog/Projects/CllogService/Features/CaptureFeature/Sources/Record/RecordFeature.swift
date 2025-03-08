@@ -9,20 +9,24 @@
 import Foundation
 
 import Domain
+import CaptureDomain
 
 import ComposableArchitecture
 
 @Reducer
 public struct RecordFeature {
     
+    private let captureUseCase: CaptureUseCase
     private let logConsoleUsecase: LogConsoleUseCase
     
     public let sessionViewModel: any ClLogSessionViewModelInterface
     
     public init(
+        captureUseCase: CaptureUseCase,
         sessionViewModel: any ClLogSessionViewModelInterface,
         logConsoleUsecase: LogConsoleUseCase
     ) {
+        self.captureUseCase = captureUseCase
         self.sessionViewModel = sessionViewModel
         self.logConsoleUsecase = logConsoleUsecase
     }
@@ -95,7 +99,9 @@ public struct RecordFeature {
                 return .none
                 
             case .climbSaveSuccess:
-                return .none
+                return .run { [captureUseCase] send in
+                    try? await captureUseCase.execute(fileURL: URL(string: "https://www.naver.com")!)
+                }
                 
             case .climbSaveFailrue:
                 return .none
