@@ -13,6 +13,8 @@ import CaptureFeature
 
 import ComposableArchitecture
 import LoginFeature
+import Shared
+
 
 @Reducer
 public struct HomeFeature {
@@ -37,6 +39,7 @@ public struct HomeFeature {
                 "icn_report_unselected"
             ]
         )
+        public var login = LoginFeature.State()
         public var captureState = CaptureFeature.State()
         public var recordState = RecordFeature.State()
     }
@@ -45,13 +48,15 @@ public struct HomeFeature {
         case onAppear
         case loginAction(LoginFeature.Action)
         case loginCompleted
-        case setDestination(Destination)
         
         case mainFeatureAction(MainFeature.Action)
         case captureFeatureAction(CaptureFeature.Action)
         case recordFeatureAction(RecordFeature.Action)
     }
     
+    public enum Destination {
+        case login
+        case main
     }
     
     public init(
@@ -72,6 +77,8 @@ public struct HomeFeature {
         
         Scope(state: \.recordState, action: \.recordFeatureAction) {
             ClLogDI.container.resolve(RecordFeature.self)
+        }
+        
         Scope(state: \.login, action: \.loginAction) {
             LoginFeature()
         }

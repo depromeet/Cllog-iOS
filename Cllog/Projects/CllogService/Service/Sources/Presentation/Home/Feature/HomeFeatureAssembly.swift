@@ -12,9 +12,11 @@ import Domain
 
 import Swinject
 
-struct HomeFeatureAssembly: Assembly {
+public struct HomeFeatureAssembly: Assembly {
     
-    func assemble(container: Container) {
+    public init() {}
+    
+    public func assemble(container: Container) {
         
         container.register(HomeFeature.self) { resolver in
             

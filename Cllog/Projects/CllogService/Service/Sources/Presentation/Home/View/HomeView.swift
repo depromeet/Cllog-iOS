@@ -30,19 +30,15 @@ struct HomeView: View {
     }
     
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            switch viewStore.state.destination {
-            case .login:
-                LoginView(
-                    on: on,
-                    store: store.scope(
-                        state: \.login,
-                        action: \.loginAction
-                    )
+        switch store.destination {
+        case .login:
+            LoginView(
+                on: on,
+                store: store.scope(
+                    state: \.login,
+                    action: \.loginAction
                 )
-                
-            }
-            
+            )
         case .main:
             MainView(
                 on: on,
@@ -55,7 +51,6 @@ struct HomeView: View {
                     store: store.scope(state: \.recordState, action: \.recordFeatureAction)
                 ), store:
                     store.scope(state: \.mainState, action: \.mainFeatureAction))
-            
         case .none:
             // Intro, splash
             Text("Splash")

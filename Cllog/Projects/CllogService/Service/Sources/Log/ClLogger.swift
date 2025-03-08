@@ -13,8 +13,9 @@ import Domain
 import Starlink
 import Pulse
 import Swinject
+import Shared
 
-public enum ClLogger {
+public struct ClLogger {
     
     public init() {}
     
@@ -32,7 +33,7 @@ public enum ClLogger {
 
 extension ClLogger: Assembly {
     
-    func assemble(container: Container) {
+    public func assemble(container: Container) {
         container.register(LogConsoleUseCase.self) { _ in
             return ClLogger()
         }
@@ -41,11 +42,11 @@ extension ClLogger: Assembly {
 
 extension ClLogger: LogConsoleUseCase {
     
-    func executeInfo(label: String, message: String) {
+    public func executeInfo(label: String, message: String) {
         self.message(label: label, level: .info, message: message)
     }
     
-    func executeDebug(label: String, message: String) {
+    public func executeDebug(label: String, message: String) {
         self.message(label: label, level: .debug, message: message)
     }
 }
