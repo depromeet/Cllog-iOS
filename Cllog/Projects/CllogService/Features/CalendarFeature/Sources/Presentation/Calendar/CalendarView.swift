@@ -11,7 +11,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct CalendarView: View {
-    private let store: StoreOf<CalendarFeature>
+    @Bindable private var store: StoreOf<CalendarFeature>
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 7), count: 7)
     
     public init(store: StoreOf<CalendarFeature>) {
@@ -20,6 +20,9 @@ struct CalendarView: View {
     
     var body: some View {
         makeBody()
+            .bottomSheet(isPresented: $store.isPresentBottomSheet) {
+                bottomSheetView()
+            }
     }
 }
 
@@ -81,12 +84,33 @@ extension CalendarView {
             
             // 달력
             LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(store.days, id: \.self) { date in
-                    DayView(day: date) {
-                        
+                ForEach(store.days, id: \.self) { day in
+                    DayView(day: day) {
+                        store.send(.dayTapped(day))
                     }
+                    .disabled(!day.isCurrentMonth)
                 }
             }
+        }
+    }
+    
+    private func bottomSheetView() -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text(store.selectedDay.displayDate)
+                    .font(.h3)
+                    .foregroundStyle(Color.clLogUI.white)
+            }
+            
+            Spacer(minLength: 10)
+            
+            Rectangle()
+                .fill(Color.clLogUI.gray600)
+                .frame(height: 1)
+            
+            Spacer(minLength: 16)
+            
+            
         }
     }
     
