@@ -8,37 +8,56 @@
 import UIKit
 import SwiftUI
 
+import DesignKit
+
 import ComposableArchitecture
 
 public struct MainView: View {
     
     private weak var on: UIViewController?
     private let tabViews: [AnyView]
+    private var overlayerView: AnyView
     private let store: StoreOf<MainFeature>
+    
+    @State private var selectedTab = 1
     
     public init(
         on: UIViewController?,
         tabViews: [any View],
+        overlayerView: any View,
         store: StoreOf<MainFeature>
     ) {
         self.on = on
-        self.store = store
         self.tabViews = tabViews.map { AnyView($0) }
+        self.overlayerView = AnyView(overlayerView)
+        self.store = store
     }
     
     public var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            TabView {
-                ForEach(Array(tabViews.enumerated()), id: \.offset) { index, view in
-                    view
-                        .tabItem {
-                            Text("Tab \(index + 1)")
-                            Image(systemName: "\(index + 1).circle")
-                        }
+        bodyView
+            .overlay {
+                if store.showOverlay {
+                    overlayerView
                 }
             }
+    }
+    
+    private var bodyView: some View {
+        TabView(selection: $selectedTab) {
+            ForEach(Array(tabViews.enumerated()), id: \.offset) { index, view in
+                view
+                    .tabItem {
+                        Image(
+                            selectedTab == index ? "\(store.selectedImageNames[index])":
+                                "\(store.unselectedImageNames[index])",
+                            bundle: .clLogUIBundle
+                        )
+                    }
+                    .toolbarBackground(Color.clLogUI.gray700, for: .tabBar)
+                    .toolbarBackground(.visible, for: .tabBar)
+            }
             .onAppear {
-                viewStore.send(.onAppear)
+                store.send(.onAppear)
             }
         }
     }

@@ -30,38 +30,33 @@ struct HomeView: View {
     }
     
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            switch viewStore.state.destination {
-            case .login:
-                LoginView(
-                    on: on,
-                    store: store.scope(
-                        state: \.login,
-                        action: \.loginAction
-                    )
+        switch store.destination {
+        case .login:
+            LoginView(
+                on: on,
+                store: store.scope(
+                    state: \.login,
+                    action: \.loginAction
                 )
-                
-            case .main:
-                MainView(
+            )
+        case .main:
+            MainView(
+                on: on,
+                tabViews: [
+                    Text("1"),
+                    captureView,
+                    Text("3")
+                ], overlayerView: RecordView(
                     on: on,
-                    tabViews: [
-                        Text("1"),
-                        captureView,
-                        Text("3")
-                    ], store: Store(
-                        initialState: MainFeature.State(),
-                        reducer: {
-                            MainFeature()
-                        }
-                    )
-                )
-                
-            case .splash:
-                // Intro, splash
-                Text("Splash").onAppear {
+                    store: store.scope(state: \.recordState, action: \.recordFeatureAction)
+                ), store:
+                    store.scope(state: \.mainState, action: \.mainFeatureAction))
+        case .none:
+            // Intro, splash
+            Text("Splash")
+                .onAppear {
                     store.send(.onAppear)
                 }
-            }
         }
     }
     
@@ -69,17 +64,7 @@ struct HomeView: View {
     private var captureView: some View {
         CaptureView(
             on: on,
-            store: Store(
-                initialState: CaptureFeature.State(),
-                reducer: {
-                    CaptureFeature { log in
-                        ClLogger.message(
-                            level: .debug,
-                            message: log
-                        )
-                    }
-                }
-            )
+            store: store.scope(state: \.captureState, action: \.captureFeatureAction)
         )
     }
 }
