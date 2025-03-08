@@ -20,7 +20,7 @@ public struct GeneralButton: View {
     ) {
         self.onTapped = onTapped
         self.configuration = GeneralButtonConfiguration(
-            style: .large,
+            style: .normal,
             text: text
         )
     }
@@ -39,12 +39,7 @@ public struct GeneralButton: View {
             Text(configuration.text)
                 .font(.b1)
                 .padding(.vertical, 15)
-                .padding(.horizontal, configuration.style.horizontalPadding)
-                .frame(
-                    maxWidth: configuration.style.horizontalPadding == nil ?
-                        .infinity :
-                        nil
-                )
+                .frame(maxWidth: .infinity)
                 .foregroundStyle(
                     isEnabled ?
                     configuration.style.foregroundColor :
@@ -68,36 +63,29 @@ public struct GeneralButtonConfiguration {
 
 // MARK: Button Style
 public enum GeneralButtonStyle {
-    case large
-    case medium
-    case small
+    case normal
+    case white
+    case error
     
     var foregroundColor: Color {
         switch self {
-        case .large:
-            return .clLogUI.gray800
-        case .medium, .small:
-            return .clLogUI.white
+        case .normal:
+            return Color.clLogUI.white
+        case .white:
+            return Color.clLogUI.gray800
+        case .error:
+            return Color.clLogUI.white
         }
     }
     
     var backgroundColor: Color {
         switch self {
-        case .large:
-            return .clLogUI.white
-        case .medium, .small:
-            return .clLogUI.gray600
-        }
-    }
-    
-    var horizontalPadding: CGFloat? {
-        switch self {
-        case .large:
-            return nil
-        case .medium:
-            return 47.0
-        case .small:
-            return 30.0
+        case .normal:
+            return Color.clLogUI.gray600
+        case .white:
+            return Color.clLogUI.white
+        case .error:
+            return Color.clLogUI.fail
         }
     }
 }
@@ -118,7 +106,7 @@ public extension GeneralButton {
 #Preview {
     
     VStack {
-        Text("Large")
+        Text("Normal")
             .foregroundStyle(Color.clLogUI.white)
             .font(.h1)
         HStack {
@@ -128,7 +116,7 @@ public extension GeneralButton {
                 GeneralButton("버튼입니다") {
                     
                 }
-                .style(.large)
+                .style(.normal)
             }
             
             VStack {
@@ -137,13 +125,13 @@ public extension GeneralButton {
                 GeneralButton("버튼입니다") {
                     
                 }
-                .style(.large)
+                .style(.normal)
                 .disabled(true)
             }
         }
         .padding(.bottom, 10)
         
-        Text("Medium")
+        Text("White")
             .foregroundStyle(Color.clLogUI.white)
             .font(.h1)
         HStack {
@@ -153,7 +141,7 @@ public extension GeneralButton {
                 GeneralButton("버튼입니다") {
                     
                 }
-                .style(.medium)
+                .style(.white)
             }
             
             VStack {
@@ -162,13 +150,13 @@ public extension GeneralButton {
                 GeneralButton("버튼입니다") {
                     
                 }
-                .style(.medium)
+                .style(.white)
                 .disabled(true)
             }
         }
         .padding(.bottom, 10)
         
-        Text("Small")
+        Text("Error")
             .foregroundStyle(Color.clLogUI.white)
             .font(.h1)
         HStack {
@@ -178,7 +166,7 @@ public extension GeneralButton {
                 GeneralButton("버튼입니다") {
                     
                 }
-                .style(.small)
+                .style(.error)
             }
             
             VStack {
@@ -187,7 +175,7 @@ public extension GeneralButton {
                 GeneralButton("버튼입니다") {
                     
                 }
-                .style(.small)
+                .style(.error)
                 .disabled(true)
             }
         }
