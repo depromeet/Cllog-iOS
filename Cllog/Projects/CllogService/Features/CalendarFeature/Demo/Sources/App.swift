@@ -15,11 +15,20 @@ struct CalendarDemoApp: App {
     
     var body: some Scene {
         WindowGroup {
-            CalendarMainView(
+//            CalendarMainView(
+//                store: .init(
+//                    initialState: CalendarMainFeature.State(),
+//                    reducer: {
+//                        CalendarMainFeature()
+//                    }
+//                )
+//            )
+            
+            CalendarDetailView(
                 store: .init(
-                    initialState: CalendarMainFeature.State(),
+                    initialState: CalendarDetailFeature.State(),
                     reducer: {
-                        CalendarMainFeature()
+                        CalendarDetailFeature()
                     }
                 )
             )
