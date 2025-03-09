@@ -9,6 +9,7 @@ import ProjectDescription
 
 public extension TargetDependency {
     struct Domains {
+        public struct Folder {}
         public struct Capture {}
         public struct Login {}
         public struct Sample {}
@@ -56,6 +57,15 @@ public extension TargetDependency.Domains.Login {
 
 public extension TargetDependency.Domains.Capture {
     static let name = "Capture"
+    
+    static let domain = TargetDependency.Domains.project(
+        name: "\(name)Domain",
+        service: .cllog
+    )
+}
+
+public extension TargetDependency.Domains.Folder {
+    static let name = "Folder"
     
     static let domain = TargetDependency.Domains.project(
         name: "\(name)Domain",
