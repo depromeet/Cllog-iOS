@@ -7,3 +7,26 @@
 //
 
 import Foundation
+
+public protocol FolderRepository {
+    func getCrages() async throws -> [Crag]
+    func getGrades() async throws -> [Grade]
+    func getFilteredStories() async throws -> [Story]
+}
+
+// TODO: Remove
+public struct MockFolderRepository: FolderRepository {
+    public init() {}
+    
+    public func getCrages() async throws -> [Crag] {
+        []
+    }
+    
+    public func getGrades() async throws -> [Grade] {
+        []
+    }
+    
+    public func getFilteredStories() async throws -> [Story] {
+        []
+    }
+}
