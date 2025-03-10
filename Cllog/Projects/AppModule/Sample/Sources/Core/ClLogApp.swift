@@ -13,7 +13,7 @@ import DesignKit
 import MainFeature
 import LoginFeature
 import CllogService
-import CaptureFeature
+import VideoFeature
 import Shared
 
 @main
@@ -35,7 +35,7 @@ class ClLogApp {
             // Feature
             HomeFeatureAssembly(),
             MainFeatureAssembly(),
-            CaptureFeatureAssembly(),
+            VideoFeatureAssembly()
         ])
         
         // App Start

@@ -15,7 +15,7 @@ let project = Project.configure(
         .Features.Calendar.feature,
         .Features.Folder.feature,
         .Features.FolderTab.feature,
-        .Features.Capture.feature,
+        .Features.Video.feature,
         .Features.Login.feature,
         .Features.Main.feature,
         .Data.data(.cllog)

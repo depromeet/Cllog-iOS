@@ -1,5 +1,5 @@
 //
-//  CaptureRecordRepositry.swift
+//  VideoRecordRepositry.swift
 //  Data
 //
 //  Created by saeng lin on 3/3/25.
@@ -7,13 +7,13 @@
 //
 
 import Foundation
-import CaptureDomain
+import VideoDomain
 
 import Networker
 import Starlink
 import Swinject
 
-public struct CaptureRecordRepositry: CaptureRepository {
+public struct VideoRecordRepositry: VideoRepository {
 
     private let provider: Networker.Provider
     
@@ -23,7 +23,7 @@ public struct CaptureRecordRepositry: CaptureRepository {
         self.provider = provider
     }
     
-    public func uploadCapture(fileURL: URL) async throws {
+    public func uploadVideo(fileURL: URL) async throws {
         let model: Emtpy = try await provider.request(VideoTarget())
     }
 }
