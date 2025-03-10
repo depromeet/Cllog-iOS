@@ -19,6 +19,11 @@ public struct VideoPermission: VideoPermissionUseCase {
     public init() {}
     
     public func execute() async throws {
+        try await checkVideoPermission()
+        try await checkMicrophonePermission()
+    }
+    
+    private func checkVideoPermission() async throws {
         let currentStatus = AVCaptureDevice.authorizationStatus(for: .video)
         if currentStatus == .authorized {
             return
@@ -37,6 +42,27 @@ public struct VideoPermission: VideoPermissionUseCase {
                     continuation.resume(throwing: error)
                 }
             }
+        }
+    }
+    
+    private func checkMicrophonePermission() async throws {
+        
+        if AVAudioApplication.shared.recordPermission == .granted {
+            return
+        }
+        try await withCheckedThrowingContinuation { continuation in
+            AVAudioApplication.requestRecordPermission(completionHandler: { granted in
+                if granted {
+                    continuation.resume()
+                } else {
+                    let error = NSError(
+                        domain: "CapturePermission",
+                        code: 1,
+                        userInfo: [NSLocalizedDescriptionKey: "Microphone permission denied."]
+                    )
+                    continuation.resume(throwing: error)
+                }
+            })
         }
     }
 }

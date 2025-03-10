@@ -111,8 +111,9 @@ public struct HomeFeature {
                         // 탭에서 전달되는 상태
                         state.isRecord = isRecord
                         return .run { [state] send in
-                            await send(.mainFeatureAction(state.isRecord ? .startRecord : .stopRecord))
-                            if state.isRecord == false {
+                            if state.isRecord {
+                                await send(.mainFeatureAction(.startRecord))
+                            } else {
                                 await send(.videoFeatureAction(.onStopRecord))
                             }
                         }
@@ -127,6 +128,7 @@ public struct HomeFeature {
                     case .closeRecord:
                         
                         return .run { send in
+                            await send(.mainFeatureAction(.stopRecord))
                             await send(
                                 .videoFeatureAction(
                                     .sendAction(

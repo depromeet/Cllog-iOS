@@ -11,5 +11,5 @@ import Foundation
 public protocol VideoRepository: Sendable {
     
     /// 영상을 업로드 하는 인터페이스
-    func uploadVideo() async throws
+    func uploadVideo(fileURL: URL) async throws
 }

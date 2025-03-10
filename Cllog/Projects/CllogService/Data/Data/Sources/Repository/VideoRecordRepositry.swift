@@ -9,11 +9,25 @@
 import Foundation
 import VideoDomain
 
+import Networker
+import Starlink
+import Swinject
+
 public struct VideoRecordRepositry: VideoRepository {
+
+    private let provider: Networker.Provider
     
-    public init() {}
-    
-    public func uploadVideo() async throws {
-        
+    public init(
+        provider: Networker.Provider
+    ) {
+        self.provider = provider
     }
+    
+    public func uploadVideo(fileURL: URL) async throws {
+        let model: Emtpy = try await provider.request(VideoTarget())
+    }
+}
+
+struct Emtpy: Decodable {
+    
 }

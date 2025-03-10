@@ -8,6 +8,7 @@
 
 import Swinject
 
+import Networker
 import Domain
 import VideoDomain
 import Data
@@ -17,13 +18,19 @@ public struct VideoFeatureAssembly: Assembly {
     public init() {}
     
     public func assemble(container: Swinject.Container) {
-        
-        container.register(VideoRepository.self) { _ in
-            VideoRecordRepositry()
+
+        container.register(CaptureRepository.self) { resolver in
+            CaptureRecordRepositry(provider: AuthProvider(
+                tokenProvider: DefaultTokenDataSource().loadToken
+            ))
         }
         
         container.register(VideoPermissionUseCase.self) { _ in
             VideoPermission()
+        }
+        
+        container.register(ClLogSessionViewModelInterface.self) { _ in
+            ClLogSessionViewModel()
         }
         
         container.register(VideoUseCase.self) { resolver in
@@ -61,7 +68,15 @@ public struct VideoFeatureAssembly: Assembly {
             guard let logConsoleUseCase  = resolver.resolve(LogConsoleUseCase.self) else {
                 fatalError("Could not resolve LogConsoleUseCase")
             }
+            guard let viewModel = resolver.resolve(ClLogSessionViewModelInterface.self) else {
+                fatalError("Could not resolve ClLogSessionViewModelInterface")
+            }
+            guard let captureUseCase = resolver.resolve(CaptureUseCase.self) else {
+                fatalError("Could not resolve CaptureUseCase")
+            }
             return RecordFeature(
+                captureUseCase: captureUseCase,
+                sessionViewModel: viewModel,
                 logConsoleUsecase: logConsoleUseCase
             )
         }
