@@ -12,7 +12,7 @@ import Core
 import ComposableArchitecture
 import DesignKit
 
-struct CalendarView: View {
+public struct CalendarView: ViewProtocol {
     @Bindable private var store: StoreOf<CalendarFeature>
     private let calendarColumns = Array(repeating: GridItem(.flexible(), spacing: 7), count: 7)
     
