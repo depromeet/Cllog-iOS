@@ -1,6 +1,6 @@
 //
-//  CaptureView.swift
-//  CaptureFeature
+//  VideoView.swift
+//  VideoFeature
 //
 //  Created by saeng lin on 2/28/25.
 //  Copyright © 2025 Supershy. All rights reserved.
@@ -35,13 +35,13 @@ public struct VideoView: View {
                     store.send(.onAppear)
                 }
             
-        case .capture:
+        case .video:
             // 카메라 권한이 있는 상태
             recordingView
             
-        case .noneCapturePermission:
+        case .noneVideoPermission:
             // 카메라 권한이 없는 상태
-            Text("none capture permission")
+            Text("none video permission")
         }
         
     }

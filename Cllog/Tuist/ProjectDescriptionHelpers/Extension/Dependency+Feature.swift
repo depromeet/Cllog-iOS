@@ -12,7 +12,7 @@ public extension TargetDependency {
         public struct Calendar {}
         public struct Folder {}
         public struct FolderTab {}
-        public struct Capture {}
+        public struct Video {}
         public struct Login {}
         public struct Root {}
         public struct Main {}
@@ -70,8 +70,8 @@ public extension TargetDependency.Features.Login {
     )
 }
 
-public extension TargetDependency.Features.Capture {
-    static let name = "Capture"
+public extension TargetDependency.Features.Video {
+    static let name = "Video"
     
     static let feature = TargetDependency.Features.project(
         name: "\(name)Feature",

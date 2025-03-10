@@ -1,6 +1,6 @@
 //
-//  CapturePermissionUseCase.swift
-//  CaptureDomain
+//  VideoPermissionUseCase.swift
+//  VideoDomain
 //
 //  Created by saeng lin on 3/3/25.
 //  Copyright © 2025 Supershy. All rights reserved.
@@ -10,11 +10,11 @@ import Foundation
 
 import AVFoundation
 
-public protocol CapturePermissionUseCase: Sendable {
+public protocol VideoPermissionUseCase: Sendable {
     func execute() async throws
 }
 
-public struct CapturePermission: CapturePermissionUseCase {
+public struct VideoPermission: VideoPermissionUseCase {
     
     public init() {}
     
@@ -30,7 +30,7 @@ public struct CapturePermission: CapturePermissionUseCase {
                     continuation.resume(returning: ())
                 } else {
                     let error = NSError(
-                        domain: "CapturePermission",
+                        domain: "VideoPermission",
                         code: 1,
                         userInfo: [NSLocalizedDescriptionKey: "Camera permission denied."]
                     )

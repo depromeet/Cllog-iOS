@@ -9,7 +9,7 @@
 import Domain
 
 import MainFeature
-import CaptureFeature
+import VideoFeature
 
 import ComposableArchitecture
 import LoginFeature
@@ -40,7 +40,7 @@ public struct HomeFeature {
             ]
         )
         public var login = LoginFeature.State()
-        public var captureState = CaptureFeature.State()
+        public var videoState = VideoFeature.State()
         public var recordState = RecordFeature.State()
     }
     
@@ -50,7 +50,7 @@ public struct HomeFeature {
         case loginCompleted
         
         case mainFeatureAction(MainFeature.Action)
-        case captureFeatureAction(CaptureFeature.Action)
+        case videoFeatureAction(VideoFeature.Action)
         case recordFeatureAction(RecordFeature.Action)
     }
     
@@ -71,8 +71,8 @@ public struct HomeFeature {
             ClLogDI.container.resolve(MainFeature.self)
         }
         
-        Scope(state: \.captureState, action: \.captureFeatureAction) {
-            ClLogDI.container.resolve(CaptureFeature.self)
+        Scope(state: \.videoState, action: \.videoFeatureAction) {
+            ClLogDI.container.resolve(VideoFeature.self)
         }
         
         Scope(state: \.recordState, action: \.recordFeatureAction) {
@@ -103,7 +103,7 @@ public struct HomeFeature {
             case .mainFeatureAction(let action):
                 return .none
                 
-            case .captureFeatureAction(let action):
+            case .videoFeatureAction(let action):
                 switch action {
                 case .sendAction(let send):
                     switch send {
@@ -113,7 +113,7 @@ public struct HomeFeature {
                         return .run { [state] send in
                             await send(.mainFeatureAction(state.isRecord ? .startRecord : .stopRecord))
                             if state.isRecord == false {
-                                await send(.captureFeatureAction(.onStopRecord))
+                                await send(.videoFeatureAction(.onStopRecord))
                             }
                         }
                     }
@@ -128,7 +128,7 @@ public struct HomeFeature {
                         
                         return .run { send in
                             await send(
-                                .captureFeatureAction(
+                                .videoFeatureAction(
                                     .sendAction(
                                         .onRecord(false)
                                     )

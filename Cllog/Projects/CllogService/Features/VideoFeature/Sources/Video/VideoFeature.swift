@@ -1,6 +1,6 @@
 //
-//  CaptureFeature.swift
-//  CaptureFeature
+//  VideoFeature.swift
+//  VideoFeature
 //
 //  Created by saeng lin on 2/28/25.
 //  Copyright © 2025 Supershy. All rights reserved.
@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 import Domain
-import CaptureDomain
+import VideoDomain
 
 import ComposableArchitecture
 
@@ -18,8 +18,8 @@ import ComposableArchitecture
 public struct VideoFeature {
     
     private let logConsoleUseCase: LogConsoleUseCase
-    private let permissionUseCase: CapturePermissionUseCase
-    private let captureUseCase: CaptureUseCase
+    private let permissionUseCase: VideoPermissionUseCase
+    private let videoUseCase: VideoUseCase
     
     @ObservableState
     public struct State: Equatable {
@@ -35,7 +35,7 @@ public struct VideoFeature {
     
     public enum Action {
         case onAppear
-        case excuteCapture
+        case excuteVideo
         case noneExcuteCaptue
         
         case onStartRecord
@@ -52,8 +52,8 @@ public struct VideoFeature {
     
     public enum ViewState {
         case normal // 아직 권한을 체크하지 않는 상태
-        case noneCapturePermission // 카메라이 없는 상태
-        case capture // 카메라 권한이 있는 상태
+        case noneVideoPermission // 카메라이 없는 상태
+        case video // 카메라 권한이 있는 상태
     }
     
     public enum Destination {
@@ -62,12 +62,12 @@ public struct VideoFeature {
     
     public init (
         logConsoleUseCase: LogConsoleUseCase,
-        permissionUseCase: CapturePermissionUseCase,
-        captureUseCase: CaptureUseCase
+        permissionUseCase: VideoPermissionUseCase,
+        videoUseCase: VideoUseCase
     ) {
         self.logConsoleUseCase = logConsoleUseCase
         self.permissionUseCase = permissionUseCase
-        self.captureUseCase = captureUseCase
+        self.videoUseCase = videoUseCase
     }
     
     public var body: some ReducerOf<Self> {
@@ -77,18 +77,18 @@ public struct VideoFeature {
                 return .run { send in
                     do {
                         try await permissionUseCase.execute()
-                        await send(.excuteCapture)
+                        await send(.excuteVideo)
                     } catch {
                         await send(.noneExcuteCaptue)
                     }
                 }
                 
-            case .excuteCapture:
-                state.viewState = .capture
+            case .excuteVideo:
+                state.viewState = .video
                 return .none
                 
             case .noneExcuteCaptue:
-                state.viewState = .noneCapturePermission
+                state.viewState = .noneVideoPermission
                 return .none
                 
             case .onStartRecord:
