@@ -28,5 +28,8 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
+        container.register(MonthLimitUseCase.self) { _ in
+            MonthLimit()
+        }
     }
 }

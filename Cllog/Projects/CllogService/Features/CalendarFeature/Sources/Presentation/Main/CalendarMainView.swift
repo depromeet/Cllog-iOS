@@ -32,6 +32,7 @@ extension CalendarMainView {
         ScrollView {
             VStack(spacing: 20) {
                 UserInfoView(
+                    type: .normal,
                     store: store.scope(state: \.userInfoState, action: \.userInfoAction)
                 )
                 

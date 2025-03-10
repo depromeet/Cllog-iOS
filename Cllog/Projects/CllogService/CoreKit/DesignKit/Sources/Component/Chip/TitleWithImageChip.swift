@@ -31,9 +31,7 @@ public struct TitleWithImageChip: View {
             Image(imageName, bundle: .module)
                 .resizable()
                 .frame(width: 21, height: 21)
-                .onTapGesture {
-                    tapHandler()
-                }
+                
         }
         .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 7))
         .foregroundStyle(forgroundColor)
@@ -41,6 +39,9 @@ public struct TitleWithImageChip: View {
             RoundedRectangle(cornerRadius: 20)
                 .foregroundStyle(backgroundColor)
         )
+        .onTapGesture {
+            tapHandler()
+        }
     }
 }
 

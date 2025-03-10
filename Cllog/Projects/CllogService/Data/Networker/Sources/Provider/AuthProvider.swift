@@ -29,7 +29,10 @@ public final class AuthProvider: Provider {
                 url: url,
                 endPoint: endpoint,
                 session: session,
-                interceptors: [tokenInterceptor]
+                interceptors: [
+                    AppIntoInterceptor(),
+                    tokenInterceptor
+                ]
             )
             
         case .some(let type):
@@ -40,7 +43,10 @@ public final class AuthProvider: Provider {
                     endPoint: endpoint,
                     session: session,
                     parameters: parameters,
-                    interceptors: [tokenInterceptor]
+                    interceptors: [
+                        AppIntoInterceptor(),
+                        tokenInterceptor
+                    ]
                 )
             case .encodable(let parameters):
                 request(
@@ -48,7 +54,10 @@ public final class AuthProvider: Provider {
                     endPoint: endpoint,
                     session: session,
                     parameters: parameters,
-                    interceptors: [tokenInterceptor]
+                    interceptors: [
+                        AppIntoInterceptor(),
+                        tokenInterceptor
+                    ]
                 )
             }
         }
