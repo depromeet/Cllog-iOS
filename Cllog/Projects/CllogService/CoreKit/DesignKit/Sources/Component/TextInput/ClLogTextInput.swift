@@ -8,17 +8,11 @@
 
 import SwiftUI
 
-public struct ClLogTextField: View {
+public struct ClLogTextInput: View {
     @Binding private var text: String
     private let placeHolder: String
     @FocusState private var isTextFieldFocused: Bool
-    private var configuration: TextFieldConfiguration
-    
-    private var displayPlaceHolder: String {
-        guard text.isEmpty else { return text }
-        
-        return configuration.state == .error ? "잘못된 입력" : placeHolder
-    }
+    private var configuration: TextInputConfiguration
     
     public init(
         placeHolder: String,
@@ -26,15 +20,16 @@ public struct ClLogTextField: View {
     ) {
         self.placeHolder = placeHolder
         self._text = text
-        self.configuration = TextFieldConfiguration(
-            state: .normal
+        self.configuration = TextInputConfiguration(
+            state: .normal,
+            type: .filed
         )
     }
     
     fileprivate init(
         _ placeHolder: String,
         _ text: Binding<String>,
-        _ configuration: TextFieldConfiguration
+        _ configuration: TextInputConfiguration
     ) {
         self.placeHolder = placeHolder
         self._text = text
@@ -46,25 +41,39 @@ public struct ClLogTextField: View {
     }
 }
 
-extension ClLogTextField {
+extension ClLogTextInput {
     fileprivate func makeBody() -> some View {
-        ZStack {
-            // TextField
-            TextField("", text: $text)
-                .padding(.horizontal, 16)
-                .tint(configuration.state.foregroundColor)
-                .focused($isTextFieldFocused)
+        ZStack(
+            alignment: configuration.type == .editor ?
+                .topLeading : .center
+        ) {
+            switch configuration.type {
+            case .filed:
+                // TextField
+                TextField("", text: $text)
+                    .padding(.horizontal, 16)
+                    .tint(configuration.state.foregroundColor)
+                    .focused($isTextFieldFocused)
+            case .editor:
+                // TextEditor
+                TextEditor(text: $text)
+                    .scrollContentBackground(.hidden)
+                    .padding(16)
+                    .tint(configuration.state.foregroundColor)
+                    .focused($isTextFieldFocused)
+            }
             
             // PlaceHolder
-            if !isTextFieldFocused {
-                Text(displayPlaceHolder)
+            if !isTextFieldFocused && text.isEmpty {
+                Text(placeHolder)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
+                .padding(.vertical, configuration.type == .editor ? 16 : 0)
             }
         }
         .font(.b1)
         .foregroundStyle(configuration.state.foregroundColor)
-        .frame(height: 48)
+        .frame(height: configuration.type == .editor ? 128 : 48)
         .background(configuration.state.backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay (
@@ -81,45 +90,24 @@ extension ClLogTextField {
         .disabled(configuration.state == .disable)
     }
     
-    func state(_ state: TextFieldState) -> ClLogTextField {
+    func state(_ state: TextInputState) -> ClLogTextInput {
         var newConfig = self.configuration
         
         newConfig.state = state
         
-        return ClLogTextField(self.placeHolder ,$text, newConfig)
-    }
-}
-
-public enum TextFieldState {
-    case normal
-    case disable
-    case error
-    
-    var backgroundColor: Color {
-        switch self {
-        case .normal, .disable:
-            return .clLogUI.gray900
-        case .error:
-            return .clLogUI.textFail
-        }
+        return ClLogTextInput(self.placeHolder ,$text, newConfig)
     }
     
-    var foregroundColor: Color {
-        switch self {
-        case .normal:
-            return .clLogUI.gray50
-        case .disable:
-            return .clLogUI.gray600
-        case .error:
-            return .clLogUI.fail
-        }
+    func type(_ type: TextInputType) -> ClLogTextInput {
+        var newConfig = self.configuration
+        
+        newConfig.type = type
+        
+        return ClLogTextInput(self.placeHolder ,$text, newConfig)
     }
 }
 
-public struct TextFieldConfiguration {
-    var state: TextFieldState
-}
-
+// MARK: - Preview
 public struct ContainerClLogTextField: View {
     @State private var textNormal: String
     @State private var textDisable: String
@@ -137,23 +125,24 @@ public struct ContainerClLogTextField: View {
     
     public var body: some View {
         GroupBox(label: Text("Normal")) {
-            ClLogTextField(
+            ClLogTextInput(
                 placeHolder: "암장을 입력해 주세요",
                 text: $textNormal
             )
             .state(.normal)
         }
         
-        GroupBox(label: Text("Error")) {
-            ClLogTextField(
+        GroupBox(label: Text("Edior Error")) {
+            ClLogTextInput(
                 placeHolder: "암장을 입력해 주세요",
                 text: $textDisable
             )
+            .type(.editor)
             .state(.error)
         }
         
         GroupBox(label: Text("Disable")) {
-            ClLogTextField(
+            ClLogTextInput(
                 placeHolder: "암장을 입력해 주세요",
                 text: $textError
             )
