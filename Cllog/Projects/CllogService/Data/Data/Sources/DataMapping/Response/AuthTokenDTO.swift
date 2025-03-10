@@ -12,11 +12,13 @@ import Networker
 public struct AuthTokenDTO: Codable {
     let accessToken: String
     let refreshToken: String
+    let provider: String
     
     func toToken() -> TokenDTO {
         TokenDTO(
             accessToken: accessToken,
-            refreshToken: refreshToken
+            refreshToken: refreshToken,
+            provider: provider
         )
     }
 }

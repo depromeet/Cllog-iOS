@@ -10,11 +10,17 @@ import Foundation
 
 public struct TokenDTO {
     
-    public init(accessToken: String, refreshToken: String) {
+    public init(
+        accessToken: String,
+        refreshToken: String,
+        provider: String
+    ) {
         self.accessToken = accessToken
         self.refreshToken = refreshToken
+        self.provider = provider
     }
     
     let accessToken: String
     let refreshToken: String
+    let provider: String
 }
