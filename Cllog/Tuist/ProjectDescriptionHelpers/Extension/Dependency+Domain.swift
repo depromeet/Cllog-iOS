@@ -9,7 +9,7 @@ import ProjectDescription
 
 public extension TargetDependency {
     struct Domains {
-        public struct Capture {}
+        public struct Video {}
         public struct Login {}
         public struct Sample {}
         public struct Domain {}
@@ -54,8 +54,8 @@ public extension TargetDependency.Domains.Login {
     )
 }
 
-public extension TargetDependency.Domains.Capture {
-    static let name = "Capture"
+public extension TargetDependency.Domains.Video {
+    static let name = "Video"
     
     static let domain = TargetDependency.Domains.project(
         name: "\(name)Domain",

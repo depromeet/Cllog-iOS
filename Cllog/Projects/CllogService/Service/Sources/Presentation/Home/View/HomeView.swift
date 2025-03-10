@@ -14,7 +14,7 @@ import CalendarFeature
 
 import MainFeature
 import LoginFeature
-import CaptureFeature
+import VideoFeature
 
 import ComposableArchitecture
 import LoginDomain
@@ -55,7 +55,7 @@ struct HomeView: View {
                         })), calendarView: CalendarView(store: .init(initialState: CalendarFeature.State(), reducer: {
                             CalendarFeature()
                         }))),
-                    captureView,
+                    videoView,
                     Text("3")
                 ], overlayerView: RecordView(
                     on: on,
@@ -72,10 +72,10 @@ struct HomeView: View {
     }
     
     @ViewBuilder
-    private var captureView: some View {
-        CaptureView(
+    private var videoView: some View {
+        VideoView(
             on: on,
-            store: store.scope(state: \.captureState, action: \.captureFeatureAction)
+            store: store.scope(state: \.videoState, action: \.videoFeatureAction)
         )
     }
 }

@@ -1,6 +1,6 @@
 //
-//  CaptureView.swift
-//  CaptureFeature
+//  VideoView.swift
+//  VideoFeature
 //
 //  Created by saeng lin on 2/28/25.
 //  Copyright © 2025 Supershy. All rights reserved.
@@ -12,14 +12,14 @@ import DesignKit
 
 import ComposableArchitecture
 
-public struct CaptureView: View {
+public struct VideoView: View {
     
     private weak var on: UIViewController?
-    private let store: StoreOf<CaptureFeature>
+    private let store: StoreOf<VideoFeature>
     
     public init(
         on: UIViewController?,
-        store: StoreOf<CaptureFeature>
+        store: StoreOf<VideoFeature>
     ) {
         self.on = on
         self.store = store
@@ -35,19 +35,19 @@ public struct CaptureView: View {
                     store.send(.onAppear)
                 }
             
-        case .capture:
+        case .video:
             // 카메라 권한이 있는 상태
             recordingView
             
-        case .noneCapturePermission:
+        case .noneVideoPermission:
             // 카메라 권한이 없는 상태
-            Text("none capture permission")
+            Text("none video permission")
         }
         
     }
 }
 
-private extension CaptureView {
+private extension VideoView {
     
     var recordingView: some View {
         ZStack {

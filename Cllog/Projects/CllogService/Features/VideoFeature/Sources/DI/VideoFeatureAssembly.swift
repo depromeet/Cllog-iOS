@@ -1,5 +1,5 @@
 //
-//  CaptureFeatureAssembly.swift
+//  VideoFeatureAssembly.swift
 //  CaptureFeature
 //
 //  Created by saeng lin on 3/3/25.
@@ -10,42 +10,42 @@ import Swinject
 
 import Networker
 import Domain
-import CaptureDomain
+import VideoDomain
 import Data
 
-public struct CaptureFeatureAssembly: Assembly {
+public struct VideoFeatureAssembly: Assembly {
     
     public init() {}
     
     public func assemble(container: Swinject.Container) {
 
-        container.register(CaptureRepository.self) { resolver in
-            CaptureRecordRepositry(provider: AuthProvider(
+        container.register(VideoRepository.self) { resolver in
+            VideoRecordRepositry(provider: AuthProvider(
                 tokenProvider: DefaultTokenDataSource().loadToken
             ))
         }
         
-        container.register(CapturePermissionUseCase.self) { _ in
-            CapturePermission()
+        container.register(VideoPermissionUseCase.self) { _ in
+            VideoPermission()
         }
         
         container.register(ClLogSessionViewModelInterface.self) { _ in
             ClLogSessionViewModel()
         }
         
-        container.register(CaptureUseCase.self) { resolver in
+        container.register(VideoUseCase.self) { resolver in
             
-            guard let capturerepository = resolver.resolve(CaptureRepository.self) else {
+            guard let videospository = resolver.resolve(VideoRepository.self) else {
                 fatalError("Could not resolve CaptureRepository")
             }
             
-            return CaptureUploadUsesCase(
-                capturerepository: capturerepository
+            return VideoUploadUsesCase(
+                videoRepository: videospository
             )
         }
         
-        container.register(CaptureFeature.self) { resolver in
-            guard let captureUseCase = resolver.resolve(CaptureUseCase.self) else {
+        container.register(VideoFeature.self) { resolver in
+            guard let videoUseCase = resolver.resolve(VideoUseCase.self) else {
                 fatalError("Could not resolve CaptureUseCase")
             }
             
@@ -53,14 +53,14 @@ public struct CaptureFeatureAssembly: Assembly {
                 fatalError("Could not resolve LogConsoleUseCase")
             }
             
-            guard let permissionUseCase = resolver.resolve(CapturePermissionUseCase.self) else {
+            guard let permissionUseCase = resolver.resolve(VideoPermissionUseCase.self) else {
                 fatalError("Could not resolve CapturePermissionUseCase")
             }
             
-            return CaptureFeature(
+            return VideoFeature(
                 logConsoleUseCase: logConsoleUseCase,
                 permissionUseCase: permissionUseCase,
-                captureUseCase: captureUseCase
+                videoUseCase: videoUseCase
             )
         }
         
@@ -71,11 +71,11 @@ public struct CaptureFeatureAssembly: Assembly {
             guard let viewModel = resolver.resolve(ClLogSessionViewModelInterface.self) else {
                 fatalError("Could not resolve ClLogSessionViewModelInterface")
             }
-            guard let captureUseCase = resolver.resolve(CaptureUseCase.self) else {
+            guard let videoUseCase = resolver.resolve(VideoUseCase.self) else {
                 fatalError("Could not resolve CaptureUseCase")
             }
             return RecordFeature(
-                captureUseCase: captureUseCase,
+                videoUseCase: videoUseCase,
                 sessionViewModel: viewModel,
                 logConsoleUsecase: logConsoleUseCase
             )
