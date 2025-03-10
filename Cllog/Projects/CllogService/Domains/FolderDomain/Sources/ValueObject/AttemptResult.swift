@@ -1,5 +1,5 @@
 //
-//  AttempResult.swift
+//  AttemptResult.swift
 //  FolderDomain
 //
 //  Created by soi on 3/10/25.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum AttempResult {
+public enum AttemptResult {
     case complete
     case fail
 }

@@ -9,12 +9,17 @@
 import SwiftUI
 
 import ComposableArchitecture
+import FolderDomain
 
 @Reducer
 public struct FolderFeature {
+    @Dependency(\.folderListUseCase) private var folderListUsecase
     
     @ObservableState
     public struct State {
+        var grades = [Grade]()
+        var crages = [Crag]()
+        var stories = [Attempt]()
         var selectedChip: Set<SelectedChip> = []
         var selectedCragName = ""
         var countOfFilteredStories = 30 // FIXME: 서버 연결
@@ -24,10 +29,12 @@ public struct FolderFeature {
     }
     
     public enum Action {
+        case onAppear
         case completeChipTapped
         case failChipTapped
         case gradeChipTapped
         case cragChipTapped(cragName: String)
+        case updateStoryInfo(grades: [Grade], crages: [Crag], attempts: [Attempt])
     }
     
     public init() {}
@@ -35,6 +42,8 @@ public struct FolderFeature {
     public var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
+            case .onAppear:
+                return getStoryInfo()
             case .completeChipTapped:
                 state.countOfFilteredStories = 20
                 state.selectedChip.formSymmetricDifference([.complete])
@@ -53,7 +62,21 @@ public struct FolderFeature {
                 state.selectedCragName = cragName
                 state.selectedChip.formSymmetricDifference([.crag])
                 return .none
+            case .updateStoryInfo(let grades, let crages, let stories):
+                state.grades = grades
+                state.crages = crages
+                state.stories = stories
+                return .none
             }
+        }
+    }
+    
+    private func getStoryInfo() -> Effect<Action> {
+        return .run { send in
+            let crages = try? await folderListUsecase.getCrages()
+            let grades = try? await folderListUsecase.getGrades()
+            let attempts = try? await folderListUsecase.getFilteredAttempts()
+            await send(.updateStoryInfo(grades: grades ?? [], crages: crages ?? [], attempts: attempts ?? []))
         }
     }
 }

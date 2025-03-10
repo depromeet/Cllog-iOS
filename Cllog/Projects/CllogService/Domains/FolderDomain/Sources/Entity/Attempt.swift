@@ -1,5 +1,5 @@
 //
-//  Story.swift
+//  Attempt.swift
 //  FolderDomain
 //
 //  Created by soi on 3/10/25.
@@ -8,10 +8,10 @@
 
 import Foundation
 
-public struct Story {
+public struct Attempt {
     let date: String
     let grade: Grade
-    let result: AttempResult
+    let result: AttemptResult
     let recordedTime: String
     let crag: String?
 }

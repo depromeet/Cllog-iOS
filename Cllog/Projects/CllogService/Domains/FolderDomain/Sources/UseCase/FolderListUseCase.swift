@@ -12,7 +12,7 @@ public protocol FolderListUseCase {
     func getCrages() async throws -> [Crag]
     func getGrades() async throws -> [Grade]
     // TODO: 필터링 VO 삽입
-    func getFilteredStories() async throws -> [Story]
+    func getFilteredAttempts() async throws -> [Attempt]
 }
 
 // TODO: Remove
@@ -31,7 +31,7 @@ public struct MockFolderListUseCase: FolderListUseCase {
         try await folderRepository.getGrades()
     }
     
-    public func getFilteredStories() async throws -> [Story] {
-        try await folderRepository.getFilteredStories()
+    public func getFilteredAttempts() async throws -> [Attempt] {
+        try await folderRepository.getFilteredAttempts()
     }
 }

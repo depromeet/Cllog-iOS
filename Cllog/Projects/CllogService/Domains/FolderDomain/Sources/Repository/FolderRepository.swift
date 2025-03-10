@@ -11,7 +11,7 @@ import Foundation
 public protocol FolderRepository {
     func getCrages() async throws -> [Crag]
     func getGrades() async throws -> [Grade]
-    func getFilteredStories() async throws -> [Story]
+    func getFilteredAttempts() async throws -> [Attempt]
 }
 
 // TODO: Remove
@@ -19,14 +19,18 @@ public struct MockFolderRepository: FolderRepository {
     public init() {}
     
     public func getCrages() async throws -> [Crag] {
-        []
+        [
+            Crag(name: "강남점", address: "강남")
+        ]
     }
     
     public func getGrades() async throws -> [Grade] {
-        []
+        [
+            Grade(title: "파랑", hexCode: 0x5E7CFF)
+        ]
     }
     
-    public func getFilteredStories() async throws -> [Story] {
+    public func getFilteredAttempts() async throws -> [Attempt] {
         []
     }
 }

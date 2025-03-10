@@ -28,6 +28,9 @@ public struct FolderView: ViewProtocol {
         makeBodyView()
             .padding(.vertical, 18)
             .background(Color.clLogUI.gray800)
+            .onAppear {
+                store.send(.onAppear)
+            }
     }
 }
 
