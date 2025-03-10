@@ -1,5 +1,5 @@
 //
-//  CaptureRecordRepositry.swift
+//  VideoRecordRepositry.swift
 //  Data
 //
 //  Created by saeng lin on 3/3/25.
@@ -7,13 +7,13 @@
 //
 
 import Foundation
-import CaptureDomain
+import VideoDomain
 
-public struct CaptureRecordRepositry: CaptureRepository {
+public struct VideoRecordRepositry: VideoRepository {
     
     public init() {}
     
-    public func uploadCapture() async throws {
+    public func uploadVideo() async throws {
         
     }
 }
