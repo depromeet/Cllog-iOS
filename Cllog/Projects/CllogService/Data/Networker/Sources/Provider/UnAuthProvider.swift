@@ -24,7 +24,8 @@ public final class UnAuthProvider: Provider {
             request(
                 url: url,
                 endPoint: endpoint,
-                session: session
+                session: session,
+                interceptors: [AppIntoInterceptor()]
             )
             
         case .some(let type):
@@ -34,14 +35,16 @@ public final class UnAuthProvider: Provider {
                     url: url,
                     endPoint: endpoint,
                     session: session,
-                    parameters: parameters
+                    parameters: parameters,
+                    interceptors: [AppIntoInterceptor()]
                 )
             case .encodable(let parameters):
                 request(
                     url: url,
                     endPoint: endpoint,
                     session: session,
-                    parameters: parameters
+                    parameters: parameters,
+                    interceptors: [AppIntoInterceptor()]
                 )
             }
         }
