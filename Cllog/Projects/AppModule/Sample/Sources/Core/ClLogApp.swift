@@ -29,11 +29,13 @@ class ClLogApp {
             ClLogger(),
             ClLogFont(),
             
+            //
+            ClLogServiceAssembly(),
+            
             // Feature
             HomeFeatureAssembly(),
             MainFeatureAssembly(),
             CaptureFeatureAssembly(),
-            ClLogServiceAssembly()
         ])
         
         // App Start

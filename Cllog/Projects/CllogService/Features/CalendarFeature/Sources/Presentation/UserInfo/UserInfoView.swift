@@ -11,10 +11,20 @@ import SwiftUI
 import ComposableArchitecture
 import DesignKit
 
+enum UserInfoType {
+    case normal
+    case detail
+}
+
 struct UserInfoView: View {
     @Bindable private var store: StoreOf<UserInfoFeature>
+    private let type: UserInfoType
     
-    public init(store: StoreOf<UserInfoFeature>) {
+    public init(
+        type: UserInfoType,
+        store: StoreOf<UserInfoFeature>
+    ) {
+        self.type = type
         self.store = store
     }
     
@@ -43,21 +53,35 @@ extension UserInfoView {
     // MARK: - InfoView
     private func makeInfoView() -> some View {
         HStack(alignment: .center) {
-            VStack(alignment: .leading, spacing: 0) {
-                Text("디퍼님,")
-                    .font(.h1)
-                    .foregroundColor(Color.clLogUI.primary)
-                
-                HStack(spacing: 0) {
-                    Text("3월엔 ")
-                        .font(.h5)
-                        .foregroundColor(Color.clLogUI.gray500)
-                    Text("15일")
-                        .font(.h5)
+            switch type {
+            case .normal:
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("디퍼님,")
+                        .font(.h1)
                         .foregroundColor(Color.clLogUI.primary)
-                    Text(" 클라이밍했어요")
-                        .font(.h5)
-                        .foregroundColor(Color.clLogUI.gray500)
+                    
+                    HStack(spacing: 0) {
+                        Text("3월엔 ")
+                            .font(.h5)
+                            .foregroundColor(Color.clLogUI.gray500)
+                        Text("15일")
+                            .font(.h5)
+                            .foregroundColor(Color.clLogUI.primary)
+                        Text(" 클라이밍했어요")
+                            .font(.h5)
+                            .foregroundColor(Color.clLogUI.gray500)
+                    }
+                }
+            case .detail:
+                HStack(spacing: 0) {
+                    Image.clLogUI.location
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .foregroundStyle(Color.clLogUI.white)
+                    
+                    Text("클라이밍파크 강남점")
+                        .font(.h2)
+                        .foregroundStyle(Color.clLogUI.gray10)
                 }
             }
             
@@ -87,6 +111,22 @@ extension UserInfoView {
             makeAttemptCountView()
                 .padding(.horizontal, 14)
                 .padding(.vertical, 16)
+            
+            if case .detail = type {
+                DividerView(.horizontal)
+                    .padding(.horizontal, 20)
+                
+                makeProblumView()
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 14)
+                
+                DividerView(.horizontal)
+                    .padding(.horizontal, 20)
+                
+                makeMemoView()
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 14)
+            }
         }
     }
     
@@ -134,10 +174,60 @@ extension UserInfoView {
                 .foregroundStyle(Color.clLogUI.gray10)
         }
     }
+    
+    // MARK: - 푼 문제
+    private func makeProblumView() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("푼 문제")
+                .font(.h5)
+                .foregroundStyle(Color.clLogUI.gray400)
+            
+            HStack(spacing: 12) {
+                Text("문제 1")
+                    .font(.h4)
+                    .foregroundStyle(Color.clLogUI.gray10)
+                HStack(spacing: 4) {
+                    ForEach(0..<4, id: \.self) { _ in
+                        Circle()
+                            .fill(Color.yellow)
+                            .frame(width: 24, height: 24)
+                    }
+                }
+            }
+            
+            HStack(spacing: 12) {
+                Text("문제 2")
+                    .font(.h4)
+                    .foregroundStyle(Color.clLogUI.gray10)
+                
+                HStack(spacing: 4) {
+                    ForEach(0..<4, id: \.self) { _ in
+                        Circle()
+                            .fill(Color.green)
+                            .frame(width: 24, height: 24)
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - 메모
+    private func makeMemoView() -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("메모")
+                .font(.h5)
+                .foregroundStyle(Color.clLogUI.gray400)
+            
+            Text("클라이밍 왕초보 탈출! 홀드 잡는 감이 온다🔥")
+                .font(.b1)
+                .foregroundStyle(Color.clLogUI.gray50)
+        }
+    }
 }
 
 #Preview {
     UserInfoView(
+        type: .normal,
         store: .init(initialState: UserInfoFeature.State(), reducer: {
             UserInfoFeature()
         })

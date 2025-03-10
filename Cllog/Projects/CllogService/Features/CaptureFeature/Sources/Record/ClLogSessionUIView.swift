@@ -10,19 +10,25 @@ import SwiftUI
 import AVFoundation
 
 public final class ClLogSessionUIView: UIView {
-
+    
     private var captureSession: AVCaptureSession?
     private var previewLayer: AVCaptureVideoPreviewLayer?
     private var movieOutput: AVCaptureMovieFileOutput?
     
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
+    private let fileOutputclosure: (URL, (any Error)?) -> Void
+
+    init(fileOutputclosure: @escaping (URL, (any Error)?) -> Void) {
+        self.fileOutputclosure = fileOutputclosure
+        super.init(frame: UIScreen.main.bounds)
         setupSession()
     }
     
+    public var isRecording: Bool {
+        movieOutput?.isRecording ?? false
+    }
+    
     public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupSession()
+        fatalError()
     }
     
     public override func layoutSubviews() {
@@ -78,6 +84,10 @@ public final class ClLogSessionUIView: UIView {
         guard let movieOutput = movieOutput, movieOutput.isRecording else { return }
         movieOutput.stopRecording()
     }
+    
+    func stopSession() {
+        captureSession?.stopRunning()
+    }
 }
 
 extension ClLogSessionUIView: AVCaptureFileOutputRecordingDelegate {
@@ -88,6 +98,6 @@ extension ClLogSessionUIView: AVCaptureFileOutputRecordingDelegate {
         from connections: [AVCaptureConnection],
         error: (any Error)?
     ) {
-        
+        self.fileOutputclosure(outputFileURL, error)
     }
 }

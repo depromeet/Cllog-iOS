@@ -65,6 +65,7 @@ extension ClLogUI where Base == Image {
     public static var calendarAfter: Image { asset(#function) }
     public static var calendarBefore: Image { asset(#function) }
     public static var time: Image { asset(#function) }
+    public static var icn_close: Image { asset(#function) }
 }
 
 extension ClLogUI where Base == UIImage {

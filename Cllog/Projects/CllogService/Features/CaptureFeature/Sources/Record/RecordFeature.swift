@@ -9,32 +9,51 @@
 import Foundation
 
 import Domain
+import CaptureDomain
 
 import ComposableArchitecture
 
 @Reducer
 public struct RecordFeature {
     
+    private let captureUseCase: CaptureUseCase
     private let logConsoleUsecase: LogConsoleUseCase
     
+    public let sessionViewModel: any ClLogSessionViewModelInterface
+    
     public init(
+        captureUseCase: CaptureUseCase,
+        sessionViewModel: any ClLogSessionViewModelInterface,
         logConsoleUsecase: LogConsoleUseCase
     ) {
+        self.captureUseCase = captureUseCase
+        self.sessionViewModel = sessionViewModel
         self.logConsoleUsecase = logConsoleUsecase
     }
     
     @ObservableState
     public struct State: Equatable {
-        public var viewState: ViewState = .recording
-        public var isRecord: Bool = false
+        var viewState: ViewState?
+        var isRecord: Bool = false
+        var fileURL: URL?
+        
+        public private(set) var recordDuration: String = "00:01:21"
         
         public init() {}
     }
     
     public enum Action {
         case onAppear
+        case onStartRecord
         case onStopRecord
         case onClose
+        
+        case fileOutput(filePath: URL, error: Error?)
+        
+        case editVideo
+        
+        case climbSaveSuccess // 완등 성공으로 저장
+        case climbSaveFailrue // 완등 실패로 저장
         
         case sendAction(Action.Send)
         
@@ -43,11 +62,11 @@ public struct RecordFeature {
         }
     }
     
-    public enum ViewState {
+    public enum ViewState: Equatable {
         // 녹화중
         case recording
         // 녹화완료
-        case recorded
+        case recorded(fileURL: URL)
         // 편집중
         case editing
         // 완료 -> 기존 탭으로 이동
@@ -58,9 +77,36 @@ public struct RecordFeature {
         Reduce { state, action in
             switch action {
             case .onAppear:
+                state.viewState = .recording
+                return .none
+                
+            case .onStartRecord:
+                state.isRecord = true
                 return .none
                 
             case .onStopRecord:
+                state.isRecord = false
+                return .none
+            
+            case .fileOutput(let filePath, let error):
+                if let error {
+                    
+                } else {
+                    state.fileURL = filePath
+                    state.viewState = .recorded(fileURL: filePath)
+                }
+                return .none
+                
+            case .editVideo:
+                return .none
+                
+            case .climbSaveSuccess:
+                guard let fileURL = state.fileURL else { return .none }
+                return .run { [captureUseCase] send in
+                    try? await captureUseCase.execute(fileURL: fileURL)
+                }
+                
+            case .climbSaveFailrue:
                 return .none
                 
             case .onClose:
@@ -72,6 +118,7 @@ public struct RecordFeature {
             case .sendAction:
                 // 상위에서 받는 이벤트 - 동작 x
                 return .none
+               
             }
         }
     }
