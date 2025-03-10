@@ -9,11 +9,25 @@
 import Foundation
 import CaptureDomain
 
+import Networker
+import Starlink
+import Swinject
+
 public struct CaptureRecordRepositry: CaptureRepository {
+
+    private let provider: Networker.Provider
     
-    public init() {}
-    
-    public func uploadCapture() async throws {
-        
+    public init(
+        provider: Networker.Provider
+    ) {
+        self.provider = provider
     }
+    
+    public func uploadCapture(fileURL: URL) async throws {
+        let model: Emtpy = try await provider.request(VideoTarget())
+    }
+}
+
+struct Emtpy: Decodable {
+    
 }

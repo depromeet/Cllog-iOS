@@ -51,40 +51,46 @@ private extension CaptureView {
     
     var recordingView: some View {
         ZStack {
-
+            
             sessionView
-                 .ignoresSafeArea()
-             
-             HStack(spacing: 16) {
-                 Button(action: {
-
-                 }) {
-//                     Image.clLogUI.btn_flash_off
-                 }
-                 
-                 Spacer()
-             }
-             .padding(.leading, 16)
-             .padding(.top, 106)
-             
-             VStack {
-                 
-                 Spacer()
-                 
-                 RecodingButton(isRecoding: .init(get: {
-                     store.isRecording
-                 }, set: { newValue in
-                     
-                 }), onTapped: {
-                     store.send(.onStartRecord)
-                 }).padding(.bottom, 40)
-             }
-             .scaleEffect(store.isRecording ? 1.1 : 1)
-         }
+                .ignoresSafeArea()
+            
+            HStack(spacing: 16) {
+                Button(action: {
+                    
+                }) {
+                    //                     Image.clLogUI.btn_flash_off
+                }
+                
+                Spacer()
+            }
+            .padding(.leading, 16)
+            .padding(.top, 106)
+            
+            VStack {
+                
+                Spacer()
+                
+                RecodingButton(isRecoding: .init(get: {
+                    store.isRecording
+                }, set: { newValue in
+                    
+                }), onTapped: {
+                    store.send(.onStartRecord)
+                }).padding(.bottom, 40)
+            }
+            .scaleEffect(store.isRecording ? 1.1 : 1)
+        }
     }
     
     var sessionView: some View {
-        ClLogSessionView()
-            .ignoresSafeArea()
+        ClLogSessionView(isRecording: .init(get: {
+            return false
+        }, set: { _ in
+            
+        }), fileOutputClousure: { _, _ in
+            
+        })
+        .ignoresSafeArea()
     }
 }

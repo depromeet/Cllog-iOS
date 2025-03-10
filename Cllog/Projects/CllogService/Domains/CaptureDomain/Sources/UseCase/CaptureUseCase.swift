@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol CaptureUseCase: Sendable {
-    func execute() async throws
+    func execute(fileURL: URL) async throws
 }
 
 public struct CaptureUploadUsesCase {
@@ -24,7 +24,7 @@ public struct CaptureUploadUsesCase {
 }
 
 extension CaptureUploadUsesCase: CaptureUseCase {
-    public func execute() async throws {
-        return try await capturerepository.uploadCapture()
+    public func execute(fileURL: URL) async throws {
+        return try await capturerepository.uploadCapture(fileURL: fileURL)
     }
 }
