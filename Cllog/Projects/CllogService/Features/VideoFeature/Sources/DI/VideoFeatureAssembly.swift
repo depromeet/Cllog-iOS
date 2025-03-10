@@ -19,8 +19,8 @@ public struct VideoFeatureAssembly: Assembly {
     
     public func assemble(container: Swinject.Container) {
 
-        container.register(CaptureRepository.self) { resolver in
-            CaptureRecordRepositry(provider: AuthProvider(
+        container.register(VideoRepository.self) { resolver in
+            VideoRecordRepositry(provider: AuthProvider(
                 tokenProvider: DefaultTokenDataSource().loadToken
             ))
         }
@@ -71,11 +71,11 @@ public struct VideoFeatureAssembly: Assembly {
             guard let viewModel = resolver.resolve(ClLogSessionViewModelInterface.self) else {
                 fatalError("Could not resolve ClLogSessionViewModelInterface")
             }
-            guard let captureUseCase = resolver.resolve(CaptureUseCase.self) else {
+            guard let videoUseCase = resolver.resolve(VideoUseCase.self) else {
                 fatalError("Could not resolve CaptureUseCase")
             }
             return RecordFeature(
-                captureUseCase: captureUseCase,
+                videoUseCase: videoUseCase,
                 sessionViewModel: viewModel,
                 logConsoleUsecase: logConsoleUseCase
             )

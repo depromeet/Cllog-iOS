@@ -9,24 +9,24 @@
 import Foundation
 
 import Domain
-import CaptureDomain
+import VideoDomain
 
 import ComposableArchitecture
 
 @Reducer
 public struct RecordFeature {
     
-    private let captureUseCase: CaptureUseCase
+    private let videoUseCase: VideoUseCase
     private let logConsoleUsecase: LogConsoleUseCase
     
     public let sessionViewModel: any ClLogSessionViewModelInterface
     
     public init(
-        captureUseCase: CaptureUseCase,
+        videoUseCase: VideoUseCase,
         sessionViewModel: any ClLogSessionViewModelInterface,
         logConsoleUsecase: LogConsoleUseCase
     ) {
-        self.captureUseCase = captureUseCase
+        self.videoUseCase = videoUseCase
         self.sessionViewModel = sessionViewModel
         self.logConsoleUsecase = logConsoleUsecase
     }
@@ -102,8 +102,8 @@ public struct RecordFeature {
                 
             case .climbSaveSuccess:
                 guard let fileURL = state.fileURL else { return .none }
-                return .run { [captureUseCase] send in
-                    try? await captureUseCase.execute(fileURL: fileURL)
+                return .run { [videoUseCase] send in
+                    try? await videoUseCase.execute(fileURL: fileURL)
                 }
                 
             case .climbSaveFailrue:

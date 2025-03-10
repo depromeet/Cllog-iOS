@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol VideoUseCase: Sendable {
-    func execute() async throws
+    func execute(fileURL: URL) async throws
 }
 
 public struct VideoUploadUsesCase {
@@ -24,7 +24,7 @@ public struct VideoUploadUsesCase {
 }
 
 extension VideoUploadUsesCase: VideoUseCase {
-    public func execute() async throws {
-        return try await videoRepository.uploadVideo()
+    public func execute(fileURL: URL) async throws {
+        return try await videoRepository.uploadVideo(fileURL: fileURL)
     }
 }
