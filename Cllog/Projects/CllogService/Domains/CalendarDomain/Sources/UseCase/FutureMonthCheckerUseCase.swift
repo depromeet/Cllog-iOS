@@ -10,11 +10,11 @@ import Foundation
 import Dependencies
 import Shared
 
-public protocol MonthLimitUseCase {
+public protocol FutureMonthCheckerUseCase {
     func execute(selectedMonth: DateComponents, currentMonth: DateComponents) -> Bool
 }
 
-public struct MonthLimit: MonthLimitUseCase {
+public struct FutureMonthChecker: FutureMonthCheckerUseCase {
     public init() {}
     
     public func execute(selectedMonth: DateComponents, currentMonth: DateComponents) -> Bool {
@@ -34,22 +34,22 @@ public struct MonthLimit: MonthLimitUseCase {
     }
 }
 
-public struct MockMonthLimit: MonthLimitUseCase {
+public struct MockMonthLimit: FutureMonthCheckerUseCase {
     public func execute(selectedMonth: DateComponents, currentMonth: DateComponents) -> Bool {
         return false
     }
 }
 
 public enum MonthLimitDependencyKey: DependencyKey {
-    public static var liveValue: any MonthLimitUseCase = ClLogDI.container.resolve(MonthLimitUseCase.self)!
+    public static var liveValue: any FutureMonthCheckerUseCase = ClLogDI.container.resolve(FutureMonthCheckerUseCase.self)!
     
-    public static var testValue: any MonthLimitUseCase = MockMonthLimit()
+    public static var testValue: any FutureMonthCheckerUseCase = MockMonthLimit()
     
-    public static var previewValue: any MonthLimitUseCase = MockMonthLimit()
+    public static var previewValue: any FutureMonthCheckerUseCase = MockMonthLimit()
 }
 
 public extension DependencyValues {
-    var monthLimitUseCase: any MonthLimitUseCase {
+    var futureMonthCheckerUseCase: any FutureMonthCheckerUseCase {
         get { self[MonthLimitDependencyKey.self] }
         set { self[MonthLimitDependencyKey.self] = newValue }
     }

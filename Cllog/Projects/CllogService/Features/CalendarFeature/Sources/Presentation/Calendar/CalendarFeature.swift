@@ -9,19 +9,19 @@
 import Foundation
 
 import ComposableArchitecture
-import Domain
+import CalendarDomain
 
 @Reducer
 public struct CalendarFeature {
     
-    @Dependency(\.monthLimitUseCase) private var monthLimitUseCase
+    @Dependency(\.futureMonthCheckerUseCase) private var futureMonthCheckerUseCase
     private let calendar = Calendar.current
     
     @ObservableState
     public struct State {
         var selectedDate: Date = Date()
         var isDisableNextMonth: Bool = false
-        var days: [ClimbeDay] = []
+        var days: [ClimbDay] = []
         var selectedDay: CalendarDate = CalendarDate(year: 0, month: 0, day: 0)
         
         var isPresentBottomSheet: Bool = false
@@ -36,12 +36,12 @@ public struct CalendarFeature {
         
         case previousMonthTapped
         case nextMonthTapped
-        case updateDays([ClimbeDay])
+        case updateDays([ClimbDay])
         case validateNextMonth
-        case dayTapped(ClimbeDay)
+        case dayTapped(ClimbDay)
         
         case fetchCalendar
-        case fetchSuccess([ClimbeDay])
+        case fetchSuccess([ClimbDay])
         case fetchFailure(Error)
     }
     
@@ -70,7 +70,7 @@ public struct CalendarFeature {
                 return .none
             case .dayTapped(let day):
                 let calendar = Calendar.current
-                let selectedComponents = calendar.dateComponents([.year, .month, .day], from: day.day)
+                let selectedComponents = calendar.dateComponents([.year, .month, .day], from: day.date)
                 
                 guard let year = selectedComponents.year,
                       let month = selectedComponents.month,
@@ -92,7 +92,7 @@ public struct CalendarFeature {
                 let selectedComponents = calendar.dateComponents([.year, .month], from: state.selectedDate)
                 let currentComponents = calendar.dateComponents([.year, .month], from: Date())
                 
-                state.isDisableNextMonth = monthLimitUseCase.execute(
+                state.isDisableNextMonth = futureMonthCheckerUseCase.execute(
                     selectedMonth: selectedComponents,
                     currentMonth: currentComponents
                 )
@@ -116,19 +116,19 @@ public struct CalendarFeature {
 extension CalendarFeature {
     private func fetchCalendar(_ date: Date) -> Effect<Action> {
         .run { send in
-            let data = ClimbeDay.mock
+            let data = ClimbDay.mock
             await send(.fetchSuccess(data))
         }
     }
     
-    private func getDays(for date: Date, calendarDay: [ClimbeDay]) -> [ClimbeDay] {
+    private func getDays(for date: Date, calendarDay: [ClimbDay]) -> [ClimbDay] {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year, .month], from: date)
         guard let firstDayOfMonth = calendar.date(from: components),
               let range = calendar.range(of: .day, in: .month, for: firstDayOfMonth) else { return [] }
         
         let firstWeekday = calendar.component(.weekday, from: firstDayOfMonth) - 1
-        var tempDays: [ClimbeDay] = []
+        var tempDays: [ClimbDay] = []
         
         //  이전 달의 남은 날짜 추가
         if firstWeekday > 0,
@@ -140,7 +140,7 @@ extension CalendarFeature {
             
             for day in startDay...endDay {
                 if let date = calendar.date(bySetting: .day, value: day, of: previousMonth) {
-                    tempDays.append(ClimbeDay(day: date, isCurrentMonth: false))
+                    tempDays.append(ClimbDay(date: date, thumbnail: "", stories: [], isCurrentMonth: false))
                 }
             }
         }
@@ -150,12 +150,13 @@ extension CalendarFeature {
             if let date = calendar.date(bySetting: .day, value: day, of: firstDayOfMonth) {
                 
                 // 서버 데이터에서 해당 날짜의 이벤트 찾기
-                let matchedEvent = calendarDay.first(where: { calendar.isDate($0.day, inSameDayAs: date) })
+                let matchedEvent = calendarDay.first(where: { calendar.isDate($0.date, inSameDayAs: date) })
                 
-                let calendarDay = ClimbeDay(
-                    day: date,
-                    isCurrentMonth: true,
-                    thumbnail: matchedEvent?.thumbnail
+                let calendarDay = ClimbDay(
+                    date: date,
+                    thumbnail: matchedEvent?.thumbnail ?? "",
+                    stories: matchedEvent?.stories ?? [],
+                    isCurrentMonth: true
                 )
                 
                 tempDays.append(calendarDay)
@@ -169,7 +170,7 @@ extension CalendarFeature {
             if let nextMonth = calendar.date(byAdding: .month, value: 1, to: firstDayOfMonth) {
                 for day in nextMonthStart..<(7 - remainder + 1) {
                     if let date = calendar.date(bySetting: .day, value: day, of: nextMonth) {
-                        tempDays.append(ClimbeDay(day: date, isCurrentMonth: false))
+                        tempDays.append(ClimbDay(date: date, thumbnail: "", stories: [], isCurrentMonth: false))
                     }
                 }
             }
