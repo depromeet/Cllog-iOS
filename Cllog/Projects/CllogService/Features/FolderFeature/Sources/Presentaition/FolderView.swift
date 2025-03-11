@@ -12,7 +12,7 @@ import DesignKit
 import ComposableArchitecture
 
 public struct FolderView: ViewProtocol {
-    let store: StoreOf<FolderFeature>
+    @Bindable var store: StoreOf<FolderFeature>
     let items = Array(1...20)
     
     let columns = [
@@ -25,11 +25,14 @@ public struct FolderView: ViewProtocol {
     }
     
     public var body: some View {
-        makeBodyView()
+        return makeBodyView()
             .padding(.vertical, 18)
             .background(Color.clLogUI.gray800)
-            .onAppear {
-                store.send(.onAppear)
+            .bottomSheet(isPresented: $store.showSelectGradeBottomSheet) {
+                showSelectGradeBottomSheet()
+            }
+            .bottomSheet(isPresented: $store.showSelectCragBottomSheet) {
+                Text("BYE")
             }
     }
 }
@@ -53,6 +56,9 @@ extension FolderView {
                 .padding(.horizontal, 16)
         }
         .scrollIndicators(.hidden)
+        .onAppear {
+            store.send(.onAppear)
+        }
     }
     
     private func makeTitleView() -> some View {
@@ -77,6 +83,7 @@ extension FolderView {
             
             ForEach(chips, id: \.self) { chip in
                 let isSelectedChip = store.selectedChip.contains(chip)
+                
                 switch chip {
                 case .complete:
                     CompleteOrFailChip(
@@ -92,18 +99,29 @@ extension FolderView {
                     ).onTapGesture {
                         store.send(.failChipTapped)
                     }
-                    
                 case .grade:
-                    TitleWithImageChip(
-                        title: isSelectedChip ? store.selectedGrade : "난이도",
-                        imageName: isSelectedChip ? "x" : "icon_down",
-                        forgroundColor: isSelectedChip ? Color.clLogUI.gray800 :  Color.clLogUI.gray200,
-                        backgroundColor: isSelectedChip ? Color.clLogUI.primary : Color.clLogUI.gray600,
-                        tapHandler: {
-                            store.send(.gradeChipTapped)
-                        }
-                    )
-                    
+                    if let selectedGrade = store.selectedGrade {
+                        TitleWithImageChip(
+                            title: selectedGrade.name,
+                            imageName: "close",
+                            forgroundColor: Color.clLogUI.gray800,
+                            backgroundColor: Color.clLogUI.primary,
+                            tapHandler: {
+                                store.send(.gradeChipTapped)
+                            }
+                        )
+                    } else {
+                        TitleWithImageChip(
+                            title: "난이도",
+                            imageName: "icon_down",
+                            forgroundColor: Color.clLogUI.gray200,
+                            backgroundColor: Color.clLogUI.gray600,
+                            tapHandler: {
+                                store.send(.gradeChipTapped)
+                            }
+                        )
+                    }
+
                 case .crag:
                     TitleWithImageChip(
                         title: isSelectedChip ? store.selectedCragName : "암장",
@@ -136,6 +154,28 @@ extension FolderView {
                 )
             }
         }
+    }
+    
+    private func showSelectGradeBottomSheet() -> some View {
+        let rows: [GridItem] = [.init(.adaptive(minimum: 60), spacing: 6)]
+        return VStack(alignment: .leading, spacing: 16) {
+            Text("난이도")
+                .font(.h3)
+                .foregroundStyle(Color.clLogUI.white)
+            
+            Divider()
+                .foregroundStyle(Color.clLogUI.gray600)
+            
+            LazyVGrid(columns: rows) {
+                ForEach(store.grades, id: \.hexCode) { grade in
+                    LevelChip(level: .blue)
+                        .onTapGesture {
+                            store.send(.didSelectGrade(grade))
+                        }
+                }
+            }
+        }
+        
     }
 }
 

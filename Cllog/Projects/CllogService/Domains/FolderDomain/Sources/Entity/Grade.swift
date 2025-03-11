@@ -9,6 +9,6 @@
 import Foundation
 
 public struct Grade {
-    let title: String
-    let hexCode: Int
+    public let name: String
+    public let hexCode: Int
 }

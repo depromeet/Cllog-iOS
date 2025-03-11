@@ -6,8 +6,6 @@
 //  Copyright © 2025 Supershy. All rights reserved.
 //
 
-import SwiftUI
-
 import ComposableArchitecture
 import FolderDomain
 
@@ -19,29 +17,38 @@ public struct FolderFeature {
     public struct State {
         var grades = [Grade]()
         var crages = [Crag]()
-        var stories = [Attempt]()
+        var attempts = [Attempt]()
         var selectedChip: Set<SelectedChip> = []
         var selectedCragName = ""
         var countOfFilteredStories = 30 // FIXME: 서버 연결
-        var selectedGrade = ""
+        var selectedGrade: Grade?
+        
+        var showSelectGradeBottomSheet = false
+        var showSelectCragBottomSheet = false
         
         public init() {}
     }
     
-    public enum Action {
+    public enum Action: BindableAction {
+        case binding(BindingAction<State>)
+        
         case onAppear
         case completeChipTapped
         case failChipTapped
         case gradeChipTapped
         case cragChipTapped(cragName: String)
         case updateStoryInfo(grades: [Grade], crages: [Crag], attempts: [Attempt])
+        case didSelectGrade(_ grade: Grade)
     }
     
     public init() {}
     
     public var body: some Reducer<State, Action> {
+        BindingReducer()
         Reduce { state, action in
             switch action {
+            case .binding:
+                return .none
             case .onAppear:
                 return getStoryInfo()
             case .completeChipTapped:
@@ -53,11 +60,15 @@ public struct FolderFeature {
                 state.selectedChip.formSymmetricDifference([.fail])
                 return .none
             case .gradeChipTapped:
-                state.selectedGrade = "파랑"
                 state.countOfFilteredStories = 5
-                state.selectedChip.formSymmetricDifference([.grade])
+                if state.selectedGrade != nil {
+                    state.selectedGrade = nil
+                } else {
+                    state.showSelectGradeBottomSheet = true
+                }
                 return .none
             case .cragChipTapped(let cragName):
+                state.showSelectCragBottomSheet = true
                 state.countOfFilteredStories = 1
                 state.selectedCragName = cragName
                 state.selectedChip.formSymmetricDifference([.crag])
@@ -65,7 +76,11 @@ public struct FolderFeature {
             case .updateStoryInfo(let grades, let crages, let stories):
                 state.grades = grades
                 state.crages = crages
-                state.stories = stories
+                state.attempts = stories
+                return .none
+            case .didSelectGrade(let grade):
+                state.selectedGrade = grade
+                state.showSelectGradeBottomSheet = false
                 return .none
             }
         }
