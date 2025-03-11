@@ -9,6 +9,7 @@ import ProjectDescription
 
 public extension TargetDependency {
     struct Features {
+        public struct Edit {}
         public struct Calendar {}
         public struct Folder {}
         public struct FolderTab {}
@@ -114,6 +115,20 @@ public extension TargetDependency.Features.Folder {
 
 public extension TargetDependency.Features.Calendar {
     static let name = "Calendar"
+    
+    static let feature = TargetDependency.Features.project(
+        name: "\(name)Feature",
+        service: .cllog
+    )
+    
+    static let interface = TargetDependency.project(
+        target: "\(name)FeatureInterface",
+        path: .relativeToFeature(path: "\(name)Feature", service: .cllog)
+    )
+}
+
+public extension TargetDependency.Features.Edit {
+    static let name = "Edit"
     
     static let feature = TargetDependency.Features.project(
         name: "\(name)Feature",
