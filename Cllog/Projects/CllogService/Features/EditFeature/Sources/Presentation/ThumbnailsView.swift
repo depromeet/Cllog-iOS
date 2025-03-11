@@ -43,7 +43,7 @@ struct ThumbnailsView: View {
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
         
-        Task { @MainActor in
+        Task {
             let assetDuration = try await asset.load(.duration)
             let durationSeconds = assetDuration.seconds
             
@@ -51,7 +51,6 @@ struct ThumbnailsView: View {
                 let time = durationSeconds * Double(i) / Double(thumbnailCount)
                 return CMTime(seconds: time, preferredTimescale: 600)
             }
-
             var thumbnails: [UIImage] = []
             for await imageResult in generator.images(for: cmTimes) {
                 if let image = try? imageResult.image {
@@ -59,7 +58,9 @@ struct ThumbnailsView: View {
                 }
             }
             
-            self.thumbnails = thumbnails
+            await MainActor.run {
+                self.thumbnails = thumbnails
+            }
         }
     }
 }
