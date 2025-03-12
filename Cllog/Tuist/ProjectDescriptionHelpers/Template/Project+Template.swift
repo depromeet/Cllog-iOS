@@ -116,7 +116,10 @@ extension Project {
                 }
                 
                 let featureScheme = Scheme.configureScheme(
-                    schemeName: featureTargetName
+                    schemeName: featureTargetName,
+                    configurationName: configuration.name,
+                    targetName: featureTargetName,
+                    codeCoverageTargets: [featureTargetName]
                 )
                 schemes.append(featureScheme)
                 
@@ -134,12 +137,12 @@ extension Project {
                     name: featureTargetName,
                     organizationName: configuration.organizationName,
                     targets: targets,
-                    dependencies: dependencies,
-                    schemes: schemes
+                    dependencies: dependencies
                 )
             }
             
         case let .module(name):
+            let moduleTargetName = name
             let moduleTarget = Target.target(
                 name: name,
                 destinations: configuration.destination,
@@ -167,7 +170,10 @@ extension Project {
             }
             
             let moduleScheme = Scheme.configureScheme(
-                schemeName: name
+                schemeName: moduleTargetName,
+                configurationName: configuration.name,
+                targetName: moduleTargetName,
+                codeCoverageTargets: [name]
             )
             
             schemes.append(moduleScheme)
@@ -180,6 +186,7 @@ extension Project {
                 schemes: schemes
             )
         case let .domain(name):
+            // Doamin
             let domainName = name == "Domain" ? "Domain" : "\(name)Domain"
             let moduleTarget = Target.target(
                 name: domainName,
@@ -193,6 +200,7 @@ extension Project {
             )
             targets.append(moduleTarget)
             
+            // Tests
             let testTargetName = "\(domainName)Tests"
             let testTarget = Target.target(
                 name: testTargetName,
@@ -206,7 +214,11 @@ extension Project {
             targets.append(testTarget)
             
             let moduleScheme = Scheme.configureScheme(
-                schemeName: domainName
+                schemeName: domainName,
+                configurationName: configuration.name,
+                targetName: domainName,
+                testTargetName: testTargetName,
+                codeCoverageTargets: [domainName]
             )
             
             schemes.append(moduleScheme)
@@ -228,8 +240,7 @@ extension Project {
         name: String,
         organizationName: String,
         targets: [Target],
-        dependencies: [TargetDependency],
-        schemes: [Scheme]
+        dependencies: [TargetDependency]
     ) -> Project {
         
         // Interface 타겟
@@ -309,7 +320,15 @@ extension Project {
         
         let targets = [interfaceTarget, frameworkTarget, demoTarget, testsTarget, testTarget]
         
-        let scheme = Scheme.configureDemoAppScheme(schemeName: "\(name)Demo")
+        let frameworkScheme = Scheme.configureScheme(
+            schemeName: frameworkTargetName,
+            configurationName: configuration.name,
+            targetName: frameworkTargetName,
+            testTargetName: testsTargetName,
+            codeCoverageTargets: [frameworkTargetName]
+        )
+        
+        let demoScheme = Scheme.configureDemoAppScheme(schemeName: "\(name)Demo")
         
         // 프로젝트 생성
         return Project(
@@ -317,7 +336,7 @@ extension Project {
             organizationName: organizationName,
             settings: configuration.commonSettings,
             targets: targets,
-            schemes: [scheme]
+            schemes: [frameworkScheme, demoScheme]
         )
     }
 }
