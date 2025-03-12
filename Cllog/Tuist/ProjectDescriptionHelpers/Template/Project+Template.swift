@@ -141,8 +141,10 @@ extension Project {
                 )
             }
             
-        case let .module(name):
+        case let .module(name, useDemo):
             let moduleTargetName = name
+            let demoScheme: Scheme
+            
             let moduleTarget = Target.target(
                 name: name,
                 destinations: configuration.destination,
@@ -167,6 +169,27 @@ extension Project {
                     dependencies: [.target(name: name)]
                 )
                 targets.append(testTarget)
+            }
+            
+            if useDemo {
+                let demoTargetName = "\(name)Demo"
+                let demoTarget = Target.target(
+                    name: demoTargetName,
+                    destinations: configuration.destination,
+                    product: .app,
+                    bundleId: "\(configuration.bundleIdentifier).\(name.lowercased())Demo",
+                    deploymentTargets: configuration.deploymentTarget,
+                    infoPlist: .extendingDefault(with: configuration.infoPlist),
+                    sources: ["Demo/Sources/**"],
+                    resources: [.glob(pattern: "Demo/Resources/**", excluding: [])],
+                    dependencies: [
+                        .target(name: moduleTargetName)
+                    ]
+                )
+                targets.append(demoTarget)
+                schemes.append(
+                    Scheme.configureDemoAppScheme(schemeName: demoTargetName)
+                )
             }
             
             let moduleScheme = Scheme.configureScheme(

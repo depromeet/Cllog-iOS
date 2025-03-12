@@ -9,7 +9,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.configure(
-    moduleType: .module(name: "DesignKit"),
+    moduleType: .module(name: "DesignKit", useDemo: true),
     product: .framework,
     dependencies: [
         .Modules.thirdPartyLibrary(.cllog),
