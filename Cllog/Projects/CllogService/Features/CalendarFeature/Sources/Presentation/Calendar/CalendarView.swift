@@ -34,9 +34,6 @@ extension CalendarView {
             selectMonthView()
             calendarView()
         }
-        .onAppear {
-            store.send(.fetchCalendar)
-        }
     }
     
     private func selectMonthView() -> some View {
