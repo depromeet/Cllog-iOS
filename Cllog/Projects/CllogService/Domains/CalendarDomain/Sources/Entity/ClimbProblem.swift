@@ -12,4 +12,10 @@ public struct ClimbProblem: Hashable {
     let id: Int
     let attemptCount: Int
     let colorHex: String
+    
+    public init(id: Int, attemptCount: Int, colorHex: String) {
+        self.id = id
+        self.attemptCount = attemptCount
+        self.colorHex = colorHex
+    }
 }

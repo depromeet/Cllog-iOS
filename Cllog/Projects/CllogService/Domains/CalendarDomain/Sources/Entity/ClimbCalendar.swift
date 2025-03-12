@@ -9,7 +9,17 @@
 import Foundation
 
 public struct ClimbCalendar {
-    let numOfClimbDays: Int
-    let totalClimbTime: Int
-    let days: [ClimbDay]
+    public let numOfClimbDays: Int
+    public let totalDurationMs: Int
+    public let days: [ClimbDay]
+    
+    public init(
+        numOfClimbDays: Int,
+        totalDurationMs: Int,
+        days: [ClimbDay]
+    ) {
+        self.numOfClimbDays = numOfClimbDays
+        self.totalDurationMs = totalDurationMs
+        self.days = days
+    }
 }

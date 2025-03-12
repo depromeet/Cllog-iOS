@@ -32,5 +32,17 @@ public struct ClLogServiceAssembly: Assembly {
         container.register(FutureMonthCheckerUseCase.self) { _ in
             FutureMonthChecker()
         }
+        
+        container.register(FetchCalendarUseCase.self) { _ in
+            FetchCalendar(
+                repository: DefaultCalendarRepository(
+                    dataSource: DefaultCalendarDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
     }
 }

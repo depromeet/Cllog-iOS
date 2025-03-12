@@ -11,7 +11,7 @@ import Foundation
 public struct ClimbDay: Hashable, Identifiable {
     public var id: UUID { UUID() }
     public let date: Date
-    public let thumbnail: String?
+    public let thumbnail: String
     public let stories: [ClimbStory]
     
     public var isCurrentMonth: Bool

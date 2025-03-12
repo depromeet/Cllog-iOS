@@ -17,4 +17,16 @@ public struct ClimbStory: Hashable {
     let totalDurationMs: Int
     let cragName: String
     let problems: [ClimbProblem]
+    
+    public init(
+        id: Int,
+        totalDurationMs: Int,
+        cragName: String,
+        problems: [ClimbProblem]
+    ) {
+        self.id = id
+        self.totalDurationMs = totalDurationMs
+        self.cragName = cragName
+        self.problems = problems
+    }
 }

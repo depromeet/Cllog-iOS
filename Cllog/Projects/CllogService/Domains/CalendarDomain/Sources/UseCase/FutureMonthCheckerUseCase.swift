@@ -34,24 +34,26 @@ public struct FutureMonthChecker: FutureMonthCheckerUseCase {
     }
 }
 
-public struct MockMonthLimit: FutureMonthCheckerUseCase {
+public struct MockFutureMonthChecker: FutureMonthCheckerUseCase {
+    public init() {}
+    
     public func execute(selectedMonth: DateComponents, currentMonth: DateComponents) -> Bool {
         return false
     }
 }
 
-public enum MonthLimitDependencyKey: DependencyKey {
+public enum FutureMonthCheckerDependencyKey: DependencyKey {
     public static var liveValue: any FutureMonthCheckerUseCase = ClLogDI.container.resolve(FutureMonthCheckerUseCase.self)!
     
-    public static var testValue: any FutureMonthCheckerUseCase = MockMonthLimit()
+    public static var testValue: any FutureMonthCheckerUseCase = MockFutureMonthChecker()
     
-    public static var previewValue: any FutureMonthCheckerUseCase = MockMonthLimit()
+    public static var previewValue: any FutureMonthCheckerUseCase = MockFutureMonthChecker()
 }
 
 public extension DependencyValues {
     var futureMonthCheckerUseCase: any FutureMonthCheckerUseCase {
-        get { self[MonthLimitDependencyKey.self] }
-        set { self[MonthLimitDependencyKey.self] = newValue }
+        get { self[FutureMonthCheckerDependencyKey.self] }
+        set { self[FutureMonthCheckerDependencyKey.self] = newValue }
     }
 }
 
