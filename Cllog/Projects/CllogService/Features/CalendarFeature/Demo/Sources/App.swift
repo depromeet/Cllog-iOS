@@ -1,37 +1,37 @@
 import SwiftUI
 
 import CalendarFeature
+import CalendarDomain
 import Shared
-import Domain
 
 @main
 struct CalendarDemoApp: App {
     
     init() {
-        ClLogDI.container.register(MonthLimitUseCase.self) { _ in
-            MonthLimit()
+        ClLogDI.container.register(FutureMonthCheckerUseCase.self) { _ in
+            FutureMonthChecker()
         }
     }
     
     var body: some Scene {
         WindowGroup {
-//            CalendarMainView(
-//                store: .init(
-//                    initialState: CalendarMainFeature.State(),
-//                    reducer: {
-//                        CalendarMainFeature()
-//                    }
-//                )
-//            )
-            
-            CalendarDetailView(
+            CalendarMainView(
                 store: .init(
-                    initialState: CalendarDetailFeature.State(),
+                    initialState: CalendarMainFeature.State(),
                     reducer: {
-                        CalendarDetailFeature()
+                        CalendarMainFeature()
                     }
                 )
             )
+            
+//            CalendarDetailView(
+//                store: .init(
+//                    initialState: CalendarDetailFeature.State(),
+//                    reducer: {
+//                        CalendarDetailFeature()
+//                    }
+//                )
+//            )
         }
     }
 }

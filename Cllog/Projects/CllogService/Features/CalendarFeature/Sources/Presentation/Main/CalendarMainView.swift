@@ -24,12 +24,15 @@ public struct CalendarMainView: ViewProtocol {
             .padding(.vertical, 32)
             .padding(.horizontal, 16)
             .background(Color.clLogUI.gray800)
+            .onAppear {
+                store.send(.onAppear)
+            }
     }
 }
 
 extension CalendarMainView {
     private func makeBody() -> some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             VStack(spacing: 20) {
                 UserInfoView(
                     type: .normal,

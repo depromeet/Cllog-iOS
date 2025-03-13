@@ -52,8 +52,8 @@ struct HomeView: View {
                             FolderTabFeature()
                         }), folderView: FolderView(store: .init(initialState: FolderFeature.State(), reducer: {
                             FolderFeature()
-                        })), calendarView: CalendarView(store: .init(initialState: CalendarFeature.State(), reducer: {
-                            CalendarFeature()
+                        })), calendarView: CalendarMainView(store: .init(initialState: CalendarMainFeature.State(), reducer: {
+                            CalendarMainFeature()
                         }))),
                     videoView,
                     Text("3")

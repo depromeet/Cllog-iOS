@@ -11,6 +11,7 @@ import Foundation
 import Data
 import Domain
 import LoginDomain
+import CalendarDomain
 import Networker
 import Swinject
 
@@ -28,8 +29,20 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
-        container.register(MonthLimitUseCase.self) { _ in
-            MonthLimit()
+        container.register(FutureMonthCheckerUseCase.self) { _ in
+            FutureMonthChecker()
+        }
+        
+        container.register(FetchCalendarUseCase.self) { _ in
+            FetchCalendar(
+                repository: DefaultCalendarRepository(
+                    dataSource: DefaultCalendarDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
         }
     }
 }
