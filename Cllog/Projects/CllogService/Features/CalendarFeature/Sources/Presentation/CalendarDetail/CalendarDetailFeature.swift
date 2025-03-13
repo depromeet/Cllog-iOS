@@ -37,3 +37,11 @@ public struct CalendarDetailFeature {
         }
     }
 }
+
+func a() {
+    Task {
+        await MainActor.run {
+            
+        }
+    }
+}

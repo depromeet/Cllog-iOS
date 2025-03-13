@@ -14,11 +14,14 @@ public struct UserInfoFeature {
     @ObservableState
     public struct State {
         var isOpen: Bool = false
+        var numOfClimbDays: Int = 0
+        var totalDurationMs: Int = 0
         public init() {}
     }
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
+        case updateUserInfo(Int, Int)
         case dropdownTapped
     }
     
@@ -31,6 +34,10 @@ public struct UserInfoFeature {
             switch action {
             case .dropdownTapped:
                 state.isOpen.toggle()
+                return .none
+            case let .updateUserInfo(numOfClimbDays, totalDurationMs):
+                state.numOfClimbDays = numOfClimbDays
+                state.totalDurationMs = totalDurationMs
                 return .none
             default:
                 return .none

@@ -67,20 +67,55 @@ extension Scheme {
     }
     
     static func configureScheme(
-        schemeName: String
+        schemeName: String,
+        configurationName: ConfigurationName,
+        targetName: String,
+        testTargetName: String? = nil,
+        codeCoverageTargets: [String] = []
     ) -> Scheme {
-        let configuration: ConfigurationName = .configuration("Dev")
+        let argument = Arguments.arguments()
         
+        // TestAction 생성
         let buildAction = BuildAction.buildAction(targets: [TargetReference(stringLiteral: schemeName)])
+        
+        // TestAction 생성
+        let testAction: TestAction? = testTargetName.map { testTarget in
+            TestAction.targets(
+                [TestableTarget(stringLiteral: testTarget)],
+                arguments: argument,
+                configuration: configurationName,
+                options: .options(
+                    coverage: true,
+                    codeCoverageTargets: codeCoverageTargets.map { TargetReference(stringLiteral: $0) }
+                )
+            )
+        }
+        
+        // RunAction 생성
+        let runAction = RunAction.runAction(
+            configuration: configurationName,
+            executable: TargetReference(stringLiteral: targetName),
+            arguments: argument
+        )
+        
+        // ArchiveAction 생성
+        let archiveAction = ArchiveAction.archiveAction(configuration: configurationName)
+        
+        // ProfileAction 생성
+        let profileAction = ProfileAction.profileAction(configuration: configurationName)
+        
+        // AnalyzeAction 생성
+        let analyzeAction = AnalyzeAction.analyzeAction(configuration: configurationName)
         
         return Scheme.scheme(
                 name: schemeName,
                 shared: true,
                 buildAction: buildAction,
-                runAction: .runAction(configuration: configuration),
-                archiveAction: .archiveAction(configuration: configuration),
-                profileAction: .profileAction(configuration: configuration),
-                analyzeAction: .analyzeAction(configuration: configuration)
+                testAction: testAction,
+                runAction: runAction,
+                archiveAction: archiveAction,
+                profileAction: profileAction,
+                analyzeAction: analyzeAction
         )
     }
 }

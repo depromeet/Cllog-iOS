@@ -24,8 +24,11 @@ public struct AppConfiguration {
     let kakaoNativeAppKey: String = "$(KAKAO_NATIVE_APP_KEY)"
 
     
-    public var configurationName: ConfigurationName {
-        return "Cllog"
+    public var name: ConfigurationName {
+        return ConfigurationName(stringLiteral: "Dev")
+    }
+    public var prodName: ConfigurationName {
+        return ConfigurationName(stringLiteral: "Prod")
     }
     
     var infoPlist: [String : Plist.Value] {
