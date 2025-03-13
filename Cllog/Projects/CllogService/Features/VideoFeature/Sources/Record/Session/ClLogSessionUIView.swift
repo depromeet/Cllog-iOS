@@ -15,10 +15,18 @@ public final class ClLogSessionUIView: UIView {
     private var previewLayer: AVCaptureVideoPreviewLayer?
     private var movieOutput: AVCaptureMovieFileOutput?
     
-    private let fileOutputclosure: (URL, (any Error)?) -> Void
+    private let fileOutputclosure: (URL, (any Error)?, TimeInterval) -> Void
+    private var playTime: (String) -> Void
+    
+    private var startTime: DispatchTime?
+    private var timer: Timer?
 
-    init(fileOutputclosure: @escaping (URL, (any Error)?) -> Void) {
+    init(
+        fileOutputclosure: @escaping (URL, (any Error)?, TimeInterval) -> Void,
+        playTime: @escaping (String) -> Void
+    ) {
         self.fileOutputclosure = fileOutputclosure
+        self.playTime = playTime
         super.init(frame: UIScreen.main.bounds)
         setupSession()
     }
@@ -77,7 +85,14 @@ public final class ClLogSessionUIView: UIView {
     
     func startRecording(to fileURL: URL) {
         guard let movieOutput = movieOutput, !movieOutput.isRecording else { return }
+        
+        let fileURL = URL(fileURLWithPath: NSTemporaryDirectory() + UUID().uuidString + ".mov")
+        
+        print("fileURLfileURL:::   \(fileURL)")
+        
         movieOutput.startRecording(to: fileURL, recordingDelegate: self)
+        startTime = DispatchTime.now()
+        startTimer()
     }
     
     func stopRecording() {
@@ -87,7 +102,35 @@ public final class ClLogSessionUIView: UIView {
     
     func stopSession() {
         captureSession?.stopRunning()
+        timer?.invalidate()
+        timer = nil
     }
+    
+    // Timer를 이용해 1초마다 경과 시간을 출력합니다.
+    private func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            let elapsed = self.formattedElapsedTime()
+            self.playTime(elapsed)
+        }
+    }
+    
+    // DispatchTime을 사용해 경과 시간을 계산 (초 단위)
+    private func getElapsedTime() -> TimeInterval {
+        guard let start = startTime else { return 0 }
+        let now = DispatchTime.now()
+        let nanoTime = now.uptimeNanoseconds - start.uptimeNanoseconds
+        return TimeInterval(nanoTime) / 1_000_000_000
+    }
+    
+    private func formattedElapsedTime() -> String {
+        let elapsedSeconds = Int(getElapsedTime())
+        let hours = elapsedSeconds / 3600
+        let minutes = (elapsedSeconds % 3600) / 60
+        let seconds = elapsedSeconds % 60
+        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    }
+
 }
 
 extension ClLogSessionUIView: AVCaptureFileOutputRecordingDelegate {
@@ -98,6 +141,6 @@ extension ClLogSessionUIView: AVCaptureFileOutputRecordingDelegate {
         from connections: [AVCaptureConnection],
         error: (any Error)?
     ) {
-        self.fileOutputclosure(outputFileURL, error)
+        self.fileOutputclosure(outputFileURL, error, getElapsedTime())
     }
 }

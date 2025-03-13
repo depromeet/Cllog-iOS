@@ -84,7 +84,6 @@ public struct HomeFeature {
         }
         
         Reduce { state, action in
-            logConsoleUseCase.executeInfo(label: "\(Self.self)", message: "action :: \(action)")
             switch action {
             case .onAppear:
                 state.destination = checkLoginStatus() ? .main : .login

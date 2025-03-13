@@ -55,18 +55,6 @@ private extension VideoView {
             sessionView
                 .ignoresSafeArea()
             
-            HStack(spacing: 16) {
-                Button(action: {
-                    
-                }) {
-                    //                     Image.clLogUI.btn_flash_off
-                }
-                
-                Spacer()
-            }
-            .padding(.leading, 16)
-            .padding(.top, 106)
-            
             VStack {
                 
                 Spacer()
@@ -88,7 +76,9 @@ private extension VideoView {
             return false
         }, set: { _ in
             
-        }), fileOutputClousure: { _, _ in
+        }), fileOutputClousure: { _, _, _ in
+            
+        }, playTime: { _ in
             
         })
         .ignoresSafeArea()

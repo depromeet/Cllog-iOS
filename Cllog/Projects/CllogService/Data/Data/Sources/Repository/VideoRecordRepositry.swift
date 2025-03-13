@@ -23,11 +23,62 @@ public struct VideoRecordRepositry: VideoRepository {
         self.provider = provider
     }
     
-    public func uploadVideo(fileURL: URL) async throws {
-        let model: Emtpy = try await provider.request(VideoTarget())
+    public func saveVideo(fileURL: URL) async throws {
+        let fileManager = FileManager.default
+        // 앱의 Documents 디렉토리 경로를 가져옵니다.
+        guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            print("Documents 디렉토리를 찾을 수 없습니다.")
+            return
+        }
+        
+        // 목적지 URL 생성 (같은 파일명 사용)
+        let destinationURL = documentsDirectory.appendingPathComponent(fileURL.lastPathComponent)
+        
+        do {
+            // 이미 동일한 파일이 존재하면 삭제합니다.
+            if fileManager.fileExists(atPath: destinationURL.path) {
+                try fileManager.removeItem(at: destinationURL)
+            }
+            
+            // 파일을 복사합니다.
+            try fileManager.copyItem(at: fileURL, to: destinationURL)
+            print("파일이 성공적으로 저장되었습니다: \(destinationURL)")
+        } catch {
+            print("파일 저장 중 에러 발생: \(error.localizedDescription)")
+            throw error
+        }
     }
-}
-
-struct Emtpy: Decodable {
     
+    public func readSavedVideo(fileName: String) async throws -> URL? {
+        let fileManager = FileManager.default
+        
+        // 앱의 Documents 디렉토리 경로 가져오기
+        guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            print("Documents 디렉토리를 찾을 수 없습니다.")
+            return nil
+        }
+        
+        // 파일 경로 생성
+        let fileURL = documentsDirectory.appendingPathComponent(fileName)
+        
+        // 파일 존재 여부 확인
+        if fileManager.fileExists(atPath: fileURL.path) {
+            do {
+                // 파일 데이터를 읽어옵니다.
+                let data = try Data(contentsOf: fileURL)
+                print("파일 읽기 성공: \(fileURL)")
+                return fileURL
+            } catch {
+                print("파일 읽기 중 에러 발생: \(error.localizedDescription)")
+                return nil
+            }
+        } else {
+            print("파일이 존재하지 않습니다: \(fileURL)")
+            return nil
+        }
+    }
+    
+    public func uploadVideo(fileURL: URL) async throws {
+//        let model: Emtpy = try await provider.request(VideoTarget())
+    }
 }

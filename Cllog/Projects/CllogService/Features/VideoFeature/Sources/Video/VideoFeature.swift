@@ -27,6 +27,7 @@ public struct VideoFeature {
         public var destination: Destination? = nil
         public var viewState: ViewState = .normal
         
+        public var recordDuration: String = "00.00.00"
         public var isRecording: Bool = false
         
         public init() {}
