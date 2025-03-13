@@ -61,7 +61,7 @@ extension UserInfoView {
                         .foregroundColor(Color.clLogUI.primary)
                     
                     HStack(spacing: 0) {
-                        Text("\(Date().month)월엔 ")
+                        Text("\(store.currentMonth)월엔 ")
                             .font(.h5)
                             .foregroundColor(Color.clLogUI.gray500)
                         Text("\(store.numOfClimbDays)일")
@@ -133,11 +133,11 @@ extension UserInfoView {
     // MARK: - 운동 시간
     private func makeWorkoutDurationView() -> some View {
         VStack(spacing: 0) {
-            Text("2월 총 운동 시간")
+            Text("\(store.currentMonth)월 총 운동 시간")
                 .font(.h5)
                 .foregroundStyle(Color.clLogUI.gray400)
             
-            Text(store.totalDurationMs.toTimeString())
+            Text(store.totalDurationMs.msToTimeString)
                 .font(.h1)
                 .foregroundStyle(Color.clLogUI.gray10)
         }

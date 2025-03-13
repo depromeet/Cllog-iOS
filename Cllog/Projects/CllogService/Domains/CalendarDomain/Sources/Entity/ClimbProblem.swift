@@ -9,8 +9,8 @@
 import Foundation
 
 public struct ClimbProblem: Hashable {
-    let attemptCount: Int
-    let colorHex: String
+    public let attemptCount: Int
+    public let colorHex: String
     
     public init(
         attemptCount: Int,

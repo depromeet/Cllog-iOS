@@ -83,16 +83,22 @@ public struct CalendarMainFeature {
                 return .send(.calendarAction(.isCurrentMonthLast(isLast)))
             case .fetchSuccess(let calendar):
                 return .merge(
-                    .send(.calendarAction(
-                        .updateCalendar(
-                            days: calendar.days,
-                            selectedDay: state.calendarCurrentDate)
-                    )),
-                    .send(.userInfoAction(
-                        .updateUserInfo(
-                            calendar.numOfClimbDays,
-                            calendar.totalDurationMs
-                        ))
+                    .send(
+                        .calendarAction(
+                            .updateCalendar(
+                                days: calendar.days,
+                                selectedDay: state.calendarCurrentDate
+                            )
+                        )
+                    ),
+                    .send(
+                        .userInfoAction(
+                            .updateUserInfo(
+                                calendar.numOfClimbDays,
+                                calendar.totalDurationMs,
+                                state.calendarCurrentDate.month
+                            )
+                        )
                     )
                 )
             case .fetchFailure(let error):

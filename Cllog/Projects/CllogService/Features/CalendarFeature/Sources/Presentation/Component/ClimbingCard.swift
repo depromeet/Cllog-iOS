@@ -8,18 +8,24 @@
 
 import SwiftUI
 
+import CalendarDomain
 import DesignKit
 
 struct ClimbingCard: View {
-    private let onTapped: () -> Void
+    private let climbStroy: ClimbStory
+    private let onTapped: (Int) -> Void
     
-    init(onTapped: @escaping () -> Void) {
+    init(
+        climbStroy: ClimbStory,
+        onTapped: @escaping (Int) -> Void
+    ) {
+        self.climbStroy = climbStroy
         self.onTapped = onTapped
     }
     
     var body: some View {
         Button {
-            onTapped()
+            onTapped(climbStroy.id)
         } label: {
             makeBody()
                 .padding(.horizontal, 16)
@@ -54,15 +60,23 @@ extension ClimbingCard {
                         .frame(width: 20, height: 20)
                         .foregroundStyle(Color.clLogUI.primary)
                     
-                    Text("00:00:00")
+                    Text(climbStroy.totalDurationMs.msToTimeString)
                         .font(.h4)
                         .foregroundStyle(Color.clLogUI.gray10)
                 }
                 
-                HStack(spacing:4) {
+                HStack(spacing:6) {
                     Text("문제")
                         .font(.b2)
                         .foregroundStyle(Color.clLogUI.gray400)
+                    
+                    HStack(spacing:4) {
+                        ForEach(climbStroy.problems, id: \.self) { problem in
+                            Circle()
+                                .fill(Color(hex: problem.colorHex))
+                                .frame(width: 10, height: 10)
+                        }
+                    }
                 }
             }
             
@@ -72,7 +86,14 @@ extension ClimbingCard {
 }
 
 #Preview {
-    ClimbingCard() {
+    ClimbingCard(
+        climbStroy: ClimbStory(
+            id: 0,
+            totalDurationMs: 0,
+            cragName: "",
+            problems: []
+        )
+    ) { _ in
         
     }
 }

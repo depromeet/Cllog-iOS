@@ -20,7 +20,7 @@ public struct CalendarFeature {
         var selectedDate: Date = Date()
         var isDisableNextMonth: Bool = false
         var days: [ClimbDay] = []
-        var selectedDay: CalendarDate = CalendarDate(year: 0, month: 0, day: 0)
+        var selectedDay: ClimbDay? = nil
         
         var isPresentBottomSheet: Bool = false
         
@@ -35,6 +35,7 @@ public struct CalendarFeature {
         case nextMonthTapped
         case updateCalendar(days: [ClimbDay], selectedDay: Date)
         case isCurrentMonthLast(Bool)
+        case storyTapped(Int)
     }
     
     public init() {}
@@ -46,23 +47,12 @@ public struct CalendarFeature {
             case .binding:
                 return .none
             case .dayTapped(let day):
-                let calendar = Calendar.current
-                let selectedComponents = calendar.dateComponents([.year, .month, .day], from: day.date)
-                
-                guard let year = selectedComponents.year,
-                      let month = selectedComponents.month,
-                      let day = selectedComponents.day
-                else {
-                    return .none
-                }
-                
-                state.selectedDay = CalendarDate(
-                    year: year,
-                    month: month,
-                    day: day
-                )
-                
-                state.isPresentBottomSheet = true
+                state.selectedDay = day
+                state.isPresentBottomSheet = !day.stories.isEmpty
+                return .none
+            case .storyTapped(let storyId):
+                state.isPresentBottomSheet = false
+                print("storyId: \(storyId)")
                 return .none
                 
             case .isCurrentMonthLast(let isLast):

@@ -13,10 +13,10 @@ public struct ClimbStory: Hashable {
         rhs.id == lhs.id
     }
     
-    let id: Int
-    let totalDurationMs: Int
-    let cragName: String
-    let problems: [ClimbProblem]
+    public let id: Int
+    public let totalDurationMs: Int
+    public let cragName: String
+    public let problems: [ClimbProblem]
     
     public init(
         id: Int,

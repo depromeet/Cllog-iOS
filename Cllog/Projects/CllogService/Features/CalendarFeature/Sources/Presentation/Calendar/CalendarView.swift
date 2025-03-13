@@ -10,6 +10,7 @@ import SwiftUI
 
 import Core
 import ComposableArchitecture
+import CalendarDomain
 import DesignKit
 
 public struct CalendarView: ViewProtocol {
@@ -23,7 +24,11 @@ public struct CalendarView: ViewProtocol {
     public var body: some View {
         makeBody()
             .bottomSheet(isPresented: $store.isPresentBottomSheet) {
-                bottomSheetView()
+                if let day = store.selectedDay {
+                    DayBottomSheet(climbDay: day) { storyId in
+                        store.send(.storyTapped(storyId))
+                    }
+                }
             }
     }
 }
@@ -88,38 +93,6 @@ extension CalendarView {
                         store.send(.dayTapped(day))
                     }
                     .disabled(!day.isCurrentMonth)
-                }
-            }
-        }
-    }
-    
-    private func bottomSheetView() -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Text(store.selectedDay.displayDate)
-                    .font(.h3)
-                    .foregroundStyle(Color.clLogUI.white)
-            }
-            
-            Spacer(minLength: 10)
-            
-            Rectangle()
-                .fill(Color.clLogUI.gray600)
-                .frame(height: 1)
-            
-            Spacer(minLength: 16)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("클라이밍파크 강남점")
-                    .font(.b1)
-                    .foregroundStyle(Color.clLogUI.white)
-                
-                VStack {
-                    ForEach(0..<5, id: \.self) { _ in
-                        ClimbingCard() {
-                            
-                        }
-                    }
                 }
             }
         }
