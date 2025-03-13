@@ -11,13 +11,13 @@ import CalendarDomain
 
 public struct DayResponseDTO: Decodable {
     public let date: String
-    public let thumbnail: String
+    public let thumbnailUrl: String
     public let stories: [StoryResponseDTO]
     
     func toDomain() -> ClimbDay {
         return ClimbDay(
             date: date.toDate(),
-            thumbnail: thumbnail,
+            thumbnail: thumbnailUrl,
             stories: stories.map { $0.toDomain() }
         )
     }

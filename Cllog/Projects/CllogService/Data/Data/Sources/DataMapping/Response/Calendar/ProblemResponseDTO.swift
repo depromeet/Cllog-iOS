@@ -10,14 +10,12 @@ import Foundation
 import CalendarDomain
 
 public struct ProblemResponseDTO: Decodable {
-    let id: Int
-    let attemptCount: Int
+    let count: Int
     let colorHex: String
     
     func toDomain() -> ClimbProblem {
         return ClimbProblem(
-            id: id,
-            attemptCount: attemptCount,
+            attemptCount: count,
             colorHex: colorHex
         )
     }
