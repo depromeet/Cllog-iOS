@@ -25,7 +25,7 @@ public struct FolderView: ViewProtocol {
     }
     
     public var body: some View {
-        return makeBodyView()
+        makeBodyView()
             .padding(.vertical, 18)
             .background(Color.clLogUI.gray800)
             .bottomSheet(isPresented: $store.showSelectGradeBottomSheet) {
@@ -67,8 +67,8 @@ extension FolderView {
                 .font(.h3)
                 .foregroundStyle(Color.clLogUI.white)
             
-            if store.countOfFilteredStories != 0 {
-                Text("\(store.countOfFilteredStories)")
+            if store.attempts.count != 0 {
+                Text("\(store.attempts.count)")
                     .font(.h3)
                     .foregroundStyle(Color.clLogUI.gray300)
             }
@@ -138,19 +138,18 @@ extension FolderView {
     }
     
     func makeThumbnailView() -> some View {
-        let items = Array(1...store.countOfFilteredStories)
-        
-        return LazyVGrid(columns: columns, spacing: 20) {
-            ForEach(items, id: \.self) { item in
+        LazyVGrid(columns: columns, spacing: 20) {
+            ForEach(store.attempts, id: \.self) { attempt in
                 ThumbnailView(
                     imageURLString: "https://www.dictionary.com/e/wp-content/uploads/2018/05/lhtm.jpg",
                     thumbnailType: .default(
-                        cragName: "클라이밍파크 강남점",
-                        date: "25.02.08 FRI"
+                        cragName: attempt.crag?.name ?? "",
+                        date: attempt.date
                     ),
-                    challengeResult: .complete,
-                    level: .blue,
-                    time: "00:00:00"
+                    challengeResult: attempt.result == .complete ? .complete : .fail,
+                    levelName: attempt.grade?.name ?? "하양",
+                    levelColor: Color(hex: attempt.grade?.hexCode ?? 0x00000),
+                    time: attempt.recordedTime
                 )
             }
         }
@@ -167,11 +166,14 @@ extension FolderView {
                 .foregroundStyle(Color.clLogUI.gray600)
             
             LazyVGrid(columns: rows) {
-                ForEach(store.grades, id: \.hexCode) { grade in
-                    LevelChip(level: .blue)
-                        .onTapGesture {
-                            store.send(.didSelectGrade(grade))
-                        }
+                ForEach(store.grades, id: \.self) { grade in
+                    LevelChip(
+                        name: grade.name,
+                        color: Color(hex: grade.hexCode)
+                    )
+                    .onTapGesture {
+                        store.send(.didSelectGrade(grade))
+                    }
                 }
             }
         }

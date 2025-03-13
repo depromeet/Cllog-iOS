@@ -11,14 +11,14 @@ import Shared
 
 import ComposableArchitecture
 
-enum FolderListUseCaseKey: DependencyKey {
-    static let liveValue: FolderListUseCase = MockFolderListUseCase(folderRepository: MockFolderRepository())
+enum AttemptUseCaseKey: DependencyKey {
+    static let liveValue: AttemptUseCase = MockAttemptUseCase(attemptRepository: MockAttemptRepository())
 //    static let liveValue = ClLogDI.container.resolve(FolderListUseCase.self)!
 }
 
 extension DependencyValues {
-    public var folderListUseCase: FolderListUseCase {
-        get { self[FolderListUseCaseKey.self] }
-        set { self[FolderListUseCaseKey.self] = newValue }
+    public var attemptUseCase: AttemptUseCase {
+        get { self[AttemptUseCaseKey.self] }
+        set { self[AttemptUseCaseKey.self] = newValue }
     }
 }

@@ -33,8 +33,13 @@ public struct ClLogServiceAssembly: Assembly {
             MonthLimit()
         }
         
-        container.register(FolderListUseCase.self) { _ in
-            MockFolderListUseCase(folderRepository: MockFolderRepository())
+        container.register(FolderUseCase.self) { _ in
+            
+            DefaultFolderListUseCase(
+                attemptUseCase: MockAttemptUseCase(attemptRepository: MockAttemptRepository()),
+                gradeUseCase: MockGradeUseCase(gradeRepository: MockGradeRepository()),
+                cragUseCase: MockCragUseCase(cragRepository: MockCragRepository())
+            )
         }
     }
 }

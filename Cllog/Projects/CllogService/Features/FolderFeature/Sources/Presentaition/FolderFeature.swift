@@ -8,19 +8,21 @@
 
 import ComposableArchitecture
 import FolderDomain
+import Shared
 
 @Reducer
 public struct FolderFeature {
-    @Dependency(\.folderListUseCase) private var folderListUsecase
+    @Dependency(\.attemptUseCase) private var attemptUseCase
+    @Dependency(\.gradeUseCase) private var gradeUseCase
+    @Dependency(\.cragUseCase) private var cragUseCase
     
     @ObservableState
     public struct State {
         var grades = [Grade]()
-        var crages = [Crag]()
+        var crags = [Crag]()
         var attempts = [Attempt]()
         var selectedChip: Set<SelectedChip> = []
         var selectedCragName = ""
-        var countOfFilteredStories = 30 // FIXME: 서버 연결
         var selectedGrade: Grade?
         
         var showSelectGradeBottomSheet = false
@@ -37,8 +39,11 @@ public struct FolderFeature {
         case failChipTapped
         case gradeChipTapped
         case cragChipTapped(cragName: String)
-        case updateStoryInfo(grades: [Grade], crages: [Crag], attempts: [Attempt])
+        case getFilterableDatas(grades: [Grade], crags: [Crag])
         case didSelectGrade(_ grade: Grade)
+        case getFilteredAttempts(_ attempt: [Attempt])
+        case getFilterableInfo
+        case fail
     }
     
     public init() {}
@@ -50,17 +55,14 @@ public struct FolderFeature {
             case .binding:
                 return .none
             case .onAppear:
-                return getStoryInfo()
+                return fetchInitialData()
             case .completeChipTapped:
-                state.countOfFilteredStories = 20
                 state.selectedChip.formSymmetricDifference([.complete])
                 return .none
             case .failChipTapped:
-                state.countOfFilteredStories = 10
                 state.selectedChip.formSymmetricDifference([.fail])
                 return .none
             case .gradeChipTapped:
-                state.countOfFilteredStories = 5
                 if state.selectedGrade != nil {
                     state.selectedGrade = nil
                 } else {
@@ -69,29 +71,50 @@ public struct FolderFeature {
                 return .none
             case .cragChipTapped(let cragName):
                 state.showSelectCragBottomSheet = true
-                state.countOfFilteredStories = 1
                 state.selectedCragName = cragName
                 state.selectedChip.formSymmetricDifference([.crag])
                 return .none
-            case .updateStoryInfo(let grades, let crages, let stories):
+            case .getFilterableDatas(let grades, let crags):
                 state.grades = grades
-                state.crages = crages
-                state.attempts = stories
+                state.crags = crags
                 return .none
             case .didSelectGrade(let grade):
                 state.selectedGrade = grade
                 state.showSelectGradeBottomSheet = false
                 return .none
+            case .getFilteredAttempts(let attempts):
+                state.attempts = attempts
+                return .none
+            case .getFilterableInfo:
+                return .none
+            case .fail:
+                return .none
             }
         }
     }
     
-    private func getStoryInfo() -> Effect<Action> {
+    private func fetchInitialData() -> Effect<Action> {
         return .run { send in
-            let crages = try? await folderListUsecase.getCrages()
-            let grades = try? await folderListUsecase.getGrades()
-            let attempts = try? await folderListUsecase.getFilteredAttempts()
-            await send(.updateStoryInfo(grades: grades ?? [], crages: crages ?? [], attempts: attempts ?? []))
+            async let grades = gradeUseCase.getGrades()
+            async let crags = cragUseCase.getCrags()
+            async let allAttempts = attemptUseCase.getAttempts()
+            
+            do {
+                let (gradesResult, cragsResults, attemptsResult) = try await (grades, crags, allAttempts)
+                
+                await send(.getFilterableDatas(grades: gradesResult, crags: cragsResults))
+                await send(.getFilteredAttempts(attemptsResult))
+            }
+        }
+    }
+    
+    private func getAttempts() -> Effect<Action> {
+        return .run { send in
+            do {
+                let attempts = try await attemptUseCase.getFilteredAttempts()
+                await send(.getFilteredAttempts(attempts))
+                
+            }
         }
     }
 }

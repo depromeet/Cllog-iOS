@@ -1,22 +1,23 @@
 //
-//  Attempt.swift
-//  FolderDomain
+//  Grade.swift
+//  Shared
 //
 //  Created by soi on 3/10/25.
 //  Copyright © 2025 Supershy. All rights reserved.
 //
 
 import Foundation
-import Shared
 
-public struct Attempt: Hashable, Identifiable {
+public struct Grade: Hashable, Identifiable {
     public var id = UUID()
     
-    public let date: String
-    public let grade: Grade?
-    public let result: AttemptResult
-    public let recordedTime: String
-    public let crag: Crag?
+    public let name: String
+    public let hexCode: Int
+    
+    public init(name: String, hexCode: Int) {
+        self.name = name
+        self.hexCode = hexCode
+    }
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
