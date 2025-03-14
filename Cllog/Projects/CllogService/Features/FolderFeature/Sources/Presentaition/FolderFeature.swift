@@ -28,6 +28,7 @@ public struct FolderFeature {
         var showSelectGradeBottomSheet = false
         var showSelectCragBottomSheet = false
         var searchCragName = ""
+        
         public init() {}
     }
     
@@ -71,6 +72,7 @@ public struct FolderFeature {
                 }
                 return .none
             case .cragChipTapped:
+                state.searchCragName = ""
                 if state.selectedCrag != nil {
                     state.selectedCrag = nil
                 } else {

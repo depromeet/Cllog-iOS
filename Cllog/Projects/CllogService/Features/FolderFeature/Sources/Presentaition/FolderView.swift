@@ -203,7 +203,13 @@ extension FolderView {
                 text: $store.searchCragName
             )
             
-            ForEach(store.crags, id: \.self) { crag in
+            ForEach(store.crags.filter { crag in
+                if store.searchCragName.isEmpty {
+                    return true
+                }
+                
+                return crag.name.matchesPattern(store.searchCragName)
+            }, id: \.self) { crag in
                 TwoLineRow(
                     title: crag.name,
                     subtitle: crag.address
