@@ -11,6 +11,7 @@ import Foundation
 import Data
 import Domain
 import LoginDomain
+import FolderDomain
 import CalendarDomain
 import Networker
 import Swinject
@@ -29,6 +30,10 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
+        container.register(MonthLimitUseCase.self) { _ in
+            MonthLimit()
+        }
+        
         container.register(FutureMonthCheckerUseCase.self) { _ in
             FutureMonthChecker()
         }
@@ -42,6 +47,15 @@ public struct ClLogServiceAssembly: Assembly {
                         )
                     )
                 )
+            )
+        }
+        
+        container.register(FolderUseCase.self) { _ in
+            
+            DefaultFolderListUseCase(
+                attemptUseCase: MockAttemptUseCase(attemptRepository: MockAttemptRepository()),
+                gradeUseCase: MockGradeUseCase(gradeRepository: MockGradeRepository()),
+                cragUseCase: MockCragUseCase(cragRepository: MockCragRepository())
             )
         }
     }

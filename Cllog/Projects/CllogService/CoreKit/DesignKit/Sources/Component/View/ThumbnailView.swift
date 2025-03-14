@@ -17,7 +17,8 @@ public struct ThumbnailView: View {
     private let imageURLString: String
     private let thumbnailType: ThumbnailType
     private let challengeResult: ChallengeResult
-    private let level: Level
+    private let levelName: String
+    private let levelColor: Color
     private let time: String
     private let deleteButtonHandler: (() -> Void)?
     
@@ -25,14 +26,16 @@ public struct ThumbnailView: View {
         imageURLString: String,
         thumbnailType: ThumbnailType,
         challengeResult: ChallengeResult,
-        level: Level,
+        levelName: String,
+        levelColor: Color,
         time: String,
         deleteButtonHandler: (() -> Void)? = nil
     ) {
         self.imageURLString = imageURLString // FIXME: response 확인
         self.thumbnailType = thumbnailType
         self.challengeResult = challengeResult
-        self.level = level
+        self.levelName = levelName
+        self.levelColor = levelColor
         self.time = time
         self.deleteButtonHandler = deleteButtonHandler
     }
@@ -68,7 +71,7 @@ public struct ThumbnailView: View {
                             isActive: true
                         )
                         
-                        LevelChip(level: level)
+                        LevelChip(name: levelName, color: levelColor)
                             .opacity(0.7)
                     }
                     .padding([.leading, .bottom], 8)
@@ -134,7 +137,8 @@ private struct ThumbnailTimeChip: View {
                 date: "25.02.08 FRI"
             ),
             challengeResult: .complete,
-            level: .blue,
+            levelName: "파랑",
+            levelColor: .blue,
             time: "00:00:00"
         )
         
@@ -142,7 +146,8 @@ private struct ThumbnailTimeChip: View {
             imageURLString: "https://www.dictionary.com/e/wp-content/uploads/2018/05/lhtm.jpg",
             thumbnailType: .calendar,
             challengeResult: .complete,
-            level: .blue,
+            levelName: "파랑",
+            levelColor: .blue,
             time: "00:00:00"
         )
         
@@ -150,7 +155,8 @@ private struct ThumbnailTimeChip: View {
             imageURLString: "https://www.dictionary.com/e/wp-content/uploads/2018/05/lhtm.jpg",
             thumbnailType: .calendar,
             challengeResult: .complete,
-            level: .blue,
+            levelName: "파랑",
+            levelColor: .blue,
             time: "00:00:00",
             deleteButtonHandler: {
                 print("delete button tapped")
@@ -164,7 +170,8 @@ private struct ThumbnailTimeChip: View {
                 date: "25.02.08 FRI"
             ),
             challengeResult: .complete,
-            level: .blue,
+            levelName: "파랑",
+            levelColor: .blue,
             time: "00:00:00",
             deleteButtonHandler: {
                 print("delete button tapped")
