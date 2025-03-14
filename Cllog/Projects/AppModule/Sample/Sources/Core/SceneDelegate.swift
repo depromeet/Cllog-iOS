@@ -23,7 +23,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = ClLogWindow(windowScene: windowScene)
         window?.backgroundColor = .clear
-        window?.rootViewController = HomeViewController.instance()
+        let homeViewController = HomeViewController.instance()
+        window?.rootViewController = UINavigationController(rootViewController: homeViewController)
         window?.makeKeyAndVisible()
     }
 

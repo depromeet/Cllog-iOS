@@ -33,6 +33,7 @@ public struct MainView: View {
         on: UIViewController?,
         store: StoreOf<MainFeature>
     ) {
+        self.on = on
         self.store = store
     }
     
