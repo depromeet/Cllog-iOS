@@ -22,11 +22,12 @@ public struct FolderFeature {
         var crags = [Crag]()
         var attempts = [Attempt]()
         var selectedChip: Set<SelectedChip> = []
-        var selectedCragName = ""
+        var selectedCrag: Crag?
         var selectedGrade: Grade?
         
         var showSelectGradeBottomSheet = false
         var showSelectCragBottomSheet = false
+        var searchCragName = ""
         
         public init() {}
     }
@@ -38,8 +39,9 @@ public struct FolderFeature {
         case completeChipTapped
         case failChipTapped
         case gradeChipTapped
-        case cragChipTapped(cragName: String)
+        case cragChipTapped
         case getFilterableDatas(grades: [Grade], crags: [Crag])
+        case didSelectCrag(_ crag: Crag)
         case didSelectGrade(_ grade: Grade)
         case getFilteredAttempts(_ attempt: [Attempt])
         case getFilterableInfo
@@ -69,14 +71,21 @@ public struct FolderFeature {
                     state.showSelectGradeBottomSheet = true
                 }
                 return .none
-            case .cragChipTapped(let cragName):
-                state.showSelectCragBottomSheet = true
-                state.selectedCragName = cragName
-                state.selectedChip.formSymmetricDifference([.crag])
+            case .cragChipTapped:
+                state.searchCragName = ""
+                if state.selectedCrag != nil {
+                    state.selectedCrag = nil
+                } else {
+                    state.showSelectCragBottomSheet = true
+                }
                 return .none
             case .getFilterableDatas(let grades, let crags):
                 state.grades = grades
                 state.crags = crags
+                return .none
+            case .didSelectCrag(let crag):
+                state.selectedCrag = crag
+                state.showSelectCragBottomSheet = false
                 return .none
             case .didSelectGrade(let grade):
                 state.selectedGrade = grade
