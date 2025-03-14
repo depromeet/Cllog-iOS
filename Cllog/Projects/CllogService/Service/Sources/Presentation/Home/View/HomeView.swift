@@ -8,21 +8,16 @@
 
 import SwiftUI
 
-import FolderTabFeature
-import FolderFeature
-import CalendarFeature
+import DesignKit
 
-import MainFeature
+import LoginDomain
 import LoginFeature
-import VideoFeature
 
 import ComposableArchitecture
-import LoginDomain
 
 struct HomeView: View {
     
     private weak var on: UIViewController?
-    
     private let store: StoreOf<HomeFeature>
     
     init(
@@ -34,48 +29,27 @@ struct HomeView: View {
     }
     
     var body: some View {
-        switch store.destination {
-        case .login:
-            LoginView(
-                on: on,
-                store: store.scope(
-                    state: \.login,
-                    action: \.loginAction
-                )
-            )
-        case .main:
-            MainView(
-                on: on,
-                tabViews: [
-                    FolderTabView(
-                        store: .init(initialState: FolderTabFeature.State(), reducer: {
-                            FolderTabFeature()
-                        }), folderView: FolderView(store: .init(initialState: FolderFeature.State(), reducer: {
-                            FolderFeature()
-                        })), calendarView: CalendarMainView(store: .init(initialState: CalendarMainFeature.State(), reducer: {
-                            CalendarMainFeature()
-                        }))),
-                    videoView,
-                    Text("3")
-                ], overlayerView: RecordView(
-                    on: on,
-                    store: store.scope(state: \.recordState, action: \.recordFeatureAction)
-                ), store:
-                    store.scope(state: \.mainState, action: \.mainFeatureAction))
-        case .none:
-            // Intro, splash
-            Text("Splash")
-                .onAppear {
-                    store.send(.onAppear)
-                }
-        }
+       bodyView
+            .onAppear {
+                store.send(.onAppear)
+            }
     }
     
-    @ViewBuilder
-    private var videoView: some View {
-        VideoView(
-            on: on,
-            store: store.scope(state: \.videoState, action: \.videoFeatureAction)
-        )
+    private var bodyView: some View {
+        ZStack {
+            // 자동 로그인
+            IfLetStore(store.scope(state: \.autoLoginState, action: \.autoLoginAction), then: AutoLoginView.init)
+                .debugFrameSize()
+            
+            // 로그인
+            IfLetStore(store.scope(state: \.loginState, action: \.loginAction), then: LoginView.init)
+                .debugFrameSize()
+            
+            // 메인
+            IfLetStore(store.scope(state: \.mainState, action: \.mainAction), then: { [weak on] store in
+                MainView(on: on, store: store)
+            })
+            .debugFrameSize()
+        }
     }
 }

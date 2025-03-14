@@ -7,8 +7,11 @@
 //
 
 import Foundation
-
 import AVFoundation
+
+import Shared
+
+import Dependencies
 
 public protocol VideoPermissionUseCase: Sendable {
     func execute() async throws
@@ -64,5 +67,26 @@ public struct VideoPermission: VideoPermissionUseCase {
                 }
             })
         }
+    }
+}
+
+public struct MockVideoPermission: VideoPermissionUseCase {
+    public func execute() async throws {
+        
+    }
+}
+
+public enum VideoPermissionDepdencyKey: DependencyKey {
+    public static var liveValue: any VideoPermissionUseCase = VideoPermission()
+    
+    public static var testValue: any VideoPermissionUseCase = MockVideoPermission()
+    
+    public static var previewValue: any VideoPermissionUseCase = MockVideoPermission()
+}
+
+public extension DependencyValues {
+    var videoPermission: any VideoPermissionUseCase {
+        get { self[VideoPermissionDepdencyKey.self] }
+        set { self[VideoPermissionDepdencyKey.self] = newValue }
     }
 }

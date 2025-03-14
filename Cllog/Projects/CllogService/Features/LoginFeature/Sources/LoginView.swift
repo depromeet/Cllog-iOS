@@ -16,13 +16,8 @@ import ComposableArchitecture
 public struct LoginView: View {
     
     private let store: StoreOf<LoginFeature>
-    private weak var on: UIViewController?
     
-    public init(
-        on: UIViewController?,
-        store: StoreOf<LoginFeature>
-    ) {
-        self.on = on
+    public init(store: StoreOf<LoginFeature>) {
         self.store = store
     }
     
@@ -158,7 +153,6 @@ extension LoginView {
 
 #Preview {
     LoginView(
-        on: nil,
         store: .init(
             initialState: LoginFeature.State(),
             reducer: {

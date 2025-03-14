@@ -42,7 +42,6 @@ private extension RecordView {
             switch store.viewState {
             case .recording:
                 recordView
-                    .ignoresSafeArea()
                     .onAppear {
                         store.send(.onStartRecord)
                     }
@@ -73,11 +72,23 @@ private extension RecordView {
             return store.isRecord
         }, set: { _ in
             
-        }), fileOutputClousure: { fileURL, error in
-            store.send(.fileOutput(filePath: fileURL, error: error))
+        }), fileOutputClousure: { fileURL, error, totalTime in
+            store.send(.fileOutput(filePath: fileURL, error: error, totalTime: totalTime))
+        }, playTime: { time in
+            store.send(.updatePlayTime(time))
         })
+        .ignoresSafeArea()
         
-        VStack {
+        VStack(spacing: .zero) {
+            
+            Text(store.recordDuration)
+                .font(.h5)
+                .foregroundColor(.clLogUI.white)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(Color.clLogUI.gray500.opacity(0.5))
+                .clipShape(Capsule())
+                .safeAreaPadding(.top)
             
             Spacer()
             
@@ -94,8 +105,13 @@ private extension RecordView {
     @ViewBuilder
     func recoredView(fileURL: URL) -> some View {
         
-        VideoPlayView(fileURL: fileURL)
-            .ignoresSafeArea()
+        VideoPlay(
+            viewModel: VideoPlayViewModel(fileURL: fileURL),
+            playTime: { timeString, currentTime in
+                store.send(.updatePlayCurrentTime(currentTime))
+                store.send(.updatePlayTime(timeString))
+            }
+        ).ignoresSafeArea()
         
         VStack(alignment: .center, spacing: 0) {
             
@@ -146,32 +162,39 @@ private extension RecordView {
                 Color.clLogUI.gray900
                     .edgesIgnoringSafeArea(.bottom)
                 
-                HStack(spacing: 7) {
-                    Button(action: {
-                        store.send(.climbSaveFailrue)
-                    }) {
-                        Text("실패로 저장")
-                            .font(.b1)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.clLogUI.gray600)
-                            .foregroundColor(.clLogUI.white)
-                            .cornerRadius(12)
-                    }
+                VStack(spacing: .zero) {
                     
-                    Button(action: {
-                        store.send(.climbSaveSuccess)
-                    }) {
-                        Text("완등으로 저장")
-                            .font(.b1)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.clLogUI.white)
-                            .foregroundColor(.clLogUI.gray800)
-                            .cornerRadius(12)
+                    RecordProgressBar(progress: store.progress)
+                    
+                    Spacer()
+                    
+                    HStack(spacing: 7) {
+                        Button(action: {
+                            store.send(.climbSaveFailrue)
+                        }) {
+                            Text("실패로 저장")
+                                .font(.b1)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.clLogUI.gray600)
+                                .foregroundColor(.clLogUI.white)
+                                .cornerRadius(12)
+                        }
+                        
+                        Button(action: {
+                            store.send(.climbSaveSuccess)
+                        }) {
+                            Text("완등으로 저장")
+                                .font(.b1)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.clLogUI.white)
+                                .foregroundColor(.clLogUI.gray800)
+                                .cornerRadius(12)
+                        }
                     }
+                    .padding(.horizontal, 16)
                 }
-                .padding(.horizontal, 16)
             }
             .frame(height: 94)
         }

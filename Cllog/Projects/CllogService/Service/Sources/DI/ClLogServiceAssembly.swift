@@ -30,9 +30,10 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
-        container.register(MonthLimitUseCase.self) { _ in
-            MonthLimit()
-        }
+        // 준영
+//        container.register(MonthLimitUseCase.self) { _ in
+//            MonthLimit()
+//        }
         
         container.register(FutureMonthCheckerUseCase.self) { _ in
             FutureMonthChecker()
@@ -50,13 +51,14 @@ public struct ClLogServiceAssembly: Assembly {
             )
         }
         
-        container.register(FolderUseCase.self) { _ in
-            
-            DefaultFolderListUseCase(
-                attemptUseCase: MockAttemptUseCase(attemptRepository: MockAttemptRepository()),
-                gradeUseCase: MockGradeUseCase(gradeRepository: MockGradeRepository()),
-                cragUseCase: MockCragUseCase(cragRepository: MockCragRepository())
-            )
-        }
+        // 준영
+//        container.register(FolderUseCase.self) { _ in
+//            
+//            DefaultFolderListUseCase(
+//                attemptUseCase: MockAttemptUseCase(attemptRepository: MockAttemptRepository()),
+//                gradeUseCase: MockGradeUseCase(gradeRepository: MockGradeRepository()),
+//                cragUseCase: MockCragUseCase(cragRepository: MockCragRepository())
+//            )
+//        }
     }
 }
