@@ -10,11 +10,11 @@ import SwiftUI
 
 public struct CheckBoxButton: View {
     @Binding private var isActive: Bool
-    private let text: String
+    private let title: String
     
-    public init(isActive: Binding<Bool>, text: String) {
+    public init(title: String, isActive: Binding<Bool>) {
+        self.title = title
         self._isActive = isActive
-        self.text = text
     }
     
     public var body: some View {
@@ -33,7 +33,7 @@ public struct CheckBoxButton: View {
                     }
                 }
                 
-                Text(text)
+                Text(title)
                     .foregroundStyle(
                         isActive
                         ? Color.clLogUI.gray50
@@ -48,8 +48,8 @@ public struct CheckBoxButton: View {
 struct CheckBoxButton_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 16) {
-            CheckBoxButton(isActive: .constant(true), text: "선택됨")
-            CheckBoxButton(isActive: .constant(false), text: "선택 안됨")
+            CheckBoxButton(title: "선택됨", isActive: .constant(true))
+            CheckBoxButton(title: "선택 안됨", isActive: .constant(false))
         }
         .padding()
         .previewLayout(.sizeThatFits)
