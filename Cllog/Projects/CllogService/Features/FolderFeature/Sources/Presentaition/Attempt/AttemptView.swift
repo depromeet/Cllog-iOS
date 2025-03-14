@@ -146,30 +146,30 @@ extension AttemptView {
             "00:35",
             "00:24",
         ]
-        return LazyVGrid(
-            columns: [GridItem(.adaptive(minimum: 79, maximum: 82), spacing: 6)],
-            alignment: .leading,
-            spacing: 6
-        ) {
-            ForEach(mockStamps, id: \.self) { timeStamp in
-                HStack {
-                    ClLogUI.stampSmall
-                        .resizable()
-                        .frame(width: 11, height: 15)
-                        .foregroundStyle(Color.clLogUI.primary)
-                    
-                    Text(timeStamp)
-                    
+        return ScrollView(.horizontal) {
+            HStack(spacing: 12) {
+                ForEach(mockStamps, id: \.self) { timeStamp in
+                    HStack {
+                        ClLogUI.stampSmall
+                            .resizable()
+                            .frame(width: 11, height: 15)
+                            .foregroundStyle(Color.clLogUI.primary)
+                        
+                        Text(timeStamp)
+                        
+                    }
+                    .font(.h5)
+                    .foregroundStyle(Color.clLogUI.gray200)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .foregroundStyle(Color.clLogUI.gray600)
+                    )
                 }
-                .font(.h5)
-                .foregroundStyle(Color.clLogUI.gray200)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(
-                    RoundedRectangle(cornerRadius: 6)
-                        .foregroundStyle(Color.clLogUI.gray600)
-                )
             }
         }
+        .scrollIndicators(.hidden)
+        .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
     }
 }
