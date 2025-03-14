@@ -24,9 +24,7 @@ public struct HomeFeatureAssembly: Assembly {
                 fatalError("Could not resolve LogUseCase")
             }
             
-            return HomeFeature(
-                logConsoleUseCase: logConsoleUseCase
-            )
+            return HomeFeature()
         }
     }
     

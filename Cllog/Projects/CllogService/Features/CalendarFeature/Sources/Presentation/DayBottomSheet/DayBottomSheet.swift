@@ -46,7 +46,7 @@ struct DayBottomSheet: View {
                     
                     VStack(spacing: 8) {
                         ForEach(climbDay.groupedStories[cragName] ?? [], id: \.self) { story in
-                            ClimbingCard(climbStroy: story) { storyId in
+                            ClimbingCard(climbStory: story) { storyId in
                                 onTapped(storyId)
                             }
                         }

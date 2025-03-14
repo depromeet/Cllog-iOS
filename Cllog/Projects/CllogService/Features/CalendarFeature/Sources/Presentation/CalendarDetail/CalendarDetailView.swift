@@ -98,11 +98,13 @@ extension CalendarDetailView {
             
             LazyVGrid(columns: calendarColumns, spacing: 11) {
                 ForEach(0..<5, id: \.self) { _ in
+                    // 준영
                     ThumbnailView(
                         imageURLString: "",
                         thumbnailType: .calendar,
                         challengeResult: .complete,
-                        level: .black,
+                        levelName: "",
+                        levelColor: .black,
                         time: "00:00:00"
                     )
                 }

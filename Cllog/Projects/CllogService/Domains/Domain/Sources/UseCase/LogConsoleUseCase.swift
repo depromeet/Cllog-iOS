@@ -8,7 +8,36 @@
 
 import Foundation
 
+import Shared
+
+import Dependencies
+
 public protocol LogConsoleUseCase {
     func executeInfo(label: String, message: String)
     func executeDebug(label: String, message: String)
+}
+
+public struct MockLogConsole: LogConsoleUseCase {
+    public func executeInfo(label: String, message: String) {
+        print("\(#function) : \(label), message : \(message)")
+    }
+    
+    public func executeDebug(label: String, message: String) {
+        print("\(#function) : \(label), message : \(message)")
+    }
+}
+
+public enum LogConsoleDepdencyKey: DependencyKey {
+    public static var liveValue: any LogConsoleUseCase = ClLogDI.container.resolve(LogConsoleUseCase.self)!
+    
+    public static var testValue: any LogConsoleUseCase = MockLogConsole()
+    
+    public static var previewValue: any LogConsoleUseCase = MockLogConsole()
+}
+
+public extension DependencyValues {
+    var logConsole: any LogConsoleUseCase {
+        get { self[LogConsoleDepdencyKey.self] }
+        set { self[LogConsoleDepdencyKey.self] = newValue }
+    }
 }

@@ -45,23 +45,7 @@ public struct VideoFeatureAssembly: Assembly {
         }
         
         container.register(VideoFeature.self) { resolver in
-            guard let videoUseCase = resolver.resolve(VideoUseCase.self) else {
-                fatalError("Could not resolve CaptureUseCase")
-            }
-            
-            guard let logConsoleUseCase  = resolver.resolve(LogConsoleUseCase.self) else {
-                fatalError("Could not resolve LogConsoleUseCase")
-            }
-            
-            guard let permissionUseCase = resolver.resolve(VideoPermissionUseCase.self) else {
-                fatalError("Could not resolve CapturePermissionUseCase")
-            }
-            
-            return VideoFeature(
-                logConsoleUseCase: logConsoleUseCase,
-                permissionUseCase: permissionUseCase,
-                videoUseCase: videoUseCase
-            )
+            return VideoFeature()
         }
         
         container.register(RecordFeature.self) { resolver in

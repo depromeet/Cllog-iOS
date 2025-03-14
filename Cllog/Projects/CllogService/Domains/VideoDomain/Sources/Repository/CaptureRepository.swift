@@ -10,6 +10,12 @@ import Foundation
 
 public protocol VideoRepository: Sendable {
     
+    /// 영상을 저장하는 인터페이스
+    func saveVideo(fileURL: URL) async throws
+    
+    /// 영상을 불러오는 인터페이스
+    func readSavedVideo(fileName: String) async throws -> URL?
+    
     /// 영상을 업로드 하는 인터페이스
     func uploadVideo(fileURL: URL) async throws
 }

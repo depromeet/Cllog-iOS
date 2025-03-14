@@ -11,20 +11,24 @@ import SwiftUI
 public struct ClLogSessionView: UIViewRepresentable {
     
     @Binding private var isRecording: Bool
-    private let fileOutputClousure: (URL, (any Error)?) -> Void
+    private let fileOutputClousure: (URL, (any Error)?, TimeInterval) -> Void
+    private let playTime: (String) -> Void
     private let path: URL
     
     public init(
         isRecording: Binding<Bool>,
-        fileOutputClousure: @escaping (URL, (any Error)?) -> Void
+        fileOutputClousure: @escaping (URL, (any Error)?, TimeInterval) -> Void,
+        playTime: @escaping (String) -> Void
     ) {
         self._isRecording = isRecording
+        
         self.path = URL(fileURLWithPath: NSTemporaryDirectory() + UUID().uuidString + ".mov")
         self.fileOutputClousure = fileOutputClousure
+        self.playTime = playTime
     }
     
     public func makeUIView(context: Context) -> ClLogSessionUIView {
-        return ClLogSessionUIView(fileOutputclosure: fileOutputClousure)
+        return ClLogSessionUIView(fileOutputclosure: fileOutputClousure, playTime: playTime)
     }
     
     public func updateUIView(

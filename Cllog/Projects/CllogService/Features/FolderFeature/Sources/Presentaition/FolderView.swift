@@ -12,7 +12,7 @@ import DesignKit
 import ComposableArchitecture
 
 public struct FolderView: ViewProtocol {
-    let store: StoreOf<FolderFeature>
+    @Bindable var store: StoreOf<FolderFeature>
     let items = Array(1...20)
     
     let columns = [
@@ -28,6 +28,12 @@ public struct FolderView: ViewProtocol {
         makeBodyView()
             .padding(.vertical, 18)
             .background(Color.clLogUI.gray800)
+            .bottomSheet(isPresented: $store.showSelectGradeBottomSheet) {
+                showSelectGradeBottomSheet()
+            }
+            .bottomSheet(isPresented: $store.showSelectCragBottomSheet) {
+                showSelectCragBottomSheet()
+            }
     }
 }
 
@@ -50,6 +56,9 @@ extension FolderView {
                 .padding(.horizontal, 16)
         }
         .scrollIndicators(.hidden)
+        .onAppear {
+            store.send(.onAppear)
+        }
     }
     
     private func makeTitleView() -> some View {
@@ -58,8 +67,8 @@ extension FolderView {
                 .font(.h3)
                 .foregroundStyle(Color.clLogUI.white)
             
-            if store.countOfFilteredStories != 0 {
-                Text("\(store.countOfFilteredStories)")
+            if store.attempts.count != 0 {
+                Text("\(store.attempts.count)")
                     .font(.h3)
                     .foregroundStyle(Color.clLogUI.gray300)
             }
@@ -74,6 +83,7 @@ extension FolderView {
             
             ForEach(chips, id: \.self) { chip in
                 let isSelectedChip = store.selectedChip.contains(chip)
+                
                 switch chip {
                 case .complete:
                     CompleteOrFailChip(
@@ -89,48 +99,124 @@ extension FolderView {
                     ).onTapGesture {
                         store.send(.failChipTapped)
                     }
-                    
                 case .grade:
-                    TitleWithImageChip(
-                        title: isSelectedChip ? store.selectedGrade : "난이도",
-                        imageName: isSelectedChip ? "x" : "icon_down",
-                        forgroundColor: isSelectedChip ? Color.clLogUI.gray800 :  Color.clLogUI.gray200,
-                        backgroundColor: isSelectedChip ? Color.clLogUI.primary : Color.clLogUI.gray600,
-                        tapHandler: {
-                            store.send(.gradeChipTapped)
-                        }
-                    )
-                    
+                    if let selectedGrade = store.selectedGrade {
+                        TitleWithImageChip(
+                            title: selectedGrade.name,
+                            imageName: "close",
+                            forgroundColor: Color.clLogUI.gray800,
+                            backgroundColor: Color.clLogUI.primary,
+                            tapHandler: {
+                                store.send(.gradeChipTapped)
+                            }
+                        )
+                    } else {
+                        TitleWithImageChip(
+                            title: "난이도",
+                            imageName: "icon_down",
+                            forgroundColor: Color.clLogUI.gray200,
+                            backgroundColor: Color.clLogUI.gray600,
+                            tapHandler: {
+                                store.send(.gradeChipTapped)
+                            }
+                        )
+                    }
+
                 case .crag:
-                    TitleWithImageChip(
-                        title: isSelectedChip ? store.selectedCragName : "암장",
-                        imageName: isSelectedChip ? "x" : "icon_down",
-                        forgroundColor: isSelectedChip ? Color.clLogUI.gray800 :  Color.clLogUI.gray200,
-                        backgroundColor: isSelectedChip ? Color.clLogUI.primary : Color.clLogUI.gray600,
-                        tapHandler: {
-                            store.send(.cragChipTapped(cragName: "엄청나게 긴긴긴긴긴 암장 이름입 니 다~!"))
-                        }
-                    )
+                    
+                    if let selectedCrag = store.selectedCrag {
+                        TitleWithImageChip(
+                            title: selectedCrag.name,
+                            imageName: "close",
+                            forgroundColor: Color.clLogUI.gray800,
+                            backgroundColor: Color.clLogUI.primary,
+                            tapHandler: {
+                                store.send(.cragChipTapped)
+                            }
+                        )
+                    } else {
+                        TitleWithImageChip(
+                            title: "암장",
+                            imageName: "icon_down",
+                            forgroundColor: Color.clLogUI.gray200,
+                            backgroundColor: Color.clLogUI.gray600,
+                            tapHandler: {
+                                store.send(.cragChipTapped)
+                            }
+                        )
+                    }
                 }
             }
         }
     }
     
     func makeThumbnailView() -> some View {
-        let items = Array(1...store.countOfFilteredStories)
-        
-        return LazyVGrid(columns: columns, spacing: 20) {
-            ForEach(items, id: \.self) { item in
+        LazyVGrid(columns: columns, spacing: 20) {
+            ForEach(store.attempts, id: \.self) { attempt in
                 ThumbnailView(
                     imageURLString: "https://www.dictionary.com/e/wp-content/uploads/2018/05/lhtm.jpg",
                     thumbnailType: .default(
-                        cragName: "클라이밍파크 강남점",
-                        date: "25.02.08 FRI"
+                        cragName: attempt.crag?.name ?? "",
+                        date: attempt.date
                     ),
-                    challengeResult: .complete,
-                    level: .blue,
-                    time: "00:00:00"
+                    challengeResult: attempt.result == .complete ? .complete : .fail,
+                    levelName: attempt.grade?.name ?? "하양",
+                    levelColor: Color(hex: attempt.grade?.hexCode ?? 0x00000),
+                    time: attempt.recordedTime
                 )
+            }
+        }
+    }
+    
+    private func showSelectGradeBottomSheet() -> some View {
+        let rows: [GridItem] = [.init(.adaptive(minimum: 60), spacing: 6)]
+        return VStack(alignment: .leading, spacing: 16) {
+            Text("난이도")
+                .font(.h3)
+                .foregroundStyle(Color.clLogUI.white)
+            
+            Divider()
+                .foregroundStyle(Color.clLogUI.gray600)
+            
+            LazyVGrid(columns: rows) {
+                ForEach(store.grades, id: \.self) { grade in
+                    LevelChip(
+                        name: grade.name,
+                        color: Color(hex: grade.hexCode)
+                    )
+                    .onTapGesture {
+                        store.send(.didSelectGrade(grade))
+                    }
+                }
+            }
+        }
+    }
+    
+    private func showSelectCragBottomSheet() -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("암장명")
+                .font(.h3)
+                .foregroundStyle(Color.clLogUI.white)
+            
+            ClLogTextInput(
+                placeHolder: "암장을 입력해주세요",
+                text: $store.searchCragName
+            )
+            
+            ForEach(store.crags.filter { crag in
+                if store.searchCragName.isEmpty {
+                    return true
+                }
+                
+                return crag.name.matchesPattern(store.searchCragName)
+            }, id: \.self) { crag in
+                TwoLineRow(
+                    title: crag.name,
+                    subtitle: crag.address
+                )
+                .onTapGesture {
+                    store.send(.didSelectCrag(crag))
+                }
             }
         }
     }

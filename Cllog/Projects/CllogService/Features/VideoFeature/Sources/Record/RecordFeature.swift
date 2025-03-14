@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import AVFoundation
 
 import Domain
 import VideoDomain
@@ -36,19 +37,25 @@ public struct RecordFeature {
         var viewState: ViewState?
         var isRecord: Bool = false
         var fileURL: URL?
+        var totalTime: TimeInterval = .zero
+        var recordDuration: String = "00:00:00"
         
-        public private(set) var recordDuration: String = "00:01:21"
+        var progress: CGFloat = 0
         
         public init() {}
     }
     
-    public enum Action {
+    public enum Action: Equatable {
         case onAppear
         case onStartRecord
         case onStopRecord
         case onClose
         
-        case fileOutput(filePath: URL, error: Error?)
+        case fileOutput(filePath: URL, error: Error?, totalTime: TimeInterval)
+        case updatePlayTime(String)
+        case updatePlayCurrentTime(CMTime)
+        
+        case test(filePath: URL)
         
         case editVideo
         
@@ -57,8 +64,44 @@ public struct RecordFeature {
         
         case sendAction(Action.Send)
         
-        public enum Send {
+        public enum Send: Equatable {
             case closeRecord
+        }
+        
+        public static func == (lhs: Self, rhs: Self) -> Bool {
+            switch (lhs, rhs) {
+            case (.onAppear, .onAppear):
+                return true
+                
+            case (.onStartRecord, .onStartRecord):
+                return true
+                    
+            case (.onStopRecord, .onStopRecord):
+                return true
+                
+            case (.onClose, .onClose):
+                return true
+                
+            case (.fileOutput, .fileOutput):
+                return true
+            case (.updatePlayTime, .updatePlayTime):
+                return true
+            case (.updatePlayCurrentTime, .updatePlayCurrentTime):
+                return true
+            case (.test, .test):
+                return true
+                
+            case (.editVideo, .editVideo):
+                return true
+                
+            case (.climbSaveSuccess, .climbSaveSuccess):
+                return true
+                
+            case (.sendAction, .sendAction):
+                return true
+                
+            default: return false
+            }
         }
     }
     
@@ -88,13 +131,41 @@ public struct RecordFeature {
                 state.isRecord = false
                 return .none
             
-            case .fileOutput(let filePath, let error):
+            case .fileOutput(let filePath, let error, let totalTime):
                 if let error {
                     
                 } else {
-                    state.fileURL = filePath
-                    state.viewState = .recorded(fileURL: filePath)
+//                    state.fileURL = filePath
+                    state.totalTime = totalTime
+//                    state.recordDuration = "00:00:00"
+////                    state.viewState = .recorded(fileURL: filePath)
+                    
                 }
+                return .run { send in
+                    do {
+                        guard let fileURL = try await videoUseCase.execute(loadName: "3E371F56-4860-4D70-807E-89C1A9774304.mov") else {
+                            return
+                        }
+                        await send(.test(filePath: fileURL))
+                    } catch {
+                        
+                    }
+                }
+            case .test(let filePath):
+                state.fileURL = filePath
+//                state.totalTime = totalTime
+                state.recordDuration = "00:00:00"
+                state.viewState = .recorded(fileURL: filePath)
+                return .none
+                
+            case .updatePlayTime(let updateTime):
+                state.recordDuration = updateTime
+                return .none
+                
+            case .updatePlayCurrentTime(let currentTime):
+                let totalTime = CGFloat(state.totalTime)
+                let currentTime = CGFloat(CMTimeGetSeconds(currentTime))
+                state.progress = currentTime/totalTime
                 return .none
                 
             case .editVideo:
@@ -103,7 +174,12 @@ public struct RecordFeature {
             case .climbSaveSuccess:
                 guard let fileURL = state.fileURL else { return .none }
                 return .run { [videoUseCase] send in
-                    try? await videoUseCase.execute(fileURL: fileURL)
+                    do {
+                        try await videoUseCase.execute(saveFile: fileURL)
+                    } catch {
+                        print("error: \(error)")
+                    }
+//                    try? await videoUseCase.execute(fileURL: fileURL)
                 }
                 
             case .climbSaveFailrue:

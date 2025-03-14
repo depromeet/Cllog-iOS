@@ -15,8 +15,8 @@ public struct MainFeatureAssembly: Assembly {
     
     public func assemble(container: Container) {
         
-        container.register(MainFeature.self) { resolver in
-            MainFeature()
-        }
+//        container.register(MainFeature.self) { resolver in
+//            MainFeature()
+//        }
     }
 }
