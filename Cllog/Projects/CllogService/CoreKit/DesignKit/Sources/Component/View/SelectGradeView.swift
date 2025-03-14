@@ -45,12 +45,33 @@ public struct SelectGradeView: View {
     
     public var body: some View {
         VStack(alignment: .leading) {
+            cragTitleSection
+            gradeSelectionSection
+            checkboxSection
+            saveButtonSection
+        }
+        .background(Color.clLogUI.gray800)
+        .onChange(of: selectedGrade) { _, newValue in
+            if selectedUnSaveGrade, newValue != nil {
+                selectedUnSaveGrade = false
+            }
+        }
+        .onChange(of: selectedUnSaveGrade) { _, newValue in
+            if newValue, selectedGrade != nil {
+                selectedGrade = nil
+            }
+        }
+    }
+    
+    // MARK: - UI Components
+    private var cragTitleSection: some View {
+        VStack(alignment: .leading) {
             Text("암장명")
                 .font(.h3)
                 .foregroundStyle(Color.clLogUI.white)
             
             Button {
-                print("tapped")
+                didTapCragTitleButton()
             } label: {
                 Text(cragName)
                     .font(.b1)
@@ -61,7 +82,11 @@ public struct SelectGradeView: View {
             }
             .background(Color.clLogUI.gray900)
             .cornerRadius(12)
-            
+        }
+    }
+    
+    private var gradeSelectionSection: some View {
+        VStack(alignment: .leading) {
             Text("문제 난이도")
                 .font(.h3)
                 .foregroundStyle(Color.clLogUI.white)
@@ -70,48 +95,44 @@ public struct SelectGradeView: View {
             
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 36, maximum: 36), spacing: 28)]) {
                 ForEach(grades, id: \.self) { grade in
-                    Circle()
-                        .foregroundStyle(grade.color)
-                        .overlay(
-                            Circle()
-                                .strokeBorder(
-                                    selectedGrade == grade ? Color.clLogUI.white : Color.clear,
-                                    lineWidth: 3
-                                )
-                        )
-                        .onTapGesture {
-                            selectedGrade = grade
-                        }
+                    gradeGradeChip(for: grade)
                 }
             }
             .padding(.vertical, 16)
             .background(Color.clLogUI.gray900)
             .cornerRadius(12)
-            
-            CheckBoxButton(
-                title: "난이도 미등록",
-                isActive: $selectedUnSaveGrade
+        }
+    }
+    
+    private func gradeGradeChip(for grade: DesignGrade) -> some View {
+        Circle()
+            .foregroundStyle(grade.color)
+            .overlay(
+                Circle()
+                    .strokeBorder(
+                        selectedGrade == grade ? Color.clLogUI.white : Color.clear,
+                        lineWidth: 3
+                    )
             )
-            
-            .padding(.top, 10)
-            .padding(.bottom, 40)
-            
-            GeneralButton("저장하기") {
-                didTapSaveButton(selectedGrade)
+            .onTapGesture {
+                selectedGrade = grade
             }
-            .style(.white)
+    }
+    
+    private var checkboxSection: some View {
+        CheckBoxButton(
+            title: "난이도 미등록",
+            isActive: $selectedUnSaveGrade
+        )
+        .padding(.top, 10)
+        .padding(.bottom, 40)
+    }
+    
+    private var saveButtonSection: some View {
+        GeneralButton("저장하기") {
+            didTapSaveButton(selectedGrade)
         }
-        .background(Color.clLogUI.gray800)
-        .onChange(of: selectedGrade) { _, newValue in
-            if selectedUnSaveGrade, newValue != nil {
-                selectedUnSaveGrade = false
-            }
-        }
-        .onChange(of: selectedUnSaveGrade) {_, newValue in
-            if newValue, selectedGrade != nil {
-                selectedGrade = nil
-            }
-        }
+        .style(.white)
     }
 }
 
