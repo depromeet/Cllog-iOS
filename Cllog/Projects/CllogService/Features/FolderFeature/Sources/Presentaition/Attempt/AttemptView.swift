@@ -15,6 +15,10 @@ import Core
 import ComposableArchitecture
 
 public struct AttemptView: ViewProtocol {
+    // TODO: Feature로 이동
+    @State var progressValue: Float = 0.5
+    @State var splitXPositions: [CGFloat] = []
+   
     private let attempt = Attempt(
         date: "25.02.08 FRI",
         grade: Grade(name: "파랑", hexCode: 0x5E7CFF),
@@ -34,12 +38,10 @@ extension AttemptView {
     private func makeBodyView() -> some View {
         VStack {
             makeChipView()
-               
-            // TODO: 동영상 재생 화면
-            RoundedRectangle(cornerRadius: 6)
-                .padding(.vertical, 12)
+            
+            makeVideoView()
                 .padding(.horizontal, 12)
-                
+                .padding(.vertical, 12)
             
             makeAttemptInfoView()
                 .padding(.horizontal, 12)
@@ -84,6 +86,38 @@ extension AttemptView {
         }
         .scrollIndicators(.hidden)
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
+    }
+    
+    private func makeVideoView() -> some View {
+        
+        return ZStack(alignment: .bottom) {
+            RoundedRectangle(cornerRadius: 6)
+                .foregroundStyle(Color.clLogUI.dim)
+                .onTapGesture {
+                    print("재생 또는 정지")
+                }
+            VStack(alignment: .leading, spacing: 3) {
+                ZStack(alignment: .bottomLeading) {
+                    ForEach(splitXPositions.indices, id: \.self) { index in
+                        ClLogUI.stamp
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                            .foregroundStyle(Color.clLogUI.primary)
+                            .offset(x: splitXPositions[index] - CGFloat(15)) // 이미지 중앙 정렬을 위한 width/2
+                    }
+                }
+                
+                PlayerProgressBar(
+                    value: $progressValue,
+                    splitPositions: [0.2, 0.4, 0.7],
+                    onSplitPositionsCalculated: { positions in
+                        
+                        splitXPositions = positions
+                    }
+                )
+                .frame(height: 10)
+            }
+        }
     }
     
     private func makeAttemptInfoView() -> some View {
