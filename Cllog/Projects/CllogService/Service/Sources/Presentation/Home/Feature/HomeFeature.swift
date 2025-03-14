@@ -13,6 +13,9 @@ import VideoFeature
 
 import ComposableArchitecture
 import LoginFeature
+import FolderTabFeature
+import FolderFeature
+import CalendarFeature
 import Shared
 
 
@@ -42,6 +45,10 @@ public struct HomeFeature {
         public var login = LoginFeature.State()
         public var videoState = VideoFeature.State()
         public var recordState = RecordFeature.State()
+        public var folderTabState = FolderTabFeature.State()
+        public var folderState = FolderFeature.State()
+        public var calendarMainState = CalendarMainFeature.State()
+        public var calendarDetailState = CalendarDetailFeature.State()
     }
     
     public enum Action {
@@ -52,11 +59,16 @@ public struct HomeFeature {
         case mainFeatureAction(MainFeature.Action)
         case videoFeatureAction(VideoFeature.Action)
         case recordFeatureAction(RecordFeature.Action)
+        case folderTabAction(FolderTabFeature.Action)
+        case folderAction(FolderFeature.Action)
+        case calendarMainAction(CalendarMainFeature.Action)
+        case calendarDetailAction(CalendarDetailFeature.Action)
     }
     
-    public enum Destination {
+    public enum Destination: Equatable {
         case login
         case main
+        case calendarDetail(Int)
     }
     
     public init(
@@ -83,6 +95,26 @@ public struct HomeFeature {
             LoginFeature()
         }
         
+        Scope(state: \.folderTabState, action: \.folderTabAction) {
+            FolderTabFeature()
+        }
+        
+        Scope(state: \.folderState, action: \.folderAction) {
+            FolderFeature()
+        }
+        
+        Scope(state: \.calendarMainState, action: \.calendarMainAction) {
+            CalendarMainFeature()
+        }
+        
+        Scope(state: \.calendarMainState, action: \.calendarMainAction) {
+            CalendarMainFeature()
+        }
+        
+        Scope(state: \.calendarDetailState, action: \.calendarDetailAction) {
+            CalendarDetailFeature()
+        }
+        
         Reduce { state, action in
             logConsoleUseCase.executeInfo(label: "\(Self.self)", message: "action :: \(action)")
             switch action {
@@ -102,6 +134,31 @@ public struct HomeFeature {
                 
             case .mainFeatureAction(let action):
                 return .none
+                
+            case .folderTabAction(let action):
+                return .none
+                
+            case .folderAction(let action):
+                return .none
+                
+            case .calendarMainAction(let action):
+                switch action {
+                case .moveToCalendarDeatil(let storyId):
+                    state.destination = .calendarDetail(storyId)
+                    return .send(
+                        .calendarDetailAction(
+                            .setStoryId(storyId)
+                        )
+                    )
+                default:
+                    return .none
+                }
+                
+            case .calendarDetailAction(let action):
+                switch action {
+                default:
+                    return .none
+                }
                 
             case .videoFeatureAction(let action):
                 switch action {

@@ -21,12 +21,12 @@ import LoginDomain
 
 struct HomeView: View {
     
-    private weak var on: UIViewController?
+    private weak var on: BaseViewController?
     
     private let store: StoreOf<HomeFeature>
     
     init(
-        on: UIViewController,
+        on: BaseViewController,
         store: StoreOf<HomeFeature>
     ) {
         self.on = on
@@ -48,20 +48,40 @@ struct HomeView: View {
                 on: on,
                 tabViews: [
                     FolderTabView(
-                        store: .init(initialState: FolderTabFeature.State(), reducer: {
-                            FolderTabFeature()
-                        }), folderView: FolderView(store: .init(initialState: FolderFeature.State(), reducer: {
-                            FolderFeature()
-                        })), calendarView: CalendarMainView(store: .init(initialState: CalendarMainFeature.State(), reducer: {
-                            CalendarMainFeature()
-                        }))),
+                        store: store.scope(
+                            state: \.folderTabState,
+                            action: \.folderTabAction
+                        ),
+                        folderView: FolderView(
+                            store: store.scope(
+                                state: \.folderState,
+                                action: \.folderAction
+                            )
+                        ),
+                        calendarView: CalendarMainView(
+                            store: store.scope(
+                                state: \.calendarMainState,
+                                action: \.calendarMainAction
+                            )
+                        )
+                    ),
                     videoView,
                     Text("3")
-                ], overlayerView: RecordView(
+                ],
+                overlayerView: RecordView(
                     on: on,
                     store: store.scope(state: \.recordState, action: \.recordFeatureAction)
-                ), store:
-                    store.scope(state: \.mainState, action: \.mainFeatureAction))
+                ),
+                store:
+                    store.scope(state: \.mainState, action: \.mainFeatureAction)
+            )
+        case .calendarDetail(let storyId):
+            CalendarDetailView(
+                store: store.scope(
+                    state: \.calendarDetailState,
+                    action: \.calendarDetailAction
+                )
+            )
         case .none:
             // Intro, splash
             Text("Splash")

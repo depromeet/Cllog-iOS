@@ -12,7 +12,7 @@ import ComposableArchitecture
 public struct UserInfoFeature {
     
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         var isOpen: Bool = false
         var numOfClimbDays: Int = 0
         var totalDurationMs: Int = 0

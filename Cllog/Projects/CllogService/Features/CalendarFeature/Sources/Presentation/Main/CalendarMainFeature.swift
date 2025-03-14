@@ -19,7 +19,8 @@ public struct CalendarMainFeature {
     private let calendar = Calendar.current
     
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
+        
         var calendarCurrentDate: Date = Date()
         
         var userInfoState = UserInfoFeature.State()
@@ -31,6 +32,7 @@ public struct CalendarMainFeature {
         case userInfoAction(UserInfoFeature.Action)
         case calendarAction(CalendarFeature.Action)
         case onAppear
+        case moveToCalendarDeatil(Int)
         
         case fetch(Date)
         case isCurrentMonthLast(Bool)
@@ -69,6 +71,8 @@ public struct CalendarMainFeature {
                         direction: -1,
                         currentDate: state.calendarCurrentDate
                     )
+                case .storyTapped(let storyId):
+                    return .send(.moveToCalendarDeatil(storyId))
                 default:
                     return .none
                 }

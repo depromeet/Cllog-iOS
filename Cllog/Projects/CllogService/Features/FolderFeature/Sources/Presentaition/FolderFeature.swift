@@ -14,7 +14,7 @@ import ComposableArchitecture
 public struct FolderFeature {
     
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         var selectedChip: Set<SelectedChip> = []
         var selectedCragName = ""
         var countOfFilteredStories = 30 // FIXME: 서버 연결

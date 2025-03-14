@@ -15,13 +15,16 @@ public struct CalendarDetailFeature {
     public init() {}
     
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         var userInfoState = UserInfoFeature.State()
+        
+        var storyId: Int? = nil
         public init() {}
     }
     
     public enum Action {
         case userInfoAction(UserInfoFeature.Action)
+        case setStoryId(Int)
     }
     
     public var body: some Reducer<State, Action> {
@@ -31,6 +34,10 @@ public struct CalendarDetailFeature {
         
         Reduce { state, action in
             switch action {
+            case .setStoryId(let id):
+                print("storyId: \(id)")
+                state.storyId = id
+                return .none
             default:
                 return .none
             }

@@ -16,7 +16,7 @@ public struct CalendarFeature {
     private let calendar = Calendar.current
     
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         var selectedDate: Date = Date()
         var isDisableNextMonth: Bool = false
         var days: [ClimbDay] = []
@@ -52,7 +52,6 @@ public struct CalendarFeature {
                 return .none
             case .storyTapped(let storyId):
                 state.isPresentBottomSheet = false
-                print("storyId: \(storyId)")
                 return .none
                 
             case .isCurrentMonthLast(let isLast):
