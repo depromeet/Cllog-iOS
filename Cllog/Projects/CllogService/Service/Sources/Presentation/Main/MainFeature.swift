@@ -12,6 +12,9 @@ import SwiftUI
 // 내부 Module
 import Shared
 import VideoFeature
+import FolderTabFeature
+import FolderFeature
+import CalendarFeature
 
 // 외부 Module
 import ComposableArchitecture
@@ -31,10 +34,24 @@ public struct MainFeature {
         // Record State
         var recordState: RecordFeature.State?
         
+        // FolderTab State
+        var folderTabState: FolderTabFeature.State = .init()
+        
+        // Folder State
+        var folderState: FolderFeature.State = .init()
+        
+        // CalendarMain State
+        var calendarMainState: CalendarMainFeature.State = .init()
+        
+        // CalendarDetail State
+        var calendarDetailState: CalendarDetailFeature.State = .init()
+        
         var isRecording: Bool = false
+        
+        var pushToCalendarDeatil: Int?
     }
     
-    public enum Action: Equatable {
+    public enum Action {
         // Main Tab Action
         case selectedTab(Int)
         
@@ -43,12 +60,34 @@ public struct MainFeature {
         
         // RecordTabbar Action
         case recordFeatureAction(RecordFeature.Action)
+        
+        // FolderTabFeature
+        case folderTabAction(FolderTabFeature.Action)
+        case folderAction(FolderFeature.Action)
+        case calendarMainAction(CalendarMainFeature.Action)
+        case calendarDetailAction(CalendarDetailFeature.Action)
     }
     
     public var body: some ReducerOf<Self> {
         
         Scope(state: \.vidoeTabState, action: \.videoTabAction) {
             ClLogDI.container.resolve(VideoFeature.self)!
+        }
+        
+        Scope(state: \.folderTabState, action: \.folderTabAction) {
+            FolderTabFeature()
+        }
+        
+        Scope(state: \.folderState, action: \.folderAction) {
+            FolderFeature()
+        }
+        
+        Scope(state: \.calendarMainState, action: \.calendarMainAction) {
+            CalendarMainFeature()
+        }
+        
+        Scope(state: \.calendarDetailState, action: \.calendarDetailAction) {
+            CalendarDetailFeature()
         }
         
         Reduce(reducerCore)
@@ -85,6 +124,17 @@ private extension MainFeature {
         case .recordFeatureAction(let action):
             // 녹화 화면 - Action
             return recordCore(&state, action)
+        case .folderTabAction(let action):
+            // 폴더 탭 - Action
+            return folderTabCore(&state, action)
+        case .folderAction(let action):
+            // 폴더 - Action
+            return folderCore(&state, action)
+        case .calendarMainAction(let action):
+            // 캘린더 - Action
+            return calendarMainCore(&state, action)
+        case .calendarDetailAction(let action):
+            return calendarDetailCore(&state, action)
         }
     }
 }
@@ -124,6 +174,78 @@ private extension MainFeature {
             // 영상 촬영 시작
             state.recordState = .init()
             return .none
+        default:
+            return .none
+        }
+    }
+}
+
+private extension MainFeature {
+    /// Video Action
+    /// - Parameters:
+    ///   - state: 저장소
+    ///   - action: FolderTab Action
+    /// - Returns: Effect
+    func folderTabCore(
+        _ state: inout State,
+        _ action: FolderTabFeature.Action
+    ) -> Effect<Action> {
+        switch action {
+        default:
+            return .none
+        }
+    }
+}
+
+private extension MainFeature {
+    /// Video Action
+    /// - Parameters:
+    ///   - state: 저장소
+    ///   - action: Folder Action
+    /// - Returns: Effect
+    func folderCore(
+        _ state: inout State,
+        _ action: FolderFeature.Action
+    ) -> Effect<Action> {
+        switch action {
+        default:
+            return .none
+        }
+    }
+}
+
+private extension MainFeature {
+    /// Video Action
+    /// - Parameters:
+    ///   - state: 저장소
+    ///   - action: FolderTab Action
+    /// - Returns: Effect
+    func calendarMainCore(
+        _ state: inout State,
+        _ action: CalendarMainFeature.Action
+    ) -> Effect<Action> {
+        switch action {
+        case .moveToCalendarDeatil(let storyId):
+            // 캘린더 상세 페이지로 이동
+            state.pushToCalendarDeatil = storyId
+            return .none
+        default:
+            return .none
+        }
+    }
+}
+
+private extension MainFeature {
+    /// Video Action
+    /// - Parameters:
+    ///   - state: 저장소
+    ///   - action: FolderTab Action
+    /// - Returns: Effect
+    func calendarDetailCore(
+        _ state: inout State,
+        _ action: CalendarDetailFeature.Action
+    ) -> Effect<Action> {
+        switch action {
         default:
             return .none
         }
