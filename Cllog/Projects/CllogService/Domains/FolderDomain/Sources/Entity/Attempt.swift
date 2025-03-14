@@ -25,4 +25,13 @@ public struct Attempt: Hashable, Identifiable {
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
     }
+    
+    public init(id: UUID = UUID(), date: String, grade: Grade?, result: AttemptResult, recordedTime: String, crag: Crag?) {
+        self.id = id
+        self.date = date
+        self.grade = grade
+        self.result = result
+        self.recordedTime = recordedTime
+        self.crag = crag
+    }
 }
