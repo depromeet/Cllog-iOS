@@ -32,7 +32,7 @@ public struct FolderView: ViewProtocol {
                 showSelectGradeBottomSheet()
             }
             .bottomSheet(isPresented: $store.showSelectCragBottomSheet) {
-                Text("BYE")
+                showSelectCragBottomSheet()
             }
     }
 }
@@ -123,15 +123,28 @@ extension FolderView {
                     }
 
                 case .crag:
-                    TitleWithImageChip(
-                        title: isSelectedChip ? store.selectedCragName : "암장",
-                        imageName: isSelectedChip ? "x" : "icon_down",
-                        forgroundColor: isSelectedChip ? Color.clLogUI.gray800 :  Color.clLogUI.gray200,
-                        backgroundColor: isSelectedChip ? Color.clLogUI.primary : Color.clLogUI.gray600,
-                        tapHandler: {
-                            store.send(.cragChipTapped(cragName: "엄청나게 긴긴긴긴긴 암장 이름입 니 다~!"))
-                        }
-                    )
+                    
+                    if let selectedCrag = store.selectedCrag {
+                        TitleWithImageChip(
+                            title: selectedCrag.name,
+                            imageName: "close",
+                            forgroundColor: Color.clLogUI.gray800,
+                            backgroundColor: Color.clLogUI.primary,
+                            tapHandler: {
+                                store.send(.cragChipTapped)
+                            }
+                        )
+                    } else {
+                        TitleWithImageChip(
+                            title: "암장",
+                            imageName: "icon_down",
+                            forgroundColor: Color.clLogUI.gray200,
+                            backgroundColor: Color.clLogUI.gray600,
+                            tapHandler: {
+                                store.send(.cragChipTapped)
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -177,7 +190,29 @@ extension FolderView {
                 }
             }
         }
-        
+    }
+    
+    private func showSelectCragBottomSheet() -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("암장명")
+                .font(.h3)
+                .foregroundStyle(Color.clLogUI.white)
+            
+            ClLogTextInput(
+                placeHolder: "암장을 입력해주세요",
+                text: $store.searchCragName
+            )
+            
+            ForEach(store.crags, id: \.self) { crag in
+                TwoLineRow(
+                    title: crag.name,
+                    subtitle: crag.address
+                )
+                .onTapGesture {
+                    store.send(.didSelectCrag(crag))
+                }
+            }
+        }
     }
 }
 
