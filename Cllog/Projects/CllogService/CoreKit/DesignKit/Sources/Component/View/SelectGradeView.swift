@@ -26,25 +26,22 @@ public struct SelectGradeView: View {
     public init(
         cragName: String,
         grades: [DesignGrade],
-        selectedGrade: Binding<DesignGrade?>,
-        selectedUnSaveGrade: Binding<Bool>,
-        didTapSaveButton: @escaping () -> Void,
+        didTapSaveButton: @escaping (DesignGrade?) -> Void,
         didTapCragTitleButton: @escaping() -> Void
     ) {
         self.cragName = cragName
         self.grades = grades
-        self._selectedGrade = selectedGrade
-        self._selectedUnSaveGrade = selectedUnSaveGrade
         self.didTapSaveButton = didTapSaveButton
         self.didTapCragTitleButton = didTapCragTitleButton
     }
     
     private let cragName: String
     private let grades: [DesignGrade]
-    @Binding private var selectedGrade: DesignGrade?
-    @Binding private var selectedUnSaveGrade: Bool
-    private var didTapSaveButton: () -> Void
+    private var didTapSaveButton: (DesignGrade?) -> Void
     private var didTapCragTitleButton: () -> Void
+    
+    @State private var selectedGrade: DesignGrade?
+    @State private var selectedUnSaveGrade: Bool = false
     
     public var body: some View {
         VStack(alignment: .leading) {
@@ -95,15 +92,26 @@ public struct SelectGradeView: View {
                 title: "난이도 미등록",
                 isActive: $selectedUnSaveGrade
             )
+            
             .padding(.top, 10)
             .padding(.bottom, 40)
             
             GeneralButton("저장하기") {
-                print("저장")
+                didTapSaveButton(selectedGrade)
             }
             .style(.white)
         }
         .background(Color.clLogUI.gray800)
+        .onChange(of: selectedGrade) { _, newValue in
+            if selectedUnSaveGrade, newValue != nil {
+                selectedUnSaveGrade = false
+            }
+        }
+        .onChange(of: selectedUnSaveGrade) {_, newValue in
+            if newValue, selectedGrade != nil {
+                selectedGrade = nil
+            }
+        }
     }
 }
 
@@ -116,9 +124,7 @@ struct SelectGradeView_Previews: PreviewProvider {
                 DesignGrade(name: "V2", color: .green),
                 DesignGrade(name: "V3", color: .red),
             ],
-            selectedGrade: .constant(nil),
-            selectedUnSaveGrade: .constant(false),
-            didTapSaveButton: {
+            didTapSaveButton: { _ in
                 
             },
             didTapCragTitleButton: {
