@@ -18,7 +18,7 @@ public struct FolderTabFeature {
     }
     
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         var selectedTab: TabType = .folder
         public init() {
         }

@@ -25,7 +25,7 @@ public extension HomeViewController {
     }
 }
 
-public final class HomeViewController: UIViewController {
+public final class HomeViewController: BaseViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,5 +47,16 @@ public final class HomeViewController: UIViewController {
         hostingController.view.frame = view.bounds
         view.addSubview(hostingController.view)
         hostingController.didMove(toParent: self)
+    }
+}
+
+public class BaseViewController: UIViewController {
+    
+    func push(_ view: UIViewController) {
+        navigationController?.pushViewController(view, animated: true)
+    }
+    
+    func pop() {
+        navigationController?.popViewController(animated: true)
     }
 }

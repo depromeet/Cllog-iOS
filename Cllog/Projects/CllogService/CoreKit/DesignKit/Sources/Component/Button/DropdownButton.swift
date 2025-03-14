@@ -29,7 +29,7 @@ public struct DropdownButton: View {
                     .frame(width: 24, height: 24)
                     .foregroundStyle(Color.clLogUI.gray700)
                 
-                Image.clLogUI.up
+                Image.clLogUI.down
                     .resizable()
                     .frame(width: 20, height: 20)
                     .foregroundStyle(Color.clLogUI.gray50)

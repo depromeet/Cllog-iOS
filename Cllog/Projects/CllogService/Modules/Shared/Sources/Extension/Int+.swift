@@ -9,11 +9,13 @@
 import Foundation
 
 public extension Int {
-    func toTimeString() -> String {
-        guard self > 0 else { return "00:00:00"}
-        let hours = self / 3600
-        let minutes = (self % 3600) / 60
-        let seconds = self % 60
+    var msToTimeString: String {
+        /// 밀리초(ms)를 `HH:mm:ss` 포맷으로 변환
+        let totalSeconds = self / 1000
+        let hours = totalSeconds / 3600
+        let minutes = (totalSeconds % 3600) / 60
+        let seconds = totalSeconds % 60
+        
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
 }

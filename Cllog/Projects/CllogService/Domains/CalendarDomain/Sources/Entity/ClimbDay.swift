@@ -14,6 +14,20 @@ public struct ClimbDay: Hashable, Identifiable {
     public let thumbnail: String
     public let stories: [ClimbStory]
     
+    public var displayDate: String {
+        let calendar = Calendar.current
+        let selectedComponents = calendar.dateComponents([.year, .month, .day], from: date)
+        
+        if let year = selectedComponents.year,
+           let month = selectedComponents.month,
+           let day = selectedComponents.day
+        {
+            return "\(year).\(month).\(day)"
+        } else {
+            return ""
+        }
+    }
+    
     public var isCurrentMonth: Bool
     
     public init(
@@ -27,7 +41,9 @@ public struct ClimbDay: Hashable, Identifiable {
         self.stories = stories
         self.isCurrentMonth = isCurrentMonth
     }
-    
+}
+
+extension ClimbDay {
     public static var mock: [ClimbDay] {
         [
             ClimbDay(
@@ -51,5 +67,10 @@ public struct ClimbDay: Hashable, Identifiable {
                 stories: []
             ),
         ]
+    }
+    
+    // 스토리 암장명으로 그룹화
+    public var groupedStories: [String: [ClimbStory]] {
+        Dictionary(grouping: stories, by: {$0.cragName} )
     }
 }

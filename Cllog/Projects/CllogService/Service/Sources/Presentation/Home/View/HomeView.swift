@@ -21,7 +21,7 @@ struct HomeView: View {
     private let store: StoreOf<HomeFeature>
     
     init(
-        on: UIViewController,
+        on: BaseViewController,
         store: StoreOf<HomeFeature>
     ) {
         self.on = on
