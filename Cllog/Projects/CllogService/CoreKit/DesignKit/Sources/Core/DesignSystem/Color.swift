@@ -88,3 +88,13 @@ extension ClLogUI where Base == Color {
         return Color(uiColor: UIColor.clLogUI.asset(name) )
     }
 }
+
+extension Color {
+    public static func randomeColor() -> Color {
+        return Color(
+            red: CGFloat(Int.random(in: 1...255))/255,
+            green: CGFloat(Int.random(in: 1...255))/255,
+            blue: CGFloat(Int.random(in: 1...255))/255
+        )
+    }
+}

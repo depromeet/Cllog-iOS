@@ -45,7 +45,7 @@ public struct RecordFeature {
         public init() {}
     }
     
-    public enum Action {
+    public enum Action: Equatable {
         case onAppear
         case onStartRecord
         case onStopRecord
@@ -64,8 +64,44 @@ public struct RecordFeature {
         
         case sendAction(Action.Send)
         
-        public enum Send {
+        public enum Send: Equatable {
             case closeRecord
+        }
+        
+        public static func == (lhs: Self, rhs: Self) -> Bool {
+            switch (lhs, rhs) {
+            case (.onAppear, .onAppear):
+                return true
+                
+            case (.onStartRecord, .onStartRecord):
+                return true
+                    
+            case (.onStopRecord, .onStopRecord):
+                return true
+                
+            case (.onClose, .onClose):
+                return true
+                
+            case (.fileOutput, .fileOutput):
+                return true
+            case (.updatePlayTime, .updatePlayTime):
+                return true
+            case (.updatePlayCurrentTime, .updatePlayCurrentTime):
+                return true
+            case (.test, .test):
+                return true
+                
+            case (.editVideo, .editVideo):
+                return true
+                
+            case (.climbSaveSuccess, .climbSaveSuccess):
+                return true
+                
+            case (.sendAction, .sendAction):
+                return true
+                
+            default: return false
+            }
         }
     }
     
