@@ -20,7 +20,6 @@ public extension View {
             SelectGradeView(
                 cragName: cragName,
                 grades: grades,
-                isPresented: isPresented,
                 didTapSaveButton: didTapSaveButton,
                 didTapCragTitleButton: didTapCragTitleButton
             )
@@ -46,13 +45,11 @@ struct SelectGradeView: View {
     init(
         cragName: String,
         grades: [DesignGrade],
-        isPresented: Binding<Bool>,
         didTapSaveButton: @escaping (DesignGrade?) -> Void,
         didTapCragTitleButton: @escaping() -> Void
     ) {
         self.cragName = cragName
         self.grades = grades
-        self._isPresented = isPresented
         self.didTapSaveButton = didTapSaveButton
         self.didTapCragTitleButton = didTapCragTitleButton
     }
@@ -169,7 +166,6 @@ struct SelectGradeView_Previews: PreviewProvider {
                 DesignGrade(name: "V2", color: .green),
                 DesignGrade(name: "V3", color: .red),
             ],
-            isPresented: .constant(false),
             didTapSaveButton: { _ in
                 
             },
