@@ -23,27 +23,6 @@ public struct HomeFeature {
         var autoLoginState: AutoLoginFeature.State?
         var loginState: LoginFeature.State?
         var mainState: MainFeature.State?
-        
-        
-//        public var isRecord: Bool = false
-//        public var destination: Destination? = nil
-//
-//        public var mainState = MainFeature.State(
-//            tabTitles: [],
-//            selectedImageNames: [
-//                "icn_folder_selected",
-//                "icn_camera_selected",
-//                "icn_report_selected"
-//            ],
-//            unselectedImageNames: [
-//                "icn_folder_unselected",
-//                "icn_camera_unselected",
-//                "icn_report_unselected"
-//            ]
-//        )
-//        public var login = LoginFeature.State()
-//        public var videoState = VideoFeature.State()
-//        public var recordState = RecordFeature.State()
     }
     
     public enum Action: Equatable {
@@ -57,13 +36,6 @@ public struct HomeFeature {
         
         // Main
         case mainAction(MainFeature.Action)
-        
-//        case onAppear
-//        case loginCompleted
-//
-//        case mainFeatureAction(MainFeature.Action)
-//        case videoFeatureAction(VideoFeature.Action)
-//        case recordFeatureAction(RecordFeature.Action)
     }
     
     public var body: some ReducerOf<Self> {

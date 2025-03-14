@@ -39,17 +39,14 @@ struct HomeView: View {
         ZStack {
             // 자동 로그인
             IfLetStore(store.scope(state: \.autoLoginState, action: \.autoLoginAction), then: AutoLoginView.init)
-                .debugFrameSize()
             
             // 로그인
             IfLetStore(store.scope(state: \.loginState, action: \.loginAction), then: LoginView.init)
-                .debugFrameSize()
             
             // 메인
             IfLetStore(store.scope(state: \.mainState, action: \.mainAction), then: { [weak on] store in
                 MainView(on: on, store: store)
             })
-            .debugFrameSize()
         }
     }
 }

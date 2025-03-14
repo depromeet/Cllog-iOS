@@ -13,6 +13,7 @@ import Domain
 import LoginDomain
 import FolderDomain
 import CalendarDomain
+import VideoDomain
 import Networker
 import Swinject
 
@@ -30,6 +31,14 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
+        
+        container.register(VideoRepository.self) { resolver in
+            VideoRecordRepositry(provider: AuthProvider(
+                tokenProvider: DefaultTokenDataSource().loadToken
+            ))
+        }
+        
+        
         // 준영
 //        container.register(MonthLimitUseCase.self) { _ in
 //            MonthLimit()

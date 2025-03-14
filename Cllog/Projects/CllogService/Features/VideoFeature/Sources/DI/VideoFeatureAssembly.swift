@@ -8,10 +8,8 @@
 
 import Swinject
 
-import Networker
 import Domain
 import VideoDomain
-import Data
 
 public struct VideoFeatureAssembly: Assembly {
     
@@ -19,12 +17,6 @@ public struct VideoFeatureAssembly: Assembly {
     
     public func assemble(container: Swinject.Container) {
 
-        container.register(VideoRepository.self) { resolver in
-            VideoRecordRepositry(provider: AuthProvider(
-                tokenProvider: DefaultTokenDataSource().loadToken
-            ))
-        }
-        
         container.register(VideoPermissionUseCase.self) { _ in
             VideoPermission()
         }
