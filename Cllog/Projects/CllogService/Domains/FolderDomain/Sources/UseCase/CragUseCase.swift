@@ -9,6 +9,8 @@
 import Foundation
 import Shared
 
+import Dependencies
+
 public protocol CragUseCase {
     func getCrags() async throws -> [Crag]
 }
@@ -23,5 +25,16 @@ public struct MockCragUseCase: CragUseCase {
     
     public func getCrags() async throws -> [Crag] {
         try await cragRepository.getCrags()
+    }
+}
+
+enum CragUseCaseKey: DependencyKey {
+    static let liveValue: CragUseCase = MockCragUseCase(cragRepository: MockCragRepository())
+}
+
+extension DependencyValues {
+    public var cragUseCase: CragUseCase {
+        get { self[CragUseCaseKey.self] }
+        set { self[CragUseCaseKey.self] = newValue }
     }
 }

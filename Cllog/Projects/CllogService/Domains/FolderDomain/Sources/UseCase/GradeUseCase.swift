@@ -9,6 +9,8 @@
 import Foundation
 import Shared
 
+import Dependencies
+
 public protocol GradeUseCase {
     func getGrades() async throws -> [Grade]
 }
@@ -23,5 +25,16 @@ public struct MockGradeUseCase: GradeUseCase {
     
     public func getGrades() async throws -> [Grade] {
         try await gradeRepository.getGrades()
+    }
+}
+
+enum GradeUseCaseKey: DependencyKey {
+    static let liveValue: GradeUseCase = MockGradeUseCase(gradeRepository: MockGradeRepository())
+}
+
+extension DependencyValues {
+    public var gradeUseCase: GradeUseCase {
+        get { self[GradeUseCaseKey.self] }
+        set { self[GradeUseCaseKey.self] = newValue }
     }
 }
