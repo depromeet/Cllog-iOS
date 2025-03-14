@@ -8,6 +8,26 @@
 
 import SwiftUI
 
+public extension View {
+    func showGradeBottomSheet(
+        isPresented: Binding<Bool>,
+        cragName: String,
+        grades: [DesignGrade],
+        didTapSaveButton: @escaping (DesignGrade?) -> Void,
+        didTapCragTitleButton: @escaping () -> Void
+    ) -> some View {
+        self.bottomSheet(isPresented: isPresented) {
+            SelectGradeView(
+                cragName: cragName,
+                grades: grades,
+                isPresented: isPresented,
+                didTapSaveButton: didTapSaveButton,
+                didTapCragTitleButton: didTapCragTitleButton
+            )
+        }
+    }
+}
+
 public struct DesignGrade: Hashable, Identifiable {
     public var id: UUID
     
@@ -21,16 +41,18 @@ public struct DesignGrade: Hashable, Identifiable {
     public let color: Color
 }
 
-public struct SelectGradeView: View {
+struct SelectGradeView: View {
     
-    public init(
+    init(
         cragName: String,
         grades: [DesignGrade],
+        isPresented: Binding<Bool>,
         didTapSaveButton: @escaping (DesignGrade?) -> Void,
         didTapCragTitleButton: @escaping() -> Void
     ) {
         self.cragName = cragName
         self.grades = grades
+        self._isPresented = isPresented
         self.didTapSaveButton = didTapSaveButton
         self.didTapCragTitleButton = didTapCragTitleButton
     }
@@ -40,10 +62,11 @@ public struct SelectGradeView: View {
     private var didTapSaveButton: (DesignGrade?) -> Void
     private var didTapCragTitleButton: () -> Void
     
+    @Binding private var isPresented: Bool
     @State private var selectedGrade: DesignGrade?
     @State private var selectedUnSaveGrade: Bool = false
     
-    public var body: some View {
+    var body: some View {
         VStack(alignment: .leading) {
             cragTitleSection
             gradeSelectionSection
@@ -130,6 +153,7 @@ public struct SelectGradeView: View {
     
     private var saveButtonSection: some View {
         GeneralButton("저장하기") {
+            isPresented = false
             didTapSaveButton(selectedGrade)
         }
         .style(.white)
@@ -145,6 +169,7 @@ struct SelectGradeView_Previews: PreviewProvider {
                 DesignGrade(name: "V2", color: .green),
                 DesignGrade(name: "V3", color: .red),
             ],
+            isPresented: .constant(false),
             didTapSaveButton: { _ in
                 
             },
