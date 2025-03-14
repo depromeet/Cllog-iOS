@@ -60,12 +60,19 @@ extension ClLogUI where Base == Image {
     public static var right: Image { asset(#function) }
     public static var share: Image { asset(#function) }
     public static var stamp: Image { asset(#function) }
+    public static var stampSmall: Image { asset(#function) }
     public static var up: Image { asset(#function) }
     public static var dotVertical: Image { asset(#function) }
     public static var calendarAfter: Image { asset(#function) }
     public static var calendarBefore: Image { asset(#function) }
     public static var time: Image { asset(#function) }
     public static var icn_close: Image { asset(#function) }
+    
+    // Edit
+    public static var playSmall: Image { asset(#function) }
+    public static var stopSmall: Image { asset(#function) }
+    public static var redo: Image { asset(#function) }
+    public static var undo: Image { asset(#function) }
 }
 
 extension ClLogUI where Base == UIImage {

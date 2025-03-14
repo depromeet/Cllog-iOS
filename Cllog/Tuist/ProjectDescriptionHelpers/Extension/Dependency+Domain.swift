@@ -9,9 +9,10 @@ import ProjectDescription
 
 public extension TargetDependency {
     struct Domains {
+        public struct Folder {}
+        public struct Calendar {}
         public struct Video {}
         public struct Login {}
-        public struct Sample {}
         public struct Domain {}
     }
 }
@@ -36,15 +37,6 @@ public extension TargetDependency.Domains.Domain {
     }
 }
 
-public extension TargetDependency.Domains.Sample {
-    static let name = "Sample"
-    
-    static let domain = TargetDependency.Domains.project(
-        name: "\(name)Domain",
-        service: .cllog
-    )
-}
-
 public extension TargetDependency.Domains.Login {
     static let name = "Login"
     
@@ -56,6 +48,23 @@ public extension TargetDependency.Domains.Login {
 
 public extension TargetDependency.Domains.Video {
     static let name = "Video"
+    
+    static let domain = TargetDependency.Domains.project(
+        name: "\(name)Domain",
+        service: .cllog
+    )
+}
+
+public extension TargetDependency.Domains.Folder {
+    static let name = "Folder"
+    static let domain = TargetDependency.Domains.project(
+        name: "\(name)Domain",
+        service: .cllog
+    )
+}
+    
+public extension TargetDependency.Domains.Calendar {
+    static let name = "Calendar"
     
     static let domain = TargetDependency.Domains.project(
         name: "\(name)Domain",

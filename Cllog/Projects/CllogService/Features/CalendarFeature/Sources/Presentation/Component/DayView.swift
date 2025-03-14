@@ -9,14 +9,14 @@
 import SwiftUI
 
 import DesignKit
-import Domain
+import CalendarDomain
 
 struct DayView: View {
-    private let day: ClimbeDay
+    private let day: ClimbDay
     private let onTapped: () -> Void
     
     init(
-        day: ClimbeDay,
+        day: ClimbDay,
         onTapped: @escaping () -> Void
     ) {
         self.day = day
@@ -47,7 +47,7 @@ struct DayView: View {
                     }
                 }
                 
-                Text("\(Calendar.current.component(.day, from: day.day))")
+                Text("\(Calendar.current.component(.day, from: day.date))")
                     .font(.h5)
                     .foregroundStyle(
                         day.isCurrentMonth ?
@@ -63,7 +63,7 @@ struct DayView: View {
 
 #Preview {
     DayView(
-        day: ClimbeDay(day: Date(), isCurrentMonth: true),
+        day: ClimbDay(date: Date(), thumbnail: "", stories: [], isCurrentMonth: true),
         onTapped: { }
     )
 }

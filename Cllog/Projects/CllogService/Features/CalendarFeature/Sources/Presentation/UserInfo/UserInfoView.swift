@@ -61,10 +61,10 @@ extension UserInfoView {
                         .foregroundColor(Color.clLogUI.primary)
                     
                     HStack(spacing: 0) {
-                        Text("3월엔 ")
+                        Text("\(Date().month)월엔 ")
                             .font(.h5)
                             .foregroundColor(Color.clLogUI.gray500)
-                        Text("15일")
+                        Text("\(store.numOfClimbDays)일")
                             .font(.h5)
                             .foregroundColor(Color.clLogUI.primary)
                         Text(" 클라이밍했어요")
@@ -137,7 +137,7 @@ extension UserInfoView {
                 .font(.h5)
                 .foregroundStyle(Color.clLogUI.gray400)
             
-            Text("00:32:10")
+            Text(store.totalDurationMs.toTimeString())
                 .font(.h1)
                 .foregroundStyle(Color.clLogUI.gray10)
         }
@@ -147,7 +147,7 @@ extension UserInfoView {
     // MARK: - 운동 시간
     private func makeAttemptCountView() -> some View {
         HStack(spacing: 0) {
-            makeAttemptView(title: "총 시도 횟수", value: 10)
+            makeAttemptView(title: "총 시도 횟수", value: store.numOfClimbDays)
                 .frame(maxWidth: .infinity)
             
             DividerView(.vertical)

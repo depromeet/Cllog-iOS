@@ -42,7 +42,7 @@ public struct MainView: View {
 }
 
 private extension MainView {
- 
+    
     var bodyView: some View {
         ZStack {
             
@@ -53,8 +53,6 @@ private extension MainView {
             IfLetStore(store.scope(state: \.recordState, action: \.recordFeatureAction)) { [weak on] store in
                 RecordView(on: on, store: store)
             }
-//            .scaleEffect(store.isRecording ? 1.0 : 0.0)
-//            .animation(.easeInOut(duration: 0.5), value: store.isRecording)
         }
     }
 }
@@ -81,7 +79,7 @@ private extension MainView {
 
 // MARK: - Folder Tabbar View
 private extension MainView {
-    
+    // 준영
     var folderTabbarView: some View  {
         Text("1")
     }

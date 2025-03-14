@@ -12,8 +12,9 @@ let project = Project.configure(
     moduleType: .domain(name: "Domain"),
     product: .staticFramework,
     dependencies: [
+        .Domains.Folder.domain,
+        .Domains.Calendar.domain,
         .Domains.Video.domain,
         .Domains.Login.domain,
-        .Domains.Sample.domain,
     ]
 )
