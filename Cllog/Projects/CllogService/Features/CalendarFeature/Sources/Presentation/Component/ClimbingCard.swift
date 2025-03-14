@@ -12,20 +12,20 @@ import CalendarDomain
 import DesignKit
 
 struct ClimbingCard: View {
-    private let climbStroy: ClimbStory
+    private let climbStory: ClimbStory
     private let onTapped: (Int) -> Void
     
     init(
-        climbStroy: ClimbStory,
+        climbStory: ClimbStory,
         onTapped: @escaping (Int) -> Void
     ) {
-        self.climbStroy = climbStroy
+        self.climbStory = climbStory
         self.onTapped = onTapped
     }
     
     var body: some View {
         Button {
-            onTapped(climbStroy.id)
+            onTapped(climbStory.id)
         } label: {
             makeBody()
                 .padding(.horizontal, 16)
@@ -60,7 +60,7 @@ extension ClimbingCard {
                         .frame(width: 20, height: 20)
                         .foregroundStyle(Color.clLogUI.primary)
                     
-                    Text(climbStroy.totalDurationMs.msToTimeString)
+                    Text(climbStory.totalDurationMs.msToTimeString)
                         .font(.h4)
                         .foregroundStyle(Color.clLogUI.gray10)
                 }
@@ -71,7 +71,7 @@ extension ClimbingCard {
                         .foregroundStyle(Color.clLogUI.gray400)
                     
                     HStack(spacing:4) {
-                        ForEach(climbStroy.problems, id: \.self) { problem in
+                        ForEach(climbStory.problems, id: \.self) { problem in
                             Circle()
                                 .fill(Color(hex: problem.colorHex))
                                 .frame(width: 10, height: 10)
@@ -87,7 +87,7 @@ extension ClimbingCard {
 
 #Preview {
     ClimbingCard(
-        climbStroy: ClimbStory(
+        climbStory: ClimbStory(
             id: 0,
             totalDurationMs: 0,
             cragName: "",

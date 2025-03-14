@@ -1,5 +1,5 @@
 //
-//  ClimbStroy.swift
+//  ClimbStory.swift
 //  CalendarDomain
 //
 //  Created by Junyoung on 3/11/25.
