@@ -12,6 +12,9 @@ import CalendarDomain
 public struct CalendarResponseDTO: Decodable {
     let numOfClimbDays: Int
     let totalDurationMs: Int
+    let totalAttemptCount: Int
+    let successAttemptCount: Int
+    let failAttemptCount: Int
     let days: [CalendarDayResponseDTO]
     
     func toDomain() -> ClimbCalendar {
