@@ -101,7 +101,11 @@ struct SelectCragView: View {
                     )
                     .background(
                         RoundedRectangle(cornerRadius: 4)
-                            .foregroundStyle(selectedCrag == crag ? Color.clLogUI.gray700 : Color.clear)
+                            .foregroundStyle(
+                                selectedCrag == crag
+                                ? Color.clLogUI.gray700
+                                : Color.clLogUI.gray800
+                            )
                     )
                     .onTapGesture {
                         selectedCrag = crag
