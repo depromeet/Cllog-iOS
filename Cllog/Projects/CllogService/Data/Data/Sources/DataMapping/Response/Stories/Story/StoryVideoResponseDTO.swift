@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import StoryDomain
 
 // 클라이밍 영상 정보
 struct StoryVideoResponseDTO: Decodable {
@@ -15,4 +16,14 @@ struct StoryVideoResponseDTO: Decodable {
     let thumbnailUrl: String
     let durationMs: Int
     let stamps: [StoryStampResponseDTO]
+    
+    func toDomain() -> StoryVideo {
+        return StoryVideo(
+            id: id,
+            localPath: localPath,
+            thumbnailUrl: thumbnailUrl,
+            durationMs: durationMs,
+            stamps: stamps.map { $0.toDomain() }
+        )
+    }
 }

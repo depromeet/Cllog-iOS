@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import StoryDomain
 
 // 클라이밍 문제 정보
 struct StoryProblemResponseDTO: Decodable {
@@ -14,4 +15,13 @@ struct StoryProblemResponseDTO: Decodable {
     let attempts: [StoryAttemptResponseDTO]
     let successCount: Int
     let failCount: Int
+    
+    func toDomain() -> StoryProblem {
+        return StoryProblem(
+            id: id,
+            attempts: attempts.map { $0.toDomain() },
+            successCount: successCount,
+            failCount: failCount
+        )
+    }
 }

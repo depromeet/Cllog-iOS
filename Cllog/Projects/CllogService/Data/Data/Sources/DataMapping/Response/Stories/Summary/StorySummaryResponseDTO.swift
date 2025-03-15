@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import StoryDomain
 
 public struct StorySummaryResponseDTO: Decodable {
     let id: Int
@@ -17,4 +18,17 @@ public struct StorySummaryResponseDTO: Decodable {
     let totalFailCount: Int
     let memo: String
     let problems: [StorySummaryProblemResponseDTO]
+    
+    func toDomain() -> StorySummary {
+        return StorySummary(
+            id: id,
+            cragName: cragName,
+            totalDurationMs: totalDurationMs,
+            totalAttemptsCount: totalAttemptsCount,
+            totalSuccessCount: totalSuccessCount,
+            totalFailCount: totalFailCount,
+            memo: memo,
+            problems: problems.map { $0.toDomain() }
+        )
+    }
 }

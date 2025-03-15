@@ -14,6 +14,7 @@ import LoginDomain
 import FolderDomain
 import CalendarDomain
 import VideoDomain
+import StoryDomain
 import Networker
 import Swinject
 
@@ -38,12 +39,6 @@ public struct ClLogServiceAssembly: Assembly {
             ))
         }
         
-        
-        // 준영
-//        container.register(MonthLimitUseCase.self) { _ in
-//            MonthLimit()
-//        }
-        
         container.register(FutureMonthCheckerUseCase.self) { _ in
             FutureMonthChecker()
         }
@@ -60,14 +55,16 @@ public struct ClLogServiceAssembly: Assembly {
             )
         }
         
-        // 준영
-//        container.register(FolderUseCase.self) { _ in
-//            
-//            DefaultFolderListUseCase(
-//                attemptUseCase: MockAttemptUseCase(attemptRepository: MockAttemptRepository()),
-//                gradeUseCase: MockGradeUseCase(gradeRepository: MockGradeRepository()),
-//                cragUseCase: MockCragUseCase(cragRepository: MockCragRepository())
-//            )
-//        }
+        container.register(FetchStoryUseCase.self) { _ in
+            FetchStory(
+                repository: DefaultStoryRepository(
+                    dataSource: DefaultStoriesDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
     }
 }

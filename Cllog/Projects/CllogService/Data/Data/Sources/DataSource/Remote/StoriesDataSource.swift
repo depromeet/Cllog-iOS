@@ -11,8 +11,8 @@ import Networker
 import Starlink
 
 public protocol StoriesDataSource {
-    func stories(_ storyId: String) async throws -> StoryResponseDTO
-    func summary(_ storyId: String) async throws -> StorySummaryResponseDTO
+    func stories(_ storyId: Int) async throws -> StoryResponseDTO
+    func summary(_ storyId: Int) async throws -> StorySummaryResponseDTO
 }
 
 public final class DefaultStoriesDataSource: StoriesDataSource {
@@ -22,7 +22,7 @@ public final class DefaultStoriesDataSource: StoriesDataSource {
         self.provider = provider
     }
     
-    public func stories(_ storyId: String) async throws -> StoryResponseDTO {
+    public func stories(_ storyId: Int) async throws -> StoryResponseDTO {
         let response: BaseResponseDTO<StoryResponseDTO> = try await provider.request(
             StoriesTarget.stories(storyId)
         )
@@ -35,7 +35,7 @@ public final class DefaultStoriesDataSource: StoriesDataSource {
         return data
     }
     
-    public func summary(_ storyId: String) async throws -> StorySummaryResponseDTO{
+    public func summary(_ storyId: Int) async throws -> StorySummaryResponseDTO{
         let response: BaseResponseDTO<StorySummaryResponseDTO> = try await provider.request(
             StoriesTarget.stories(storyId)
         )
@@ -50,8 +50,8 @@ public final class DefaultStoriesDataSource: StoriesDataSource {
 }
 
 enum StoriesTarget {
-    case stories(String)
-    case summary(String)
+    case stories(Int)
+    case summary(Int)
 }
 
 extension StoriesTarget: EndpointType {

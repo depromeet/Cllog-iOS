@@ -7,8 +7,16 @@
 //
 
 import Foundation
+import StoryDomain
 
 public struct StoryResponseDTO: Decodable {
     let id: Int
     let problems: [StoryProblemResponseDTO]
+    
+    func toDomain() -> Story {
+        return Story(
+            id: id,
+            problems: problems.map { $0.toDomain() }
+        )
+    }
 }

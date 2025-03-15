@@ -7,9 +7,17 @@
 //
 
 import Foundation
+import StoryDomain
 
 // 클라이밍 시도 정보
 struct StoryAttemptResponseDTO: Decodable {
-    let status: StoryAttemptStatusResponseDTO
+    let status: String
     let video: StoryVideoResponseDTO
+    
+    func toDomain() -> StoryAttempt {
+        return StoryAttempt(
+            status: .init(value: status),
+            video: video.toDomain()
+        )
+    }
 }

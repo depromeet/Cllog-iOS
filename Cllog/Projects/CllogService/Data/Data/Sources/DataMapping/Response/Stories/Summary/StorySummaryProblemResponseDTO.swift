@@ -7,9 +7,18 @@
 //
 
 import Foundation
+import StoryDomain
 
 struct StorySummaryProblemResponseDTO: Decodable {
     let id: Int
     let attemptCount: Int
     let colorHex: String
+    
+    func toDomain() -> StorySummaryProblem {
+        return StorySummaryProblem(
+            id: id,
+            attemptCount: attemptCount,
+            colorHex: colorHex
+        )
+    }
 }
