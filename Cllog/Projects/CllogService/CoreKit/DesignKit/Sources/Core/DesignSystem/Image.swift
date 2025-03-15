@@ -36,6 +36,7 @@ extension ClLogUI where Base == UIImage {
     public static var calendarAfter: UIImage { asset(#function) }
     public static var calendarBefore: UIImage { asset(#function) }
     public static var time: UIImage { asset(#function) }
+    public static var check: UIImage { asset(#function) }
 }
 
 extension ClLogUI where Base == Image {
@@ -67,6 +68,7 @@ extension ClLogUI where Base == Image {
     public static var calendarBefore: Image { asset(#function) }
     public static var time: Image { asset(#function) }
     public static var icn_close: Image { asset(#function) }
+    public static var check: Image { asset(#function) }
     
     // Edit
     public static var playSmall: Image { asset(#function) }
