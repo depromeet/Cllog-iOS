@@ -225,7 +225,7 @@ private extension MainFeature {
         _ action: CalendarMainFeature.Action
     ) -> Effect<Action> {
         switch action {
-        case .moveToCalendarDeatil(let storyId):
+        case .moveToCalendarDetail(let storyId):
             // 캘린더 상세 페이지로 이동
             state.pushToCalendarDeatil = storyId
             return .none

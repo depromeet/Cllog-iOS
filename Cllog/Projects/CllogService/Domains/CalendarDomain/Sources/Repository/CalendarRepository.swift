@@ -48,8 +48,7 @@ public final class MockCalendarRepository: CalendarRepository {
             return components.year == year && components.month == month
         }
         return ClimbCalendar(
-            numOfClimbDays: filteredDays.count, // 등반한 날짜 수
-            totalDurationMs: 1000,
+            summary: CalendarSummary(),
             days: filteredDays
         )
     }

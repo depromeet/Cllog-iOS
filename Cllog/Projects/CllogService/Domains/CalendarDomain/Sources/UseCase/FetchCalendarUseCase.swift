@@ -39,7 +39,7 @@ public struct FetchCalendar: FetchCalendarUseCase {
 
 public struct MockFetchCalendar: FetchCalendarUseCase {
     public func fetch(_ date: Date) async throws -> ClimbCalendar {
-        ClimbCalendar(numOfClimbDays: 0, totalDurationMs: 0, days: [])
+        ClimbCalendar(summary: CalendarSummary(), days: [])
     }
 }
 
