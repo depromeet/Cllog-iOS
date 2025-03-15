@@ -14,6 +14,7 @@ import CllogService
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    private var navigationController: UINavigationController?
 
     func scene(
         _ scene: UIScene,
@@ -24,7 +25,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = ClLogWindow(windowScene: windowScene)
         window?.backgroundColor = .clear
         let homeViewController = HomeViewController.instance()
-        window?.rootViewController = UINavigationController(rootViewController: homeViewController)
+        navigationController = UINavigationController(rootViewController: homeViewController)
+        navigationController?.setNavigationBarHidden(true, animated: true)
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
+        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
 
@@ -44,3 +49,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 }
+
+extension SceneDelegate: UIGestureRecognizerDelegate { }

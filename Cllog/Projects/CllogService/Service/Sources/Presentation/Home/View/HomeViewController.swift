@@ -20,12 +20,12 @@ import Shared
 
 public extension HomeViewController {
     
-    static func instance() -> HomeViewController {
+    static func instance() -> UIViewController {
         return HomeViewController()
     }
 }
 
-public final class HomeViewController: BaseViewController {
+public final class HomeViewController: UIViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,16 +47,5 @@ public final class HomeViewController: BaseViewController {
         hostingController.view.frame = view.bounds
         view.addSubview(hostingController.view)
         hostingController.didMove(toParent: self)
-    }
-}
-
-public class BaseViewController: UIViewController {
-    
-    func push(_ view: UIViewController) {
-        navigationController?.pushViewController(view, animated: true)
-    }
-    
-    func pop() {
-        navigationController?.popViewController(animated: true)
     }
 }

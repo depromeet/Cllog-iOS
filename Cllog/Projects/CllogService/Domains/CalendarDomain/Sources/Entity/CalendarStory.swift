@@ -1,5 +1,5 @@
 //
-//  ClimbStory.swift
+//  CalendarStory.swift
 //  CalendarDomain
 //
 //  Created by Junyoung on 3/11/25.
@@ -8,21 +8,21 @@
 
 import Foundation
 
-public struct ClimbStory: Hashable {
-    public static func == (lhs: ClimbStory, rhs: ClimbStory) -> Bool {
+public struct CalendarStory: Hashable {
+    public static func == (lhs: CalendarStory, rhs: CalendarStory) -> Bool {
         rhs.id == lhs.id
     }
     
     public let id: Int
     public let totalDurationMs: Int
     public let cragName: String
-    public let problems: [ClimbProblem]
+    public let problems: [CalendarProblem]
     
     public init(
         id: Int,
         totalDurationMs: Int,
         cragName: String,
-        problems: [ClimbProblem]
+        problems: [CalendarProblem]
     ) {
         self.id = id
         self.totalDurationMs = totalDurationMs

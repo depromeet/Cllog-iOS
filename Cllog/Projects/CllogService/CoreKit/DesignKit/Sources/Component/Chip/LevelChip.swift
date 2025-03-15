@@ -11,13 +11,16 @@ import SwiftUI
 public struct LevelChip: View {
     let name: String
     let color: Color
+    let backgroundColor: Color
     
     public init(
         name: String,
-        color: Color
+        color: Color,
+        backgroundColor: Color = .clLogUI.gray700
     ) {
         self.name = name
         self.color = color
+        self.backgroundColor = backgroundColor
     }
     
     public var body: some View {
@@ -34,7 +37,7 @@ public struct LevelChip: View {
         .padding(.vertical, 5)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .foregroundStyle(Color.clLogUI.gray700)
+                .foregroundStyle(backgroundColor)
         )
     }
 }
