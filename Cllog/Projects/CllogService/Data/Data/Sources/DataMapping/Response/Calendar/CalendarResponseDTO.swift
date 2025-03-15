@@ -12,7 +12,7 @@ import CalendarDomain
 public struct CalendarResponseDTO: Decodable {
     let numOfClimbDays: Int
     let totalDurationMs: Int
-    let days: [DayResponseDTO]
+    let days: [CalendarDayResponseDTO]
     
     func toDomain() -> ClimbCalendar {
         return ClimbCalendar(

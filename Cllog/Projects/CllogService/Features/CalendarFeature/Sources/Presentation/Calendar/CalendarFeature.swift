@@ -19,8 +19,8 @@ public struct CalendarFeature {
     public struct State: Equatable {
         var selectedDate: Date = Date()
         var isDisableNextMonth: Bool = false
-        var days: [ClimbDay] = []
-        var selectedDay: ClimbDay? = nil
+        var days: [CalendarDay] = []
+        var selectedDay: CalendarDay? = nil
         
         var isPresentBottomSheet: Bool = false
         
@@ -29,11 +29,11 @@ public struct CalendarFeature {
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case dayTapped(ClimbDay)
+        case dayTapped(CalendarDay)
         
         case previousMonthTapped
         case nextMonthTapped
-        case updateCalendar(days: [ClimbDay], selectedDay: Date)
+        case updateCalendar(days: [CalendarDay], selectedDay: Date)
         case isCurrentMonthLast(Bool)
         case storyTapped(Int)
     }
@@ -70,14 +70,14 @@ public struct CalendarFeature {
 
 extension CalendarFeature {
     
-    private func getDays(for date: Date, calendarDay: [ClimbDay]) -> [ClimbDay] {
+    private func getDays(for date: Date, calendarDay: [CalendarDay]) -> [CalendarDay] {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year, .month], from: date)
         guard let firstDayOfMonth = calendar.date(from: components),
               let range = calendar.range(of: .day, in: .month, for: firstDayOfMonth) else { return [] }
         
         let firstWeekday = calendar.component(.weekday, from: firstDayOfMonth) - 1
-        var tempDays: [ClimbDay] = []
+        var tempDays: [CalendarDay] = []
         
         //  이전 달의 남은 날짜 추가
         if firstWeekday > 0,
@@ -89,7 +89,7 @@ extension CalendarFeature {
             
             for day in startDay...endDay {
                 if let date = calendar.date(bySetting: .day, value: day, of: previousMonth) {
-                    tempDays.append(ClimbDay(date: date, thumbnail: "", stories: [], isCurrentMonth: false))
+                    tempDays.append(CalendarDay(date: date, thumbnail: "", stories: [], isCurrentMonth: false))
                 }
             }
         }
@@ -101,7 +101,7 @@ extension CalendarFeature {
                 // 서버 데이터에서 해당 날짜의 이벤트 찾기
                 let matchedEvent = calendarDay.first(where: { calendar.isDate($0.date, inSameDayAs: date) })
                 
-                let calendarDay = ClimbDay(
+                let calendarDay = CalendarDay(
                     date: date,
                     thumbnail: matchedEvent?.thumbnail ?? "",
                     stories: matchedEvent?.stories ?? [],
@@ -119,7 +119,7 @@ extension CalendarFeature {
             if let nextMonth = calendar.date(byAdding: .month, value: 1, to: firstDayOfMonth) {
                 for day in nextMonthStart..<(7 - remainder + 1) {
                     if let date = calendar.date(bySetting: .day, value: day, of: nextMonth) {
-                        tempDays.append(ClimbDay(date: date, thumbnail: "", stories: [], isCurrentMonth: false))
+                        tempDays.append(CalendarDay(date: date, thumbnail: "", stories: [], isCurrentMonth: false))
                     }
                 }
             }

@@ -9,13 +9,13 @@
 import Foundation
 import CalendarDomain
 
-public struct DayResponseDTO: Decodable {
+public struct CalendarDayResponseDTO: Decodable {
     public let date: String
     public let thumbnailUrl: String
-    public let stories: [StoryResponseDTO]
+    public let stories: [CalendarStoryResponseDTO]
     
-    func toDomain() -> ClimbDay {
-        return ClimbDay(
+    func toDomain() -> CalendarDay {
+        return CalendarDay(
             date: date.toDate(),
             thumbnail: thumbnailUrl,
             stories: stories.map { $0.toDomain() }

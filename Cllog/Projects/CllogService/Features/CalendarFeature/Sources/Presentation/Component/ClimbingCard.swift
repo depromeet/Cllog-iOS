@@ -12,11 +12,11 @@ import CalendarDomain
 import DesignKit
 
 struct ClimbingCard: View {
-    private let climbStory: ClimbStory
+    private let climbStory: CalendarStory
     private let onTapped: (Int) -> Void
     
     init(
-        climbStory: ClimbStory,
+        climbStory: CalendarStory,
         onTapped: @escaping (Int) -> Void
     ) {
         self.climbStory = climbStory
@@ -87,7 +87,7 @@ extension ClimbingCard {
 
 #Preview {
     ClimbingCard(
-        climbStory: ClimbStory(
+        climbStory: CalendarStory(
             id: 0,
             totalDurationMs: 0,
             cragName: "",

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct ClimbProblem: Hashable {
+public struct CalendarProblem: Hashable {
     public let attemptCount: Int
     public let colorHex: String
     

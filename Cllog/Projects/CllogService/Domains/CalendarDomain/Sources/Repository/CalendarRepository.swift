@@ -14,7 +14,7 @@ public protocol CalendarRepository {
 
 public final class MockCalendarRepository: CalendarRepository {
     // 2025년 3월 1~30일 목데이터
-    let mockCalendar = (1...30).compactMap { day -> ClimbDay? in
+    let mockCalendar = (1...30).compactMap { day -> CalendarDay? in
         let calendar = Calendar.current
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -26,7 +26,7 @@ public final class MockCalendarRepository: CalendarRepository {
         
         guard let date = calendar.date(from: components) else { return nil }
         
-        return ClimbDay(
+        return CalendarDay(
             date: date,
             thumbnail: "https://example.com/thumbnail\(day).jpg",
             stories: []
