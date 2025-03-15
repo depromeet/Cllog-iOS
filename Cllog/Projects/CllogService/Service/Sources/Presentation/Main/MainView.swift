@@ -12,9 +12,12 @@ import SwiftUI
 
 /// 내부 Module
 import VideoFeature
+import FolderTabFeature
 
 /// 외부 Module
 import ComposableArchitecture
+import FolderFeature
+import CalendarFeature
 
 /// 구현부
 public struct MainView: View {
@@ -39,6 +42,12 @@ public struct MainView: View {
     
     public var body: some View {
         bodyView
+            .onChange(of: store.pushToCalendarDeatil) { oldValue, newValue in
+                guard let newValue else { return }
+                let view = CalendarDetailView(store: store.scope(state: \.calendarDetailState, action: \.calendarDetailAction))
+                let vc = UIHostingController(rootView: view)
+                on?.navigationController?.pushViewController(vc, animated: true)
+            }
     }
 }
 
@@ -80,9 +89,25 @@ private extension MainView {
 
 // MARK: - Folder Tabbar View
 private extension MainView {
-    // 준영
     var folderTabbarView: some View  {
-        Text("1")
+        FolderTabView(
+            store: store.scope(
+                state: \.folderTabState,
+                action: \.folderTabAction
+            ),
+            folderView: FolderView(
+                store: store.scope(
+                    state: \.folderState,
+                    action: \.folderAction
+                )
+            ),
+            calendarView: CalendarMainView(
+                store: store.scope(
+                    state: \.calendarMainState,
+                    action: \.calendarMainAction
+                )
+            )
+        )
     }
 }
 
