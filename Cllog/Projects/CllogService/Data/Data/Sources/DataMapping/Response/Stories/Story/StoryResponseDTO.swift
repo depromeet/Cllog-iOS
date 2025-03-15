@@ -8,6 +8,7 @@
 
 import Foundation
 
-struct StoryResponseDTO: Decodable {
-    
+public struct StoryResponseDTO: Decodable {
+    let id: Int
+    let problems: [StoryProblemResponseDTO]
 }
