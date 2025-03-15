@@ -9,6 +9,26 @@
 import SwiftUI
 import Combine
 
+public extension View {
+    func showCragBottomSheet(
+        isPresented: Binding<Bool>,
+        didTapSaveButton: @escaping (DesignCrag) -> Void,
+        didTapSkipButton: @escaping () -> Void,
+        didChangeSearchText: @escaping (String) -> Void,
+        crags: Binding<[DesignCrag]>
+    ) -> some View {
+        self.bottomSheet(isPresented: isPresented) {
+            SelectCragView(
+                didTapSaveButton: didTapSaveButton,
+                didTapSkipButton: didTapSkipButton,
+                didChangeSearchText: didChangeSearchText,
+                crags: crags
+            )
+            
+        }
+    }
+}
+
 public struct DesignCrag: Hashable, Identifiable {
     public var id: UUID
     
@@ -39,12 +59,10 @@ struct SelectCragView: View {
     private var didTapSaveButton: (DesignCrag) -> Void
     private var didTapSkipButton: () -> Void
     private var didChangeSearchText: (String) -> Void
-    private let searchSubject = PassthroughSubject<String, Never>()
     
     @State private var searchText = ""
     @Binding private var crags: [DesignCrag]
     @State private var selectedCrag: DesignCrag?
-    @State private var cancellables = Set<AnyCancellable>()
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -53,13 +71,8 @@ struct SelectCragView: View {
             buttonSection
         }
         .background(Color.clLogUI.gray800)
-        .onAppear {
-            searchSubject
-                .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
-                .sink { newValue in
-                    didChangeSearchText(newValue)
-                }
-                .store(in: &cancellables)
+        .onChange(of: searchText) { _, newValue in
+            didChangeSearchText(newValue)
         }
     }
     
@@ -73,9 +86,6 @@ struct SelectCragView: View {
                 placeHolder: "암장을 입력해주세요",
                 text: $searchText
             )
-        }
-        .onChange(of: searchText) { _, newValue in
-            searchSubject.send(newValue)
         }
     }
     
