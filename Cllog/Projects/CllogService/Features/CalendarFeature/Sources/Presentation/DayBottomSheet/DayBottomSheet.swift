@@ -11,11 +11,11 @@ import SwiftUI
 import CalendarDomain
 
 struct DayBottomSheet: View {
-    private let climbDay: ClimbDay
+    private let climbDay: CalendarDay
     private let onTapped: (Int) -> Void
     
     init(
-        climbDay: ClimbDay,
+        climbDay: CalendarDay,
         onTapped: @escaping (Int) -> Void
     ) {
         self.climbDay = climbDay

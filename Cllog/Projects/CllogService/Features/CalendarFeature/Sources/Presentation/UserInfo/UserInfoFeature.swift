@@ -8,21 +8,22 @@
 
 import ComposableArchitecture
 
+import CalendarDomain
+
 @Reducer
 public struct UserInfoFeature {
     
     @ObservableState
     public struct State: Equatable {
         var isOpen: Bool = false
-        var numOfClimbDays: Int = 0
-        var totalDurationMs: Int = 0
+        var summary: CalendarSummary = CalendarSummary()
         var currentMonth: Int = 0
         public init() {}
     }
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case updateUserInfo(Int, Int, Int)
+        case updateUserInfo(CalendarSummary)
         case dropdownTapped
     }
     
@@ -36,10 +37,8 @@ public struct UserInfoFeature {
             case .dropdownTapped:
                 state.isOpen.toggle()
                 return .none
-            case let .updateUserInfo(numOfClimbDays, totalDurationMs, currentMonth):
-                state.numOfClimbDays = numOfClimbDays
-                state.totalDurationMs = totalDurationMs
-                state.currentMonth = currentMonth
+            case let .updateUserInfo(summary):
+                state.summary = summary
                 return .none
             default:
                 return .none

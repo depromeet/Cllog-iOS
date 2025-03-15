@@ -12,11 +12,11 @@ import DesignKit
 import CalendarDomain
 
 struct DayView: View {
-    private let day: ClimbDay
+    private let day: CalendarDay
     private let onTapped: () -> Void
     
     init(
-        day: ClimbDay,
+        day: CalendarDay,
         onTapped: @escaping () -> Void
     ) {
         self.day = day
@@ -63,7 +63,7 @@ struct DayView: View {
 
 #Preview {
     DayView(
-        day: ClimbDay(date: Date(), thumbnail: "", stories: [], isCurrentMonth: true),
+        day: CalendarDay(date: Date(), thumbnail: "", stories: [], isCurrentMonth: true),
         onTapped: { }
     )
 }

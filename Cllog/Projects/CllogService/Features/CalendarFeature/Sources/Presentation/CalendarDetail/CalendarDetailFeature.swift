@@ -9,9 +9,12 @@
 import Foundation
 
 import ComposableArchitecture
+import StoryDomain
 
 @Reducer
 public struct CalendarDetailFeature {
+    @Dependency(\.fetchStoryUseCase) var fetchStoryUseCase
+    
     public init() {}
     
     @ObservableState
@@ -37,18 +40,18 @@ public struct CalendarDetailFeature {
             case .setStoryId(let id):
                 print("storyId: \(id)")
                 state.storyId = id
+                
+                Task {
+                    let story = try await fetchStoryUseCase.fetchStory(id)
+                    let summary = try await fetchStoryUseCase.fetchSummary(id)
+                    
+                    print(story)
+                    print(summary)
+                }
                 return .none
             default:
                 return .none
             }
-        }
-    }
-}
-
-func a() {
-    Task {
-        await MainActor.run {
-            
         }
     }
 }

@@ -48,7 +48,7 @@ public struct MainFeature {
         
         var isRecording: Bool = false
         
-        var pushToCalendarDeatil: Int?
+        var pushToCalendarDetail: Int?
     }
     
     public enum Action {
@@ -225,10 +225,10 @@ private extension MainFeature {
         _ action: CalendarMainFeature.Action
     ) -> Effect<Action> {
         switch action {
-        case .moveToCalendarDeatil(let storyId):
+        case .moveToCalendarDetail(let storyId):
             // 캘린더 상세 페이지로 이동
-            state.pushToCalendarDeatil = storyId
-            return .none
+            state.pushToCalendarDetail = storyId
+            return .send(.calendarDetailAction(.setStoryId(storyId)))
         default:
             return .none
         }

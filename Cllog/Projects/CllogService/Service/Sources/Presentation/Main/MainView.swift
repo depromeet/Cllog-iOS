@@ -42,7 +42,7 @@ public struct MainView: View {
     
     public var body: some View {
         bodyView
-            .onChange(of: store.pushToCalendarDeatil) { oldValue, newValue in
+            .onChange(of: store.pushToCalendarDetail) { oldValue, newValue in
                 guard let newValue else { return }
                 let view = CalendarDetailView(store: store.scope(state: \.calendarDetailState, action: \.calendarDetailAction))
                 let vc = UIHostingController(rootView: view)

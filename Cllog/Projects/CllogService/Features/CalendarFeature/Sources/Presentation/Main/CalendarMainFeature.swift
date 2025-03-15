@@ -32,7 +32,7 @@ public struct CalendarMainFeature {
         case userInfoAction(UserInfoFeature.Action)
         case calendarAction(CalendarFeature.Action)
         case onAppear
-        case moveToCalendarDeatil(Int)
+        case moveToCalendarDetail(Int)
         
         case fetch(Date)
         case isCurrentMonthLast(Bool)
@@ -72,7 +72,7 @@ public struct CalendarMainFeature {
                         currentDate: state.calendarCurrentDate
                     )
                 case .storyTapped(let storyId):
-                    return .send(.moveToCalendarDeatil(storyId))
+                    return .send(.moveToCalendarDetail(storyId))
                 default:
                     return .none
                 }
@@ -97,11 +97,7 @@ public struct CalendarMainFeature {
                     ),
                     .send(
                         .userInfoAction(
-                            .updateUserInfo(
-                                calendar.numOfClimbDays,
-                                calendar.totalDurationMs,
-                                state.calendarCurrentDate.month
-                            )
+                            .updateUserInfo(calendar.summary)
                         )
                     )
                 )
