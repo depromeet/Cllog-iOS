@@ -59,14 +59,13 @@ public struct MainFeature {
         case videoTabAction(VideoFeature.Action)
         
         // RecordTabbar Action
-        case recordFeatureAction(RecordFeature.Action)
+        case recordFeatureAction(RecordHomeFeature.Action)
         
         // FolderTabFeature
         case folderTabAction(FolderTabFeature.Action)
         case folderAction(FolderFeature.Action)
         case calendarMainAction(CalendarMainFeature.Action)
         case calendarDetailAction(CalendarDetailFeature.Action)
-        case recordFeatureAction(RecordHomeFeature.Action)
     }
     
     public var body: some ReducerOf<Self> {
