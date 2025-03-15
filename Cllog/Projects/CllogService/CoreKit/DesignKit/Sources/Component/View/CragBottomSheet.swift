@@ -90,20 +90,23 @@ struct SelectCragView: View {
     }
     
     private var cragSelectionSection: some View {
-        LazyVStack(alignment: .leading) {
-            ForEach(crags, id: \.self) { crag in
-                TwoLineRow(
-                    title: crag.name,
-                    subtitle: crag.address
-                )
-                .background(
-                    selectedCrag == crag ? Color.clLogUI.gray700 : Color.clear
-                )
-                .onTapGesture {
-                    selectedCrag = crag
+        ScrollView {
+            LazyVGrid(alignment: .leading) {
+                ForEach(crags, id: \.self) { crag in
+                    TwoLineRow(
+                        title: crag.name,
+                        subtitle: crag.address
+                    )
+                    .background(
+                        selectedCrag == crag ? Color.clLogUI.gray700 : Color.clear
+                    )
+                    .onTapGesture {
+                        selectedCrag = crag
+                    }
                 }
             }
         }
+        .frame(height: 300) // TODO: 컨텐츠 사이즈 기반 동적 높이 적용
     }
     
     private var buttonSection: some View {
