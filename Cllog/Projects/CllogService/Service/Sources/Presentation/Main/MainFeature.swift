@@ -29,7 +29,7 @@ public struct MainFeature {
         var vidoeTabState: VideoFeature.State = .init()
         
         // Record State
-        var recordState: RecordFeature.State?
+        var recordState: RecordHomeFeature.State?
         
         var isRecording: Bool = false
     }
@@ -42,7 +42,7 @@ public struct MainFeature {
         case videoTabAction(VideoFeature.Action)
         
         // RecordTabbar Action
-        case recordFeatureAction(RecordFeature.Action)
+        case recordFeatureAction(RecordHomeFeature.Action)
     }
     
     public var body: some ReducerOf<Self> {
@@ -53,7 +53,7 @@ public struct MainFeature {
         
         Reduce(reducerCore)
             .ifLet(\.recordState, action: \.recordFeatureAction) {
-                ClLogDI.container.resolve(RecordFeature.self)!
+                ClLogDI.container.resolve(RecordHomeFeature.self)!
             }
     }
 }
@@ -98,9 +98,18 @@ private extension MainFeature {
     /// - Returns: Effect
     func recordCore(
         _ state: inout State,
-        _ action: RecordFeature.Action
+        _ action: RecordHomeFeature.Action
     ) -> Effect<Action> {
-        return .none
+        switch action {
+        case .recordEnd:
+            state.recordState = nil
+            state.isRecording = false
+            return .run { send in
+                await send(.videoTabAction(.onStartSession))
+            }
+        default:
+            return .none
+        }
     }
 }
 
@@ -120,9 +129,9 @@ private extension MainFeature {
         case .onStartRecord:
             withAnimation(.easeInOut(duration: 0.3)) {
                 state.isRecording = true
+                // 영상 촬영 시작
+                state.recordState = .init()
             }
-            // 영상 촬영 시작
-            state.recordState = .init()
             return .none
         default:
             return .none

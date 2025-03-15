@@ -52,7 +52,7 @@ private extension MainView {
             
             // 영상 녹화 화면
             IfLetStore(store.scope(state: \.recordState, action: \.recordFeatureAction)) { [weak on] store in
-                RecordView(on: on, store: store)
+                RecordHomeView(on: on, store: store)
             }
         }
     }
@@ -73,6 +73,7 @@ private extension MainView {
                     .onAppear {
                         store.send(.selectedTab(index))
                     }
+                    .safeAreaPadding()
             }
         }
     }

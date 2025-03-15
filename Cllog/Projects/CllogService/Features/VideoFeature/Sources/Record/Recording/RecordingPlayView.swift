@@ -1,30 +1,29 @@
 //
-//  VideoSession.swift
+//  RecordingPlayView.swift
 //  VideoFeature
 //
-//  Created by saeng lin on 3/14/25.
+//  Created by saeng lin on 3/15/25.
 //  Copyright © 2025 Supershy. All rights reserved.
 //
 
-// Apple Module
 import UIKit
 import AVFoundation
 
-public class VideoSession: UIView {
+public class RecordingPlayView: UIView {
     
     private var previewLayer: AVCaptureVideoPreviewLayer
+    private let viewModel: RecordingPlayViewModel
     
-    private var camera: VideoPreviewViewModel
-    
-    init(camera: VideoPreviewViewModel) {
-        self.camera = camera
-        self.previewLayer = AVCaptureVideoPreviewLayer(session: camera.session)
-        super.init(frame: UIScreen.main.bounds)
-        configure()
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
-    public required init?(coder: NSCoder) {
-        fatalError()
+    public init(viewModel: RecordingPlayViewModel) {
+        self.viewModel = viewModel
+        self.previewLayer = AVCaptureVideoPreviewLayer(session: viewModel.session)
+        super.init(frame: UIScreen.main.bounds)
+        
+        configure()
     }
     
     public override func layoutSubviews() {
