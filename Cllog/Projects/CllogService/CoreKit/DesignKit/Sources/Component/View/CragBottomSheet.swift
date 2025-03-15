@@ -63,6 +63,7 @@ struct SelectCragView: View {
     @State private var searchText = ""
     @Binding private var crags: [DesignCrag]
     @State private var selectedCrag: DesignCrag?
+    @FocusState private var isFocused: Bool
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -86,22 +87,25 @@ struct SelectCragView: View {
                 placeHolder: "암장을 입력해주세요",
                 text: $searchText
             )
+            .focused($isFocused)
         }
     }
     
     private var cragSelectionSection: some View {
         ScrollView {
-            LazyVGrid(alignment: .leading) {
+            LazyVStack(alignment: .leading) {
                 ForEach(crags, id: \.self) { crag in
                     TwoLineRow(
                         title: crag.name,
                         subtitle: crag.address
                     )
                     .background(
-                        selectedCrag == crag ? Color.clLogUI.gray700 : Color.clear
+                        RoundedRectangle(cornerRadius: 4)
+                            .foregroundStyle(selectedCrag == crag ? Color.clLogUI.gray700 : Color.clear)
                     )
                     .onTapGesture {
                         selectedCrag = crag
+                        isFocused = false
                     }
                 }
             }
@@ -122,7 +126,6 @@ struct SelectCragView: View {
             .style(.white)
             .disabled(selectedCrag == nil)
         }
-        
     }
 }
 
