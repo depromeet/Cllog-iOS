@@ -9,14 +9,14 @@
 import Foundation
 import CalendarDomain
 
-public struct StoryResponseDTO: Decodable {
+public struct CalendarStoryResponseDTO: Decodable {
     let id: Int
     let totalDurationMs: Int
     let cragName: String
-    let problems: [ProblemResponseDTO]
+    let problems: [CalendarProblemResponseDTO]
     
-    func toDomain() -> ClimbStory {
-        return ClimbStory(
+    func toDomain() -> CalendarStory {
+        return CalendarStory(
             id: id,
             totalDurationMs: totalDurationMs,
             cragName: cragName,

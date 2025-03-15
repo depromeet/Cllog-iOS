@@ -48,7 +48,7 @@ extension CalendarTarget: EndpointType {
     var path: String {
         switch self {
         case .calendars:
-            return "/api/v1/calenders"
+            return "/api/v1/calendars"
         }
     }
     

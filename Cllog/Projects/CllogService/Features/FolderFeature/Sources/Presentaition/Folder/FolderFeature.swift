@@ -17,7 +17,7 @@ public struct FolderFeature {
     @Dependency(\.cragUseCase) private var cragUseCase
     
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         var grades = [Grade]()
         var crags = [Crag]()
         var attempts = [Attempt]()

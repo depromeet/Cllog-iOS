@@ -25,7 +25,7 @@ public struct HomeFeature {
         var mainState: MainFeature.State?
     }
     
-    public enum Action: Equatable {
+    public enum Action {
         case onAppear
         
         // autoLogin

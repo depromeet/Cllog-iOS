@@ -59,7 +59,6 @@ struct SelectGradeView: View {
     private var didTapSaveButton: (DesignGrade?) -> Void
     private var didTapCragTitleButton: () -> Void
     
-    @Binding private var isPresented: Bool
     @State private var selectedGrade: DesignGrade?
     @State private var selectedUnSaveGrade: Bool = false
     
@@ -150,7 +149,6 @@ struct SelectGradeView: View {
     
     private var saveButtonSection: some View {
         GeneralButton("저장하기") {
-            isPresented = false
             didTapSaveButton(selectedGrade)
         }
         .style(.white)

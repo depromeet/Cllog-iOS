@@ -72,7 +72,7 @@ extension CalendarDetailView {
     func makeContent() -> some View {
         VStack(spacing: 20) {
             userInfoView()
-            problumListView()
+            problemListView()
             Spacer()
         }
     }
@@ -84,7 +84,7 @@ extension CalendarDetailView {
         )
     }
     
-    func problumListView() -> some View {
+    func problemListView() -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Circle()

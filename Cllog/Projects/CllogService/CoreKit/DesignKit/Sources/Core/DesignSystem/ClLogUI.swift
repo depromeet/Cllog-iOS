@@ -45,3 +45,4 @@ extension Color: ClLogUISupporttable {}
 
 extension UIImage : ClLogUISupporttable {}
 extension Image: ClLogUISupporttable {}
+extension UIViewController: ClLogUISupporttable {}
