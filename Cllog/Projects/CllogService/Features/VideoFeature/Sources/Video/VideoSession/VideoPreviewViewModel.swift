@@ -66,17 +66,23 @@ public class VideoPreviewViewModel: NSObject, ObservableObject, AVCaptureVideoDa
     }
     
     public func startSession() {
-        guard !session.isRunning else {  return }
+        #if !targetEnvironment(simulator)
         sessionQueue.async { [weak session] in
-            session?.startRunning()
+            guard let session else { return }
+            guard !session.isRunning else { return }
+            session.startRunning()
         }
+        #endif
     }
     
     public func stopSession() {
-        guard session.isRunning else {  return }
+        #if !targetEnvironment(simulator)
         sessionQueue.async { [weak session] in
-            session?.stopRunning()
+            guard let session else { return }
+            guard session.isRunning else { return }
+            session.stopRunning()
         }
+        #endif
     }
     
     public func captureOutput(

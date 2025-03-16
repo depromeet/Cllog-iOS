@@ -50,8 +50,8 @@ private extension MainView {
             tabView
             
             // 영상 녹화 화면
-            IfLetStore(store.scope(state: \.recordState, action: \.recordFeatureAction)) { store in
-                RecordView(store: store)
+            IfLetStore(store.scope(state: \.recordState, action: \.recordFeatureAction)) { [weak on] store in
+                RecordHomeView(on: on, store: store)
             }
         }
     }
@@ -72,6 +72,7 @@ private extension MainView {
                     .onAppear {
                         store.send(.selectedTab(index))
                     }
+                    .safeAreaPadding()
             }
         }
     }

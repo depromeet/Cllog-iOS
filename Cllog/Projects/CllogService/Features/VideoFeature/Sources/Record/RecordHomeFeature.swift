@@ -1,0 +1,120 @@
+//
+//  RecordFeatrue.swift
+//  VideoFeature
+//
+//  Created by saeng lin on 3/15/25.
+//  Copyright © 2025 Supershy. All rights reserved.
+//
+
+import Foundation
+
+import ComposableArchitecture
+
+@Reducer
+public struct RecordHomeFeature {
+    
+    @ObservableState
+    public struct State: Equatable {
+        public init() {}
+        
+        var recordingState: RecordingFeature.State?
+        var recordedState: RecordedFeature.State?
+    }
+    
+    public enum Action: Equatable {
+        
+        case onAppear
+    
+        // Recording Action: - 녹화 액션
+        case recordingAction(RecordingFeature.Action)
+        // Recorded Action: - 녹화 완료 / 성공, 실패, 편집, close 할 수 있는 화면
+        case recordedAction(RecordedFeature.Action)
+        
+        case recordEnd
+    }
+    
+    public var body: some ReducerOf<Self> {
+        Reduce(reduceCore)
+            .ifLet(\.recordingState, action: \.recordingAction) {
+                RecordingFeature()
+            }
+            .ifLet(\.recordedState, action: \.recordedAction) {
+                RecordedFeature()
+            }
+    }
+}
+
+extension RecordHomeFeature {
+    
+    /// Reducer
+    /// - Parameters:
+    ///   - state: 저장소
+    ///   - action: 액션
+    /// - Returns: Effect
+    private func reduceCore(
+        _ state: inout State,
+        _ action: Action
+    ) -> Effect<Action> {
+        switch action {
+        case .onAppear:
+            state.recordingState = .init()
+            return .none
+            
+        case .recordEnd:
+            return .none
+            
+        case .recordingAction(let action):
+            return recordingReduceCore(&state, action)
+            
+        case .recordedAction(let action):
+            return recordedReduceCore(&state, action)
+        
+        }
+    }
+}
+
+private extension RecordHomeFeature {
+    
+    /// Recording Action
+    /// - Parameters:
+    ///   - state: 저장소
+    ///   - action: RecordingAction
+    /// - Returns: Effect
+    func recordingReduceCore(
+        _ state: inout State,
+        _ action: RecordingFeature.Action
+    ) -> Effect<Action> {
+        switch action {
+        case .presentRecorded(let fileName, let path, let totalDuration):
+            state.recordedState = .init(fileName: fileName, elapsedTime: totalDuration, path: path)
+            state.recordingState = nil
+            return .none
+        default:
+            return .none
+        }
+    }
+}
+
+private extension RecordHomeFeature {
+    
+    /// Recording Action
+    /// - Parameters:
+    ///   - state: 저장소
+    ///   - action: RecordingAction
+    /// - Returns: Effect
+    func recordedReduceCore(
+        _ state: inout State,
+        _ action: RecordedFeature.Action
+    ) -> Effect<Action> {
+        switch action {
+        case .close:
+            state.recordingState = nil
+            state.recordedState = nil
+            return .run { send in
+                await send(.recordEnd)
+            }
+        default:
+            return .none
+        }
+    }
+}

@@ -21,10 +21,6 @@ public struct VideoFeatureAssembly: Assembly {
             VideoPermission()
         }
         
-        container.register(ClLogSessionViewModelInterface.self) { _ in
-            ClLogSessionViewModel()
-        }
-        
         container.register(VideoUseCase.self) { resolver in
             
             guard let videospository = resolver.resolve(VideoRepository.self) else {
@@ -40,21 +36,8 @@ public struct VideoFeatureAssembly: Assembly {
             return VideoFeature()
         }
         
-        container.register(RecordFeature.self) { resolver in
-            guard let logConsoleUseCase  = resolver.resolve(LogConsoleUseCase.self) else {
-                fatalError("Could not resolve LogConsoleUseCase")
-            }
-            guard let viewModel = resolver.resolve(ClLogSessionViewModelInterface.self) else {
-                fatalError("Could not resolve ClLogSessionViewModelInterface")
-            }
-            guard let videoUseCase = resolver.resolve(VideoUseCase.self) else {
-                fatalError("Could not resolve CaptureUseCase")
-            }
-            return RecordFeature(
-                videoUseCase: videoUseCase,
-                sessionViewModel: viewModel,
-                logConsoleUsecase: logConsoleUseCase
-            )
+        container.register(RecordHomeFeature.self) { resolver in
+            return RecordHomeFeature()
         }
     }
     

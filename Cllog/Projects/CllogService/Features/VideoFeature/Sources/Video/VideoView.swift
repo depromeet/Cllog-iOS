@@ -57,9 +57,13 @@ private extension VideoView {
     
     var camerView: some View {
         ZStack {
+            #if !targetEnvironment(simulator)
             VideoPreview(camera: store.camerModel)
                 .ignoresSafeArea()
-            
+            #else
+            Color.clLogUI.gray100
+                .ignoresSafeArea()
+            #endif
             VStack(spacing: .zero) {
                 
                 Spacer()

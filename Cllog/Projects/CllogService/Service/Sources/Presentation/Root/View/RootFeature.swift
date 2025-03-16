@@ -95,7 +95,8 @@ private extension RootFeature {
     ) -> Effect<Action> {
         switch action {
         case .onAppear:
-            state.loginState = LoginFeature.State()
+//            state.loginState = LoginFeature.State()
+            state.mainState = .init()
             state.autoLoginState = nil
             return .none
         }
