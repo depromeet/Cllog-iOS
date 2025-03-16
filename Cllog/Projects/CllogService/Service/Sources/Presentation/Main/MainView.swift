@@ -23,31 +23,21 @@ import CalendarFeature
 public struct MainView: View {
     
     // MARK: - Private Properties
-    private weak var on: UIViewController?
     private let store: StoreOf<MainFeature>
     
     @State private var selectedTab: Int = 0
     
     /// 초기화
     /// - Parameters:
-    ///   - on: Root UIViewController
     ///   - store: MainFeature
     public init(
-        on: UIViewController?,
         store: StoreOf<MainFeature>
     ) {
-        self.on = on
         self.store = store
     }
     
     public var body: some View {
         bodyView
-            .onChange(of: store.pushToCalendarDetail) { oldValue, newValue in
-                guard let newValue else { return }
-                let view = CalendarDetailView(store: store.scope(state: \.calendarDetailState, action: \.calendarDetailAction))
-                let vc = UIHostingController(rootView: view)
-                on?.navigationController?.pushViewController(vc, animated: true)
-            }
     }
 }
 
@@ -60,8 +50,8 @@ private extension MainView {
             tabView
             
             // 영상 녹화 화면
-            IfLetStore(store.scope(state: \.recordState, action: \.recordFeatureAction)) { [weak on] store in
-                RecordView(on: on, store: store)
+            IfLetStore(store.scope(state: \.recordState, action: \.recordFeatureAction)) { store in
+                RecordView(store: store)
             }
         }
     }
@@ -116,7 +106,6 @@ private extension MainView {
     
     var videoTabbarView: some View {
         VideoView(
-            on: on,
             store: store.scope(state: \.vidoeTabState, action: \.videoTabAction)
         )
     }
