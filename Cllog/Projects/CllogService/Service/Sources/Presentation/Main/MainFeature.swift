@@ -222,7 +222,7 @@ private extension MainFeature {
     /// Video Action
     /// - Parameters:
     ///   - state: 저장소
-    ///   - action: FolderTab Action
+    ///   - action: CalendarMainFeature Action
     /// - Returns: Effect
     func calendarMainCore(
         _ state: inout State,
@@ -243,13 +243,15 @@ private extension MainFeature {
     /// Video Action
     /// - Parameters:
     ///   - state: 저장소
-    ///   - action: FolderTab Action
+    ///   - action: CalendarDetailFeature Action
     /// - Returns: Effect
     func calendarDetailCore(
         _ state: inout State,
         _ action: CalendarDetailFeature.Action
     ) -> Effect<Action> {
         switch action {
+        case .backButtonTapped:
+            return .none
         default:
             return .none
         }

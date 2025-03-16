@@ -41,7 +41,7 @@ extension CalendarDetailView {
     func makeAppBar() -> some View {
         AppBar {
             Button {
-                
+                store.send(.backButtonTapped)
             } label: {
                 Image.clLogUI.back
                     .resizable()
@@ -52,7 +52,7 @@ extension CalendarDetailView {
         } rightContent: {
             HStack(spacing: 20) {
                 Button {
-                    
+                    store.send(.shareButtonTapped)
                 } label: {
                     Image.clLogUI.share
                         .resizable()
@@ -60,7 +60,7 @@ extension CalendarDetailView {
                         .foregroundStyle(Color.clLogUI.white)
                 }
                 Button {
-                    
+                    store.send(.moreButtonTapped)
                 } label: {
                     Image.clLogUI.dotVertical
                         .resizable()

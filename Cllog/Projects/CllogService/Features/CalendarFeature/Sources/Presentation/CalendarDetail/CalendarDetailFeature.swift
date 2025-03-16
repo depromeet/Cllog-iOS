@@ -34,6 +34,9 @@ public struct CalendarDetailFeature {
         case storiesAction(StoriesFeature.Action)
         
         case onAppear
+        case backButtonTapped
+        case shareButtonTapped
+        case moreButtonTapped
         case fetchStorySuccess(Story)
         case fetchSummarySuccess(StorySummary)
         case fetchFailure(Error)
@@ -60,6 +63,13 @@ extension CalendarDetailFeature {
                 fetchStory(storyId: state.storyId),
                 fetchSummary(storyId: state.storyId)
             )
+            
+        case .backButtonTapped:
+            return .none
+        case .shareButtonTapped:
+            return .none
+        case .moreButtonTapped:
+            return .none
             
         case .fetchStorySuccess(let story):
             return .send(
