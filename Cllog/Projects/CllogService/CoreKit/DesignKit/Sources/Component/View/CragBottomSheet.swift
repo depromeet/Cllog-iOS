@@ -64,6 +64,8 @@ struct SelectCragView: View {
     @Binding private var crags: [DesignCrag]
     @State private var selectedCrag: DesignCrag?
     @FocusState private var isFocused: Bool
+    @State private var debounceWorkItem: DispatchWorkItem?
+    @State private var isLoading = false
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -73,7 +75,7 @@ struct SelectCragView: View {
         }
         .background(Color.clLogUI.gray800)
         .onChange(of: searchText) { _, newValue in
-            didChangeSearchText(newValue)
+            debounceSearchText(newValue)
         }
     }
     
@@ -94,7 +96,7 @@ struct SelectCragView: View {
     private var cragSelectionSection: some View {
         ScrollView {
             LazyVStack(alignment: .leading) {
-                ForEach(crags, id: \.self) { crag in
+                ForEach(crags, id: \.id) { crag in
                     TwoLineRow(
                         title: crag.name,
                         subtitle: crag.address
@@ -130,6 +132,20 @@ struct SelectCragView: View {
             .style(.white)
             .disabled(selectedCrag == nil)
         }
+    }
+    
+    private func debounceSearchText(_ text: String) {
+        debounceWorkItem?.cancel()
+        
+        isLoading = !text.isEmpty
+        
+        let workItem = DispatchWorkItem {
+            didChangeSearchText(text)
+            isLoading = false
+        }
+        
+        debounceWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
     }
 }
 
