@@ -34,7 +34,6 @@ public struct RecordedView: View {
             .onAppear {
                 store.send(.onAppear)
             }
-            .debugFrameSize()
     }
     
     @ViewBuilder

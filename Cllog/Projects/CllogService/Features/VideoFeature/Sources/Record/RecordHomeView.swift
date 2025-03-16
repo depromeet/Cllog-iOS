@@ -47,5 +47,13 @@ public struct RecordHomeView: View {
             }
         }
     }
+    
+}
 
+#Preview {
+    RecordHomeView(on: nil, store: .init(
+        initialState: RecordHomeFeature.State(),
+        reducer: {
+            RecordHomeFeature()
+        }))
 }

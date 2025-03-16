@@ -85,8 +85,11 @@ private extension RecordHomeFeature {
         _ action: RecordingFeature.Action
     ) -> Effect<Action> {
         switch action {
-        case .presentRecorded(let fileName, let path, let totalDuration):
-            state.recordedState = .init(fileName: fileName, elapsedTime: totalDuration, path: path)
+        case .presentRecorded(let fileName, let path):
+            state.recordedState = .init(
+                fileName: fileName,
+                path: path
+            )
             state.recordingState = nil
             return .none
         default:

@@ -25,7 +25,7 @@ public struct MainView: View {
     // MARK: - Private Properties
     private let store: StoreOf<MainFeature>
     
-    @State private var selectedTab: Int = 0
+    @State private var selectedTab: Int = 1
     
     /// 초기화
     /// - Parameters:
@@ -50,8 +50,8 @@ private extension MainView {
             tabView
             
             // 영상 녹화 화면
-            IfLetStore(store.scope(state: \.recordState, action: \.recordFeatureAction)) { [weak on] store in
-                RecordHomeView(on: on, store: store)
+            IfLetStore(store.scope(state: \.recordState, action: \.recordFeatureAction)) { store in
+                RecordHomeView(store: store)
             }
         }
     }
@@ -72,7 +72,6 @@ private extension MainView {
                     .onAppear {
                         store.send(.selectedTab(index))
                     }
-                    .safeAreaPadding()
             }
         }
     }

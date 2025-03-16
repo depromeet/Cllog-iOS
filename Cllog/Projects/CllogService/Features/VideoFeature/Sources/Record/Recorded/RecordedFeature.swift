@@ -18,16 +18,13 @@ public struct RecordedFeature {
     public struct State: Equatable {
         
         let fileName: String
-        let elapsedTime: TimeInterval
         let path: URL
-        let viewModel: RecordedPlayViewModel
         var duration: String = ""
-        
+        let viewModel: RecordedPlayViewModel
         var progress: CGFloat = .zero
         
-        public init(fileName: String, elapsedTime: TimeInterval, path: URL) {
+        public init(fileName: String, path: URL) {
             self.fileName = fileName
-            self.elapsedTime = elapsedTime
             self.path = path
             self.viewModel = RecordedPlayViewModel(videoURL: path)
         }
@@ -39,7 +36,7 @@ public struct RecordedFeature {
         case startListeningPlayTime
         case startListeningEndPlay
         
-        case timerTicked(CMTime)
+        case timerTicked(CMTime, CMTime)
         
         case close
     }
@@ -76,13 +73,13 @@ extension RecordedFeature {
         case .startListeningPlayTime:
             return .run { [weak viewModel = state.viewModel] send in
                 guard let viewModel else { return }
-                for await playTime in viewModel.playTimeAsyncStream {
-                    await send(.timerTicked(playTime))
+                for await (playTime, totalduration) in viewModel.playTimeAsyncStream {
+                    await send(.timerTicked(playTime, totalduration))
                 }
             }.cancellable(id: "PlayTime", cancelInFlight: true)
             
-        case .timerTicked(let playTime):
-            let totalTime = CGFloat(state.elapsedTime)
+        case .timerTicked(let playTime, let duration):
+            let totalTime = CGFloat(CMTimeGetSeconds(duration))
             let currentTime = CGFloat(CMTimeGetSeconds(playTime))
             state.duration = playTime.formatTimeInterval()
             state.progress = currentTime/totalTime

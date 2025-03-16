@@ -35,29 +35,72 @@ public struct RecordingView: View {
             .onAppear {
                 store.send(.onAppear)
             }
-            .debugFrameSize()
     }
     
     @ViewBuilder
     private var bodyView: some View {
         
-        #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
         Color.gray
             .ignoresSafeArea()
-        #else
+#else
         RecordingPlyPreview(viewModel: store.viewModel)
             .ignoresSafeArea()
-        #endif
+#endif
         
         VStack(spacing: .zero) {
+            HStack {
+                Text(store.elapsedTime.formatTimeInterval())
+                    .font(.h5)
+                    .foregroundColor(.clLogUI.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color.clLogUI.gray500.opacity(0.5))
+                    .clipShape(Capsule())
+            }
+            .frame(height: 64)
             
-            Text(store.elapsedTime.formatTimeInterval())
-                .font(.h5)
-                .foregroundColor(.clLogUI.white)
-                .background(Color.clLogUI.gray500.opacity(0.5))
-                .clipShape(Capsule())
-                .padding(.horizontal, 5.5)
-                .padding(.vertical, 9.5)
+            HStack(spacing: .zero) {
+                VStack {
+                    Button {
+                        
+                    } label: {
+                        Image.clLogUI.flashOff
+                            .renderingMode(.template)
+                            .foregroundColor(.clLogUI.white)
+                            .frame(width: 40, height: 40)
+                            .background(Color.clLogUI.gray500.opacity(0.5))
+                            .clipShape(Capsule())
+                    }
+
+                    
+                    Button {
+                        
+                    } label: {
+                        Text("9:16")
+                            .font(.h5)
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.clLogUI.white)
+                            .background(Color.clLogUI.gray500.opacity(0.5))
+                            .clipShape(Capsule())
+                    }
+                    
+                    Button {
+                        
+                    } label: {
+                        Text("1x")
+                            .font(.h5)
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.clLogUI.white)
+                            .background(Color.clLogUI.gray500.opacity(0.5))
+                            .clipShape(Capsule())
+                    }
+                }
+                .padding(.top, 42)
+                .padding(.leading, 16)
+                
+                Spacer()
+            }
             
             Spacer()
             

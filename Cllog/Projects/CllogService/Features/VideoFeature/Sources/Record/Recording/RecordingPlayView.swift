@@ -18,6 +18,10 @@ public class RecordingPlayView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        print("deinit: \(Self.self)")
+    }
+    
     public init(viewModel: RecordingPlayViewModel) {
         self.viewModel = viewModel
         self.previewLayer = AVCaptureVideoPreviewLayer(session: viewModel.session)

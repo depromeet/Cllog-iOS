@@ -64,7 +64,53 @@ private extension VideoView {
             Color.clLogUI.gray100
                 .ignoresSafeArea()
             #endif
+            
             VStack(spacing: .zero) {
+                
+                Color.clear
+                    .frame(height: 64)
+                
+                HStack(spacing: .zero) {
+                    VStack {
+                        Button {
+                            
+                        } label: {
+                            Image.clLogUI.flashOff
+                                .renderingMode(.template)
+                                .foregroundColor(.clLogUI.white)
+                                .frame(width: 40, height: 40)
+                                .background(Color.clLogUI.gray500.opacity(0.5))
+                                .clipShape(Capsule())
+                        }
+
+                        
+                        Button {
+                            
+                        } label: {
+                            Text("9:16")
+                                .font(.h5)
+                                .frame(width: 40, height: 40)
+                                .foregroundColor(.clLogUI.white)
+                                .background(Color.clLogUI.gray500.opacity(0.5))
+                                .clipShape(Capsule())
+                        }
+                        
+                        Button {
+                            
+                        } label: {
+                            Text("1x")
+                                .font(.h5)
+                                .frame(width: 40, height: 40)
+                                .foregroundColor(.clLogUI.white)
+                                .background(Color.clLogUI.gray500.opacity(0.5))
+                                .clipShape(Capsule())
+                        }
+                    }
+                    .padding(.top, 42)
+                    .padding(.leading, 16)
+                    
+                    Spacer()
+                }
                 
                 Spacer()
                 
