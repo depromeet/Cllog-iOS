@@ -9,7 +9,7 @@
 import Foundation
 
 // 클라이밍 문제 정보
-public struct StoryProblem {
+public struct StoryProblem: Hashable, Equatable {
     public let id: Int
     public let attempts: [StoryAttempt]
     public let successCount: Int

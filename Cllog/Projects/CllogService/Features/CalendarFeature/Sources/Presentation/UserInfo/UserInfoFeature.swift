@@ -9,6 +9,7 @@
 import ComposableArchitecture
 
 import CalendarDomain
+import StoryDomain
 
 @Reducer
 public struct UserInfoFeature {
@@ -16,14 +17,26 @@ public struct UserInfoFeature {
     @ObservableState
     public struct State: Equatable {
         var isOpen: Bool = false
-        var summary: CalendarSummary = CalendarSummary()
         var currentMonth: Int = 0
+        
+        var numOfClimbDays: Int = 0
+        var id: Int = 0
+        var cragName: String = ""
+        var totalDurationMs: Int = 0
+        var totalAttemptsCount: Int = 0
+        var totalSuccessCount: Int = 0
+        var totalFailCount: Int = 0
+        var memo: String = ""
+        var problems: [StorySummaryProblem] = []
+        
         public init() {}
     }
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case updateUserInfo(CalendarSummary)
+        case updateCurrentMonth(Int)
+        case updateCalendarInfo(CalendarSummary)
+        case updateStoryInfo(StorySummary)
         case dropdownTapped
     }
     
@@ -37,8 +50,26 @@ public struct UserInfoFeature {
             case .dropdownTapped:
                 state.isOpen.toggle()
                 return .none
-            case let .updateUserInfo(summary):
-                state.summary = summary
+            case let .updateCalendarInfo(summary):
+                state.numOfClimbDays = summary.numOfClimbDays
+                state.totalDurationMs = summary.totalDurationMs
+                state.totalAttemptsCount = summary.totalAttemptCount
+                state.totalSuccessCount = summary.successAttemptCount
+                state.totalFailCount = summary.failAttemptCount
+                return .none
+            case let .updateStoryInfo(summary):
+                state.id = summary.id
+                state.cragName = summary.cragName ?? ""
+                state.totalDurationMs = summary.totalDurationMs
+                state.totalAttemptsCount = summary.totalAttemptsCount
+                state.totalSuccessCount = summary.totalSuccessCount
+                state.totalFailCount = summary.totalFailCount
+                state.memo = summary.memo ?? ""
+                state.problems = summary.problems
+                
+                return .none
+            case let .updateCurrentMonth(month):
+                state.currentMonth = month
                 return .none
             default:
                 return .none

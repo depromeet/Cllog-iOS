@@ -17,15 +17,11 @@ import DesignKit
 import ComposableArchitecture
 
 public struct VideoView: View {
-    
-    private weak var on: UIViewController?
     private let store: StoreOf<VideoFeature>
     
     public init(
-        on: UIViewController? = nil,
         store: StoreOf<VideoFeature>
     ) {
-        self.on = on
         self.store = store
     }
     

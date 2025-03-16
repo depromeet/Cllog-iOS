@@ -37,7 +37,7 @@ public final class DefaultStoriesDataSource: StoriesDataSource {
     
     public func summary(_ storyId: Int) async throws -> StorySummaryResponseDTO{
         let response: BaseResponseDTO<StorySummaryResponseDTO> = try await provider.request(
-            StoriesTarget.stories(storyId)
+            StoriesTarget.summary(storyId)
         )
         
         guard let data = response.data else {

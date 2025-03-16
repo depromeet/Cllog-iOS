@@ -9,7 +9,7 @@
 import Foundation
 
 // 클라이밍 영상 정보
-public struct StoryVideo {
+public struct StoryVideo: Hashable, Equatable {
     public let id: Int
     public let localPath: String
     public let thumbnailUrl: String

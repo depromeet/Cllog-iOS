@@ -16,7 +16,8 @@ import LoginFeature
 import Shared
 
 @Reducer
-public struct HomeFeature {
+public struct RootFeature {
+    public weak var coordinator: Coordinator?
     
     @ObservableState
     public struct State: Equatable {
@@ -47,7 +48,10 @@ public struct HomeFeature {
                 LoginFeature()
             }
             .ifLet(\.mainState, action: \.mainAction) {
-                MainFeature()
+                var feature = MainFeature()
+                feature.coordinator = self.coordinator
+                
+                return feature
             }
     }
     
@@ -78,7 +82,7 @@ public struct HomeFeature {
 }
 
 // MARK: - Login Action
-private extension HomeFeature {
+private extension RootFeature {
     
     /// 자동 로그인 Action
     /// - Parameters:
@@ -127,7 +131,7 @@ private extension HomeFeature {
     }
 }
 
-private extension HomeFeature {
+private extension RootFeature {
     
     /// Main Tab Action
     /// - Parameters:

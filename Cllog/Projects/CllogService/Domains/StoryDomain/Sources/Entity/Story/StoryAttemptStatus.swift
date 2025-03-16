@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum StoryAttemptStatus: String {
+public enum StoryAttemptStatus: String, Equatable {
     case success = "SUCCESS"
     case failure = "FAILURE"
     

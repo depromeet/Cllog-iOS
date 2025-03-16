@@ -8,9 +8,9 @@
 
 import Foundation
 
-public struct Story {
-    let id: Int
-    let problems: [StoryProblem]
+public struct Story: Equatable {
+    public let id: Int
+    public let problems: [StoryProblem]
     
     public init(
         id: Int,

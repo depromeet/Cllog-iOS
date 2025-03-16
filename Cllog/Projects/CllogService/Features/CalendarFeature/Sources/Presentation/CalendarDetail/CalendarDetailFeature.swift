@@ -20,14 +20,26 @@ public struct CalendarDetailFeature {
     @ObservableState
     public struct State: Equatable {
         var userInfoState = UserInfoFeature.State()
+        var storiesState = StoriesFeature.State()
         
-        var storyId: Int? = nil
-        public init() {}
+        var storyId: Int
+        
+        public init(storyId: Int) {
+            self.storyId = storyId
+        }
     }
     
     public enum Action {
         case userInfoAction(UserInfoFeature.Action)
-        case setStoryId(Int)
+        case storiesAction(StoriesFeature.Action)
+        
+        case onAppear
+        case backButtonTapped
+        case shareButtonTapped
+        case moreButtonTapped
+        case fetchStorySuccess(Story)
+        case fetchSummarySuccess(StorySummary)
+        case fetchFailure(Error)
     }
     
     public var body: some Reducer<State, Action> {
@@ -35,22 +47,72 @@ public struct CalendarDetailFeature {
             UserInfoFeature()
         }
         
-        Reduce { state, action in
-            switch action {
-            case .setStoryId(let id):
-                print("storyId: \(id)")
-                state.storyId = id
-                
-                Task {
-                    let story = try await fetchStoryUseCase.fetchStory(id)
-                    let summary = try await fetchStoryUseCase.fetchSummary(id)
-                    
-                    print(story)
-                    print(summary)
-                }
-                return .none
-            default:
-                return .none
+        Scope(state: \.storiesState, action: \.storiesAction) {
+            StoriesFeature()
+        }
+        
+        Reduce(reducerCore)
+    }
+}
+
+extension CalendarDetailFeature {
+    func reducerCore(_ state: inout State, _ action: Action) -> Effect<Action> {
+        switch action {
+        case .onAppear:
+            return .merge(
+                fetchStory(storyId: state.storyId),
+                fetchSummary(storyId: state.storyId)
+            )
+            
+        case .backButtonTapped:
+            return .none
+        case .shareButtonTapped:
+            return .none
+        case .moreButtonTapped:
+            return .none
+            
+        case .fetchStorySuccess(let story):
+            return .send(
+                .storiesAction(
+                    .updateStory(story)
+                )
+            )
+            
+        case .fetchSummarySuccess(let summary):
+            return .send(
+                .userInfoAction(
+                    .updateStoryInfo(summary)
+                )
+            )
+            
+        case .fetchFailure(let error):
+            print(error)
+            return .none
+        default:
+            return .none
+        }
+    }
+}
+
+extension CalendarDetailFeature {
+    func fetchStory(storyId: Int) -> Effect<Action> {
+        .run { send in
+            do {
+                let story = try await fetchStoryUseCase.fetchStory(storyId)
+                await send(.fetchStorySuccess(story))
+            } catch {
+                await send(.fetchFailure(error))
+            }
+        }
+    }
+    
+    func fetchSummary(storyId: Int) -> Effect<Action> {
+        .run { send in
+            do {
+                let summary = try await fetchStoryUseCase.fetchSummary(storyId)
+                await send(.fetchSummarySuccess(summary))
+            } catch {
+                await send(.fetchFailure(error))
             }
         }
     }
