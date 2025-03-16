@@ -62,7 +62,11 @@ extension CalendarDetailFeature {
             )
             
         case .fetchStorySuccess(let story):
-            return .none
+            return .send(
+                .storiesAction(
+                    .updateStory(story)
+                )
+            )
             
         case .fetchSummarySuccess(let summary):
             return .send(

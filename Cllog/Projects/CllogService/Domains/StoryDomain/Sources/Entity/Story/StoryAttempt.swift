@@ -9,7 +9,7 @@
 import Foundation
 
 // 클라이밍 시도 정보
-public struct StoryAttempt {
+public struct StoryAttempt: Hashable, Equatable {
     public let status: StoryAttemptStatus
     public let video: StoryVideo
     

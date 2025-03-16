@@ -133,13 +133,13 @@ extension UserInfoView {
     
     // MARK: - 운동 시간
     private func makeWorkoutDurationView() -> some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             Text(
                 store.currentMonth == 0 ?
                 "총 운동 시간" : "\(store.currentMonth)월 총 운동 시간"
             )
-                .font(.h5)
-                .foregroundStyle(Color.clLogUI.gray400)
+            .font(.h5)
+            .foregroundStyle(Color.clLogUI.gray400)
             
             Text(store.totalDurationMs.msToTimeString)
                 .font(.h1)

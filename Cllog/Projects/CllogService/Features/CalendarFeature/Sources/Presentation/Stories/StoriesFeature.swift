@@ -9,16 +9,17 @@
 import Foundation
 
 import ComposableArchitecture
+import StoryDomain
 
 @Reducer
 public struct StoriesFeature {
     @ObservableState
     public struct State: Equatable {
-        
+        var story: Story = Story(id: 0, problems: [])
     }
     
     public enum Action: Equatable {
-        
+        case updateStory(Story)
     }
     
     public init() {}
@@ -30,6 +31,10 @@ public struct StoriesFeature {
 
 extension StoriesFeature {
     func reducerCore(_ state: inout State, _ action: Action) -> Effect<Action> {
-        
+        switch action {
+        case .updateStory(let story):
+            state.story = story
+            return .none
+        }
     }
 }
