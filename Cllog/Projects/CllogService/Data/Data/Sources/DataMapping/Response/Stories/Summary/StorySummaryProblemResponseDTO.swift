@@ -12,7 +12,7 @@ import StoryDomain
 struct StorySummaryProblemResponseDTO: Decodable {
     let id: Int
     let attemptCount: Int
-    let colorHex: String
+    let colorHex: String?
     
     func toDomain() -> StorySummaryProblem {
         return StorySummaryProblem(

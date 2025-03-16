@@ -12,7 +12,6 @@ import ComposableArchitecture
 import DesignKit
 
 public struct CalendarDetailView: View {
-    private let calendarColumns = Array(repeating: GridItem(.flexible(), spacing: 18), count: 2)
     private let store: StoreOf<CalendarDetailFeature>
     
     public init(store: StoreOf<CalendarDetailFeature>) {
@@ -22,6 +21,9 @@ public struct CalendarDetailView: View {
     public var body: some View {
         makeBody()
             .background(Color.clLogUI.gray800)
+            .onAppear {
+                store.send(.onAppear)
+            }
     }
 }
 
@@ -85,37 +87,16 @@ extension CalendarDetailView {
     }
     
     func problemListView() -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Circle()
-                    .fill(.red)
-                    .frame(width: 16, height: 16)
-                
-                Text("문제1")
-                    .font(.h3)
-                    .foregroundStyle(Color.clLogUI.white)
-            }
-            
-            LazyVGrid(columns: calendarColumns, spacing: 11) {
-                ForEach(0..<5, id: \.self) { _ in
-                    ThumbnailView(
-                        imageURLString: "",
-                        thumbnailType: .calendar,
-                        challengeResult: .complete,
-                        levelName: "",
-                        levelColor: .black,
-                        time: "00:00:00"
-                    )
-                }
-            }
-        }
+        StoriesView(
+            store: store.scope(state: \.storiesState, action: \.storiesAction)
+        )
     }
 }
 
 #Preview {
     CalendarDetailView(
         store: .init(
-            initialState: CalendarDetailFeature.State(),
+            initialState: CalendarDetailFeature.State(storyId: 0),
             reducer: {
                 CalendarDetailFeature()
             }

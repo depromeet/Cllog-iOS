@@ -44,9 +44,18 @@ public struct MainView: View {
         bodyView
             .onChange(of: store.pushToCalendarDetail) { oldValue, newValue in
                 guard let newValue else { return }
-                let view = CalendarDetailView(store: store.scope(state: \.calendarDetailState, action: \.calendarDetailAction))
+                let view = CalendarDetailView(
+                    store: .init(
+                        initialState: CalendarDetailFeature.State(storyId: newValue),
+                        reducer: {
+                            CalendarDetailFeature()
+                        }
+                    )
+                )
                 let vc = UIHostingController(rootView: view)
                 on?.navigationController?.pushViewController(vc, animated: true)
+                
+                store.send(.pushToCalendarDetailCompleted)
             }
     }
 }

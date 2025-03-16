@@ -8,15 +8,19 @@
 
 import Foundation
 
-public struct StorySummaryProblem {
+public struct StorySummaryProblem: Equatable {
     public let id: Int
     public let attemptCount: Int
-    public let colorHex: String
+    public let colorHex: String?
+    
+    public var displayColorHex: String {
+        colorHex ?? "#41444D"
+    }
     
     public init(
         id: Int,
         attemptCount: Int,
-        colorHex: String
+        colorHex: String?
     ) {
         self.id = id
         self.attemptCount = attemptCount

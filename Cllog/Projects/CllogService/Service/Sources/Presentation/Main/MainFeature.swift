@@ -44,7 +44,7 @@ public struct MainFeature {
         var calendarMainState: CalendarMainFeature.State = .init()
         
         // CalendarDetail State
-        var calendarDetailState: CalendarDetailFeature.State = .init()
+        var calendarDetailState: CalendarDetailFeature.State?
         
         var isRecording: Bool = false
         
@@ -54,6 +54,7 @@ public struct MainFeature {
     public enum Action {
         // Main Tab Action
         case selectedTab(Int)
+        case pushToCalendarDetailCompleted
         
         // Video Tab Action
         case videoTabAction(VideoFeature.Action)
@@ -86,13 +87,12 @@ public struct MainFeature {
             CalendarMainFeature()
         }
         
-        Scope(state: \.calendarDetailState, action: \.calendarDetailAction) {
-            CalendarDetailFeature()
-        }
-        
         Reduce(reducerCore)
             .ifLet(\.recordState, action: \.recordFeatureAction) {
                 ClLogDI.container.resolve(RecordFeature.self)!
+            }
+            .ifLet(\.calendarDetailState, action: \.calendarDetailAction) {
+                CalendarDetailFeature()
             }
     }
 }
@@ -116,6 +116,10 @@ private extension MainFeature {
                 // folder, report도 전달하기 위해서 merge
                 .send(.videoTabAction(.selectedTab(index)))
             )
+            
+        case .pushToCalendarDetailCompleted:
+            state.pushToCalendarDetail = nil
+            return .none
             
         case .videoTabAction(let action):
             // 비디오 화면 - Action
@@ -228,7 +232,7 @@ private extension MainFeature {
         case .moveToCalendarDetail(let storyId):
             // 캘린더 상세 페이지로 이동
             state.pushToCalendarDetail = storyId
-            return .send(.calendarDetailAction(.setStoryId(storyId)))
+            return .none
         default:
             return .none
         }
