@@ -21,6 +21,7 @@ import ComposableArchitecture
 
 @Reducer
 public struct MainFeature {
+    public weak var coordinator: Coordinator?
     
     @ObservableState
     public struct State: Equatable {
@@ -231,7 +232,8 @@ private extension MainFeature {
         switch action {
         case .moveToCalendarDetail(let storyId):
             // 캘린더 상세 페이지로 이동
-            state.pushToCalendarDetail = storyId
+            coordinator?.pushToCalendarDetail(storyId)
+            
             return .none
         default:
             return .none
