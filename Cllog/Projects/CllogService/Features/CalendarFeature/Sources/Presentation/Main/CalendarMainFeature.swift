@@ -59,6 +59,7 @@ public struct CalendarMainFeature {
                     direction: 0,
                     currentDate: state.calendarCurrentDate
                 )
+                
             case .calendarAction(let action):
                 switch action {
                 case .nextMonthTapped:
@@ -83,8 +84,10 @@ public struct CalendarMainFeature {
                     fetchCalendar(state.calendarCurrentDate),
                     validateNextMonth(state.calendarCurrentDate)
                 )
+                
             case .isCurrentMonthLast(let isLast):
                 return .send(.calendarAction(.isCurrentMonthLast(isLast)))
+                
             case .fetchSuccess(let calendar):
                 return .merge(
                     .send(
@@ -97,13 +100,20 @@ public struct CalendarMainFeature {
                     ),
                     .send(
                         .userInfoAction(
-                            .updateUserInfo(calendar.summary)
+                            .updateCalendarInfo(calendar.summary)
+                        )
+                    ),
+                    .send(
+                        .userInfoAction(
+                            .updateCurrentMonth(state.calendarCurrentDate.month)
                         )
                     )
                 )
+                
             case .fetchFailure(let error):
                 print(error)
                 return .none
+                
             default:
                 return .none
             }

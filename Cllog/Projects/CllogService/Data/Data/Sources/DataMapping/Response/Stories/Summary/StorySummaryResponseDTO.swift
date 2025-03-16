@@ -11,12 +11,12 @@ import StoryDomain
 
 public struct StorySummaryResponseDTO: Decodable {
     let id: Int
-    let cragName: String
+    let cragName: String?
     let totalDurationMs: Int
     let totalAttemptsCount: Int
     let totalSuccessCount: Int
     let totalFailCount: Int
-    let memo: String
+    let memo: String?
     let problems: [StorySummaryProblemResponseDTO]
     
     func toDomain() -> StorySummary {

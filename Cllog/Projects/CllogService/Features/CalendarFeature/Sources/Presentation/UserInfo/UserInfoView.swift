@@ -10,6 +10,7 @@ import SwiftUI
 
 import ComposableArchitecture
 import DesignKit
+import Shared
 
 enum UserInfoType {
     case normal
@@ -64,7 +65,7 @@ extension UserInfoView {
                         Text("\(store.currentMonth)월엔 ")
                             .font(.h5)
                             .foregroundColor(Color.clLogUI.gray500)
-                        Text("\(store.summary.totalAttemptCount)일")
+                        Text("\(store.numOfClimbDays)일")
                             .font(.h5)
                             .foregroundColor(Color.clLogUI.primary)
                         Text(" 클라이밍했어요")
@@ -79,7 +80,7 @@ extension UserInfoView {
                         .frame(width: 30, height: 30)
                         .foregroundStyle(Color.clLogUI.white)
                     
-                    Text("클라이밍파크 강남점")
+                    Text(store.cragName)
                         .font(.h2)
                         .foregroundStyle(Color.clLogUI.gray10)
                 }
@@ -116,7 +117,7 @@ extension UserInfoView {
                 DividerView(.horizontal)
                     .padding(.horizontal, 20)
                 
-                makeProblumView()
+                makeProblemView()
                     .padding(.horizontal, 20)
                     .padding(.vertical, 14)
                 
@@ -132,12 +133,15 @@ extension UserInfoView {
     
     // MARK: - 운동 시간
     private func makeWorkoutDurationView() -> some View {
-        VStack(spacing: 0) {
-            Text("\(store.currentMonth)월 총 운동 시간")
-                .font(.h5)
-                .foregroundStyle(Color.clLogUI.gray400)
+        VStack(alignment: .leading, spacing: 0) {
+            Text(
+                store.currentMonth == 0 ?
+                "총 운동 시간" : "\(store.currentMonth)월 총 운동 시간"
+            )
+            .font(.h5)
+            .foregroundStyle(Color.clLogUI.gray400)
             
-            Text(store.summary.totalDurationMs.msToTimeString)
+            Text(store.totalDurationMs.msToTimeString)
                 .font(.h1)
                 .foregroundStyle(Color.clLogUI.gray10)
         }
@@ -147,17 +151,17 @@ extension UserInfoView {
     // MARK: - 운동 시간
     private func makeAttemptCountView() -> some View {
         HStack(spacing: 0) {
-            makeAttemptView(title: "총 시도 횟수", value: store.summary.totalAttemptCount)
+            makeAttemptView(title: "총 시도 횟수", value: store.totalAttemptsCount)
                 .frame(maxWidth: .infinity)
             
             DividerView(.vertical)
             
-            makeAttemptView(title: "완등 횟수", value: store.summary.successAttemptCount)
+            makeAttemptView(title: "완등 횟수", value: store.totalSuccessCount)
                 .frame(maxWidth: .infinity)
             
             DividerView(.vertical)
             
-            makeAttemptView(title: "실패 횟수", value: store.summary.failAttemptCount)
+            makeAttemptView(title: "실패 횟수", value: store.totalFailCount)
                 .frame(maxWidth: .infinity)
         }
     }
@@ -176,35 +180,25 @@ extension UserInfoView {
     }
     
     // MARK: - 푼 문제
-    private func makeProblumView() -> some View {
+    private func makeProblemView() -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("푼 문제")
                 .font(.h5)
                 .foregroundStyle(Color.clLogUI.gray400)
             
-            HStack(spacing: 12) {
-                Text("문제 1")
-                    .font(.h4)
-                    .foregroundStyle(Color.clLogUI.gray10)
-                HStack(spacing: 4) {
-                    ForEach(0..<4, id: \.self) { _ in
-                        Circle()
-                            .fill(Color.yellow)
-                            .frame(width: 24, height: 24)
-                    }
-                }
-            }
-            
-            HStack(spacing: 12) {
-                Text("문제 2")
-                    .font(.h4)
-                    .foregroundStyle(Color.clLogUI.gray10)
-                
-                HStack(spacing: 4) {
-                    ForEach(0..<4, id: \.self) { _ in
-                        Circle()
-                            .fill(Color.green)
-                            .frame(width: 24, height: 24)
+            ForEach(store.problems.indices, id: \.self) { index in
+                VStack(spacing: 4) {
+                    HStack(spacing: 12) {
+                        Text("문제 \(index + 1)")
+                            .font(.h4)
+                            .foregroundStyle(Color.clLogUI.gray10)
+                        HStack(spacing: 4) {
+                            ForEach(0..<store.problems[index].attemptCount, id: \.self) { _ in
+                                Circle()
+                                    .fill(Color(hex: store.problems[index].displayColorHex))
+                                    .frame(width: 24, height: 24)
+                            }
+                        }
                     }
                 }
             }
@@ -218,7 +212,7 @@ extension UserInfoView {
                 .font(.h5)
                 .foregroundStyle(Color.clLogUI.gray400)
             
-            Text("클라이밍 왕초보 탈출! 홀드 잡는 감이 온다🔥")
+            Text(store.memo)
                 .font(.b1)
                 .foregroundStyle(Color.clLogUI.gray50)
         }

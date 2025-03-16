@@ -17,8 +17,8 @@ public struct ThumbnailView: View {
     private let imageURLString: String
     private let thumbnailType: ThumbnailType
     private let challengeResult: ChallengeResult
-    private let levelName: String
-    private let levelColor: Color
+    private let levelName: String?
+    private let levelColor: Color?
     private let time: String
     private let deleteButtonHandler: (() -> Void)?
     
@@ -26,8 +26,8 @@ public struct ThumbnailView: View {
         imageURLString: String,
         thumbnailType: ThumbnailType,
         challengeResult: ChallengeResult,
-        levelName: String,
-        levelColor: Color,
+        levelName: String? = nil,
+        levelColor: Color? = nil,
         time: String,
         deleteButtonHandler: (() -> Void)? = nil
     ) {
@@ -70,9 +70,10 @@ public struct ThumbnailView: View {
                             challengeResult: challengeResult,
                             isActive: true
                         )
-                        
-                        LevelChip(name: levelName, color: levelColor)
-                            .opacity(0.7)
+                        if let levelName, let levelColor {
+                            LevelChip(name: levelName, color: levelColor)
+                                .opacity(0.7)
+                        }
                     }
                     .padding([.leading, .bottom], 8)
                 }

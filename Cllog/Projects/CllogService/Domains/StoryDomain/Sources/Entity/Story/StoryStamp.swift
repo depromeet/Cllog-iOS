@@ -9,7 +9,7 @@
 import Foundation
 
 // 클라이밍 스탬프 정보
-public struct StoryStamp {
+public struct StoryStamp: Hashable, Equatable {
     public let id: Int
     public let timeMs: Int
     

@@ -8,24 +8,24 @@
 
 import Foundation
 
-public struct StorySummary {
+public struct StorySummary: Equatable {
     public let id: Int
-    public let cragName: String
+    public let cragName: String?
     public let totalDurationMs: Int
     public let totalAttemptsCount: Int
     public let totalSuccessCount: Int
     public let totalFailCount: Int
-    public let memo: String
+    public let memo: String?
     public let problems: [StorySummaryProblem]
     
     public init(
         id: Int,
-        cragName: String,
+        cragName: String?,
         totalDurationMs: Int,
         totalAttemptsCount: Int,
         totalSuccessCount: Int,
         totalFailCount: Int,
-        memo: String,
+        memo: String?,
         problems: [StorySummaryProblem]
     ) {
         self.id = id
@@ -36,5 +36,16 @@ public struct StorySummary {
         self.totalFailCount = totalFailCount
         self.memo = memo
         self.problems = problems
+    }
+    
+    public init() {
+        self.id = 0
+        self.cragName = ""
+        self.totalDurationMs = 0
+        self.totalAttemptsCount = 0
+        self.totalSuccessCount = 0
+        self.totalFailCount = 0
+        self.memo = ""
+        self.problems = []
     }
 }

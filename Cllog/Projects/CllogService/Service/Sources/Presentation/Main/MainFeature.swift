@@ -55,6 +55,7 @@ public struct MainFeature {
     public enum Action {
         // Main Tab Action
         case selectedTab(Int)
+        case pushToCalendarDetailCompleted
         
         // Video Tab Action
         case videoTabAction(VideoFeature.Action)
@@ -116,6 +117,10 @@ private extension MainFeature {
                 // folder, report도 전달하기 위해서 merge
                 .send(.videoTabAction(.selectedTab(index)))
             )
+            
+        case .pushToCalendarDetailCompleted:
+            state.pushToCalendarDetail = nil
+            return .none
             
         case .videoTabAction(let action):
             // 비디오 화면 - Action
@@ -218,7 +223,7 @@ private extension MainFeature {
     /// Video Action
     /// - Parameters:
     ///   - state: 저장소
-    ///   - action: FolderTab Action
+    ///   - action: CalendarMainFeature Action
     /// - Returns: Effect
     func calendarMainCore(
         _ state: inout State,
@@ -240,13 +245,15 @@ private extension MainFeature {
     /// Video Action
     /// - Parameters:
     ///   - state: 저장소
-    ///   - action: FolderTab Action
+    ///   - action: CalendarDetailFeature Action
     /// - Returns: Effect
     func calendarDetailCore(
         _ state: inout State,
         _ action: CalendarDetailFeature.Action
     ) -> Effect<Action> {
         switch action {
+        case .backButtonTapped:
+            return .none
         default:
             return .none
         }
