@@ -115,7 +115,7 @@ extension CalendarDetailView {
 #Preview {
     CalendarDetailView(
         store: .init(
-            initialState: CalendarDetailFeature.State(),
+            initialState: CalendarDetailFeature.State(storyId: 0),
             reducer: {
                 CalendarDetailFeature()
             }

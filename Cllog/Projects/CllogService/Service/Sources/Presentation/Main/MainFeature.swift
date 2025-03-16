@@ -21,6 +21,7 @@ import ComposableArchitecture
 
 @Reducer
 public struct MainFeature {
+    public weak var coordinator: Coordinator?
     
     @ObservableState
     public struct State: Equatable {
@@ -44,7 +45,7 @@ public struct MainFeature {
         var calendarMainState: CalendarMainFeature.State = .init()
         
         // CalendarDetail State
-        var calendarDetailState: CalendarDetailFeature.State = .init()
+        var calendarDetailState: CalendarDetailFeature.State?
         
         var isRecording: Bool = false
         
@@ -86,13 +87,12 @@ public struct MainFeature {
             CalendarMainFeature()
         }
         
-        Scope(state: \.calendarDetailState, action: \.calendarDetailAction) {
-            CalendarDetailFeature()
-        }
-        
         Reduce(reducerCore)
             .ifLet(\.recordState, action: \.recordFeatureAction) {
                 ClLogDI.container.resolve(RecordFeature.self)!
+            }
+            .ifLet(\.calendarDetailState, action: \.calendarDetailAction) {
+                CalendarDetailFeature()
             }
     }
 }
@@ -227,8 +227,9 @@ private extension MainFeature {
         switch action {
         case .moveToCalendarDetail(let storyId):
             // 캘린더 상세 페이지로 이동
-            state.pushToCalendarDetail = storyId
-            return .send(.calendarDetailAction(.setStoryId(storyId)))
+            coordinator?.pushToCalendarDetail(storyId)
+            
+            return .none
         default:
             return .none
         }

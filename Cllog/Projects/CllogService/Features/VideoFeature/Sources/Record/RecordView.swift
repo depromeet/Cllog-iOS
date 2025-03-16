@@ -15,14 +15,11 @@ import ComposableArchitecture
 
 public struct RecordView: View {
     
-    private weak var on: UIViewController?
     private let store: StoreOf<RecordFeature>
     
     public init(
-        on: UIViewController?,
         store: StoreOf<RecordFeature>
     ) {
-        self.on = on
         self.store = store
     }
     

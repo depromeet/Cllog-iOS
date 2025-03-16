@@ -21,8 +21,11 @@ public struct CalendarDetailFeature {
     public struct State: Equatable {
         var userInfoState = UserInfoFeature.State()
         
-        var storyId: Int? = nil
-        public init() {}
+        var storyId: Int
+        
+        public init(storyId: Int) {
+            self.storyId = storyId
+        }
     }
     
     public enum Action {

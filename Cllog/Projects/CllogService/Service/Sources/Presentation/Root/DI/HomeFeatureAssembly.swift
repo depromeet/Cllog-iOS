@@ -18,13 +18,13 @@ public struct HomeFeatureAssembly: Assembly {
     
     public func assemble(container: Container) {
         
-        container.register(HomeFeature.self) { resolver in
+        container.register(RootFeature.self) { resolver in
             
             guard let logConsoleUseCase  = resolver.resolve(LogConsoleUseCase.self) else {
                 fatalError("Could not resolve LogUseCase")
             }
             
-            return HomeFeature()
+            return RootFeature()
         }
     }
     

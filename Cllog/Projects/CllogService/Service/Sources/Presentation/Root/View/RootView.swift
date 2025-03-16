@@ -15,16 +15,13 @@ import LoginFeature
 
 import ComposableArchitecture
 
-struct HomeView: View {
+struct RootView: View {
     
-    private weak var on: UIViewController?
-    private let store: StoreOf<HomeFeature>
+    private let store: StoreOf<RootFeature>
     
     init(
-        on: UIViewController,
-        store: StoreOf<HomeFeature>
+        store: StoreOf<RootFeature>
     ) {
-        self.on = on
         self.store = store
     }
     
@@ -44,8 +41,8 @@ struct HomeView: View {
             IfLetStore(store.scope(state: \.loginState, action: \.loginAction), then: LoginView.init)
             
             // 메인
-            IfLetStore(store.scope(state: \.mainState, action: \.mainAction), then: { [weak on] store in
-                MainView(on: on, store: store)
+            IfLetStore(store.scope(state: \.mainState, action: \.mainAction), then: { store in
+                MainView(store: store)
             })
         }
     }
