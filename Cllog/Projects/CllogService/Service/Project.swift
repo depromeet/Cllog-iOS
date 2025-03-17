@@ -12,6 +12,7 @@ let project = Project.configure(
     moduleType: .service(name: "Cllog"),
     product: .staticFramework,
     dependencies: [
+        .Features.Setting.feature,
         .Features.Edit.feature,
         .Features.Calendar.feature,
         .Features.Folder.feature,
