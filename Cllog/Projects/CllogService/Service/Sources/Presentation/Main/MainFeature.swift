@@ -162,6 +162,10 @@ private extension MainFeature {
             return .run { send in
                 await send(.videoTabAction(.onStartSession))
             }
+            
+        case .moveEditRecord(let path):
+            coordinator?.pushToRecordEdit(path: path)
+            return .none
         default:
             return .none
         }

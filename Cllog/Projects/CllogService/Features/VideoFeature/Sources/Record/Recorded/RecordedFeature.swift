@@ -38,6 +38,10 @@ public struct RecordedFeature {
         
         case timerTicked(CMTime, CMTime)
         
+        case editButtonTapped
+        case moveEditRecord(URL)
+        
+        case pause
         case close
     }
     
@@ -83,6 +87,19 @@ extension RecordedFeature {
             let currentTime = CGFloat(CMTimeGetSeconds(playTime))
             state.duration = playTime.formatTimeInterval()
             state.progress = currentTime/totalTime
+            return .none
+            
+        case .editButtonTapped:
+            return .merge(
+                .send(.moveEditRecord(state.path)),
+                .send(.pause)
+            )
+            
+        case .pause:
+            state.viewModel.pause()
+            return .none
+            
+        case .moveEditRecord:
             return .none
             
         case .close:

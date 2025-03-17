@@ -82,7 +82,7 @@ public struct RecordedView: View {
                 
                 // 오른쪽 버튼 (편집)
                 Button(action: {
-                    
+                    store.send(.editButtonTapped)
                 }) {
                     Text("편집")
                         .font(.h5)

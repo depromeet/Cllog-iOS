@@ -15,6 +15,7 @@ import PulseProxy
 import SwiftUI
 import ComposableArchitecture
 import CalendarFeature
+import EditFeature
 
 import LoginFeature
 import Shared
@@ -24,6 +25,8 @@ public protocol Coordinator: AnyObject {
     func start()
     func pushToCalendarDetail(_ storyId: Int)
     func pop()
+    
+    func pushToRecordEdit(path: URL)
 }
 
 // MARK: RootCoordinator
@@ -66,5 +69,17 @@ public final class DefaultCoordinator: Coordinator {
     
     public func pop() {
         navigationController.popViewController(animated: true)
+    }
+}
+
+extension DefaultCoordinator {
+    public func pushToRecordEdit(path: URL) {
+        let view = VideoEditView(store: .init(
+            initialState: VideoEditFeature.State(videoURL: path), reducer: {
+                VideoEditFeature()
+            })
+        )
+        let hostVC = UIHostingController(rootView: view)
+        navigationController.pushViewController(hostVC, animated: true)
     }
 }
