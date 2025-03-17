@@ -12,9 +12,9 @@ public struct Grade: Hashable, Identifiable {
     public var id = UUID()
     
     public let name: String
-    public let hexCode: Int
+    public let hexCode: String
     
-    public init(name: String, hexCode: Int) {
+    public init(name: String, hexCode: String) {
         self.name = name
         self.hexCode = hexCode
     }

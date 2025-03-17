@@ -76,13 +76,20 @@ extension FolderView {
     }
     
     private func makeChipView() -> some View {
-        let chips = FolderFeature.SelectedChip.allCases
+        
+        
         return HStack {
             Spacer()
                 .frame(width: 16)
             
-            ForEach(chips, id: \.self) { chip in
-                let isSelectedChip = store.selectedChip.contains(chip)
+            ForEach(store.chips, id: \.self) { chip in
+                
+                let isSelectedChip = switch chip {
+                case .complete: store.attemptFilter.attemptResult == .complete
+                case .fail: store.attemptFilter.attemptResult == .fail
+                case .grade: store.attemptFilter.grade != nil
+                case .crag: store.attemptFilter.crag != nil
+                }
                 
                 switch chip {
                 case .complete:
@@ -100,51 +107,25 @@ extension FolderView {
                         store.send(.failChipTapped)
                     }
                 case .grade:
-                    if let selectedGrade = store.selectedGrade {
-                        TitleWithImageChip(
-                            title: selectedGrade.name,
-                            imageName: "close",
-                            forgroundColor: Color.clLogUI.gray800,
-                            backgroundColor: Color.clLogUI.primary,
-                            tapHandler: {
-                                store.send(.gradeChipTapped)
-                            }
-                        )
-                    } else {
-                        TitleWithImageChip(
-                            title: "난이도",
-                            imageName: "icon_down",
-                            forgroundColor: Color.clLogUI.gray200,
-                            backgroundColor: Color.clLogUI.gray600,
-                            tapHandler: {
-                                store.send(.gradeChipTapped)
-                            }
-                        )
-                    }
-
+                    TitleWithImageChip(
+                        title: isSelectedChip ? store.attemptFilter.grade?.name ?? "" : "난이도",
+                        imageName: isSelectedChip ? "close" : "icon_down",
+                        forgroundColor: isSelectedChip ? Color.clLogUI.gray800 : Color.clLogUI.gray200,
+                        backgroundColor: isSelectedChip ? Color.clLogUI.primary : Color.clLogUI.gray600,
+                        tapHandler: {
+                            store.send(.gradeChipTapped)
+                        }
+                    )
                 case .crag:
-                    
-                    if let selectedCrag = store.selectedCrag {
-                        TitleWithImageChip(
-                            title: selectedCrag.name,
-                            imageName: "close",
-                            forgroundColor: Color.clLogUI.gray800,
-                            backgroundColor: Color.clLogUI.primary,
-                            tapHandler: {
-                                store.send(.cragChipTapped)
-                            }
-                        )
-                    } else {
-                        TitleWithImageChip(
-                            title: "암장",
-                            imageName: "icon_down",
-                            forgroundColor: Color.clLogUI.gray200,
-                            backgroundColor: Color.clLogUI.gray600,
-                            tapHandler: {
-                                store.send(.cragChipTapped)
-                            }
-                        )
-                    }
+                    TitleWithImageChip(
+                        title: isSelectedChip ? store.attemptFilter.crag?.name ?? "" : "암장",
+                        imageName: isSelectedChip ? "close" : "icon_down",
+                        forgroundColor: isSelectedChip ? Color.clLogUI.gray800 : Color.clLogUI.gray200,
+                        backgroundColor: isSelectedChip ? Color.clLogUI.primary : Color.clLogUI.gray600,
+                        tapHandler: {
+                            store.send(.cragChipTapped)
+                        }
+                    )
                 }
             }
         }
@@ -161,7 +142,7 @@ extension FolderView {
                     ),
                     challengeResult: attempt.result == .complete ? .complete : .fail,
                     levelName: attempt.grade?.name ?? "하양",
-                    levelColor: Color(hex: attempt.grade?.hexCode ?? 0x00000),
+                    levelColor: Color(hex: attempt.grade?.hexCode ?? "0x00000"),
                     time: attempt.recordedTime
                 )
             }
