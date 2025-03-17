@@ -19,7 +19,9 @@ import ComposableArchitecture
 public struct RecordedView: View {
     
     private weak var on: UIViewController?
-    private let store: StoreOf<RecordedFeature>
+    
+    @Bindable
+    private var store: StoreOf<RecordedFeature>
     
     public init(
         on: UIViewController?,
@@ -34,6 +36,7 @@ public struct RecordedView: View {
             .onAppear {
                 store.send(.onAppear)
             }
+            .presentDialog($store.scope(state: \.alert, action: \.alert), style: .default)
     }
     
     @ViewBuilder
@@ -58,7 +61,7 @@ public struct RecordedView: View {
         ZStack {
             HStack {
                 Button(action: {
-                    store.send(.close)
+                    store.send(.closeButtonTapped)
                 }) {
                     Image.clLogUI.icn_close
                         .renderingMode(.template)

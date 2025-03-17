@@ -17,6 +17,8 @@ public struct RecordedFeature {
     @ObservableState
     public struct State: Equatable {
         
+        @Presents var alert: AlertState<Action.Dialog>?
+        
         let fileName: String
         let path: URL
         var duration: String = ""
@@ -42,11 +44,23 @@ public struct RecordedFeature {
         case moveEditRecord(URL)
         
         case pause
+        case closeButtonTapped
         case close
+        
+        case successTapped
+        case failtureTapped
+        
+        case alert(PresentationAction<Dialog>)
+        @CasePathable
+        public enum Dialog: Equatable {
+            case confirm
+            case cancel
+        }
     }
     
     public var body: some ReducerOf<Self> {
         Reduce(reduceCore)
+            .ifLet(\.alert, action: \.alert)
     }
     
 }
@@ -102,7 +116,37 @@ extension RecordedFeature {
         case .moveEditRecord:
             return .none
             
+        case .closeButtonTapped:
+            state.alert = AlertState {
+                TextState("기록 저장 취소")
+            } actions: {
+                ButtonState(action: .cancel) {
+                    TextState("계속 편집")
+                }
+                ButtonState(action: .confirm) {
+                    TextState("저장 안함")
+                }
+            } message: {
+                TextState("이 페이지를 나가면 촬영하신 영상이 저장되지 않아요")
+            }
+            return .none
+            
         case .close:
+            return .none
+            
+        case .successTapped:
+            return .none
+        case .failtureTapped:
+            return .none
+            
+        case .alert(.presented(.confirm)):
+            print("확인")
+            return .none
+            
+        case .alert(.presented(.cancel)):
+            print("취소")
+            return .none
+        case .alert(.dismiss):
             return .none
         }
     }
