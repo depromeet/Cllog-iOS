@@ -15,6 +15,18 @@ public protocol GradeUseCase {
     func getGrades() async throws -> [Grade]
 }
 
+public struct DefaultGradeUseCase: GradeUseCase {
+    private let repository: GradeRepository
+    
+    public init(repository: GradeRepository) {
+        self.repository = repository
+    }
+    
+    public func getGrades() async throws -> [Grade] {
+        try await repository.getGrades()
+    }
+}
+
 // TODO: Remove
 public struct MockGradeUseCase: GradeUseCase {
     private let gradeRepository: GradeRepository
@@ -29,7 +41,7 @@ public struct MockGradeUseCase: GradeUseCase {
 }
 
 enum GradeUseCaseKey: DependencyKey {
-    static let liveValue: GradeUseCase = MockGradeUseCase(gradeRepository: MockGradeRepository())
+    static let liveValue: GradeUseCase = ClLogDI.container.resolve(GradeUseCase.self)!
 }
 
 extension DependencyValues {

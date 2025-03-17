@@ -15,6 +15,18 @@ public protocol CragUseCase {
     func getCrags() async throws -> [Crag]
 }
 
+public struct DefaultCragUseCase: CragUseCase {
+    private let repository: CragRepository
+    
+    public init(repository: CragRepository) {
+        self.repository = repository
+    }
+    
+    public func getCrags() async throws -> [Crag] {
+        try await repository.getCrags()
+    }
+}
+
 // TODO: Remove
 public struct MockCragUseCase: CragUseCase {
     private let cragRepository: CragRepository
@@ -29,7 +41,8 @@ public struct MockCragUseCase: CragUseCase {
 }
 
 enum CragUseCaseKey: DependencyKey {
-    static let liveValue: CragUseCase = MockCragUseCase(cragRepository: MockCragRepository())
+    static let liveValue: CragUseCase = ClLogDI.container.resolve(CragUseCase.self)!
+//    static let liveValue: CragUseCase = MockCragUseCase(cragRepository: MockCragRepository())
 }
 
 extension DependencyValues {
