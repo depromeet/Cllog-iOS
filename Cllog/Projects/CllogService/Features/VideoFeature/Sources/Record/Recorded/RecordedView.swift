@@ -114,7 +114,7 @@ public struct RecordedView: View {
                 
                 HStack(spacing: 7) {
                     Button(action: {
-                        
+                        store.send(.failtureTapped)
                     }) {
                         Text("실패로 저장")
                             .font(.b1)
@@ -126,7 +126,7 @@ public struct RecordedView: View {
                     }
                     
                     Button(action: {
-                        
+                        store.send(.successTapped)
                     }) {
                         Text("완등으로 저장")
                             .font(.b1)
