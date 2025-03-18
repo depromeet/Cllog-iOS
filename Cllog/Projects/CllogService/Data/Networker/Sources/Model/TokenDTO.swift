@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct TokenDTO {
+public struct TokenDTO: Sendable {
     
     public init(
         accessToken: String,

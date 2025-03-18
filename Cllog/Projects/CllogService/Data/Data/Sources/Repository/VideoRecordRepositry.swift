@@ -81,4 +81,15 @@ public struct VideoRecordRepositry: VideoRepository {
     public func uploadVideo(fileURL: URL) async throws {
 //        let model: Emtpy = try await provider.request(VideoTarget())
     }
+    
+    public func uploadVideoThumbnail(
+        name: String,
+        fileName: String,
+        min: String,
+        value: Data
+    ) async throws {
+        
+//        let format =
+    }
+    
 }

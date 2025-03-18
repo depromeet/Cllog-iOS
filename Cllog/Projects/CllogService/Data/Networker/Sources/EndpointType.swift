@@ -15,4 +15,5 @@ public protocol EndpointType {
     var parameters: ParameterType? { get }
     var encodable: Encodable? { get }
     var headers: [Starlink.Header]? { get }
+    var encoding: StarlinkEncodable { get }
 }
