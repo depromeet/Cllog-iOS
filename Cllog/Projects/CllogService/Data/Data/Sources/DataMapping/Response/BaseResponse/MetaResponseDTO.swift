@@ -8,6 +8,6 @@
 
 import Foundation
 struct BaseMetaResponseDTO: Decodable {
-    let nextCursor: Int
+    let nextCursor: Int?
     let hasMore: Bool
 }

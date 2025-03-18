@@ -23,7 +23,7 @@ public final class DefaulCragDataSource: CragDataSource {
     }
     
     public func crags() async throws -> [FolderCragResponseDTO] {
-        let response: BaseResponseWithMetaDTO<FolderAttemptCragResponseDTO, BaseMetaResponseDTO> = try await provider.request(
+        let response: BaseResponseDTO<BaseContentsResponse<[FolderCragResponseDTO], BaseMetaResponseDTO>> = try await provider.request(
             CragTarget.myCrags
         )
         
@@ -31,7 +31,7 @@ public final class DefaulCragDataSource: CragDataSource {
             throw StarlinkError.inValidJSONData(nil)
         }
         
-        return crags.contents ?? []
+        return crags.contents
     }
     
 }

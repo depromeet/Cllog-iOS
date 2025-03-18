@@ -22,7 +22,7 @@ public final class DefaultGradeDataSource: GradeDataSource {
     }
     
     public func myGrades() async throws -> [FolderGradeResponseDTO] {
-        let response: BaseResponseWithMetaDTO<FolderAttemptGradeResponseDTO, BaseMetaResponseDTO> = try await provider.request(
+        let response: BaseResponseDTO<BaseContentsResponse<[FolderGradeResponseDTO], BaseMetaResponseDTO>> = try await provider.request(
             GradeTarget.myGrades
         )
         

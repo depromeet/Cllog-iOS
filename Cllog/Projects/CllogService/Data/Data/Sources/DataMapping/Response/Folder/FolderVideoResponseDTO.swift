@@ -13,5 +13,5 @@ struct FolderVideoResponseDTO: Decodable {
     let id: Int
     let localPath: String
     let thumbnailUrl: String
-    let durationMS: Int
+    let durationMs: Int
 }

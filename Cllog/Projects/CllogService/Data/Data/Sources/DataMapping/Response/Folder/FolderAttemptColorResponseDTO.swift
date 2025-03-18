@@ -1,5 +1,5 @@
 //
-//  FolderAttemptCragResponseDTO.swift
+//  FolderAttemptColorResponseDTO.swift
 //  Data
 //
 //  Created by soi on 3/18/25.
@@ -9,17 +9,16 @@
 import Foundation
 import Shared
 
-struct FolderAttemptCragResponseDTO: Decodable {
+struct FolderAttemptColorResponseDTO: Decodable {
     let id: Int
+    let hex: String
     let name: String
-    let roadAddress: String
     
-    func toDomain() -> Crag {
-        Crag(
+    func toDomain() -> Grade {
+        Grade(
             id: String(id),
             name: name,
-            address: roadAddress
+            hexCode: hex
         )
     }
 }
-

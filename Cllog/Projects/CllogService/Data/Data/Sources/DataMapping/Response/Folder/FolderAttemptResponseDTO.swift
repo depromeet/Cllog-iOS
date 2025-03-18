@@ -14,22 +14,17 @@ public struct FolderAttemptResponseDTO: Decodable {
     let attemptId: Int
     let date: String
     let video: FolderVideoResponseDTO
-    let cragName: String?
-    let colorName: String?
-    let colorHex: String?
+    let crag: FolderAttemptCragResponseDTO?
+    let color: FolderAttemptColorResponseDTO?
     let status: String
     
     func toDomain() -> Attempt {
         Attempt(
             date: date,
-            grade: colorName.flatMap { name in
-                colorHex.map { hex in Grade(name: name, hexCode: hex) }
-            },
+            grade: color?.toDomain(),
             result: AttemptResult(rawValue: status) ?? .complete,
-            recordedTime: video.durationMS.msToTimeString,
-            crag: cragName.flatMap { cragName in
-                Crag(name: cragName, address: "")
-            }
+            recordedTime: video.durationMs.msToTimeString,
+            crag: crag?.toDomain()
         )
     }
 }
