@@ -10,6 +10,7 @@ import SwiftUI
 
 import ComposableArchitecture
 import CalendarFeature
+import SettingFeature
 
 public struct RouterView: View {
     @Bindable private var store: StoreOf<RouterFeature>
@@ -30,6 +31,9 @@ public struct RouterView: View {
             switch store.case {
             case .calendarDetail(let store):
                 CalendarDetailView(store: store)
+                    .hideNavBarKeepSwipe()
+            case .setting(let store):
+                SettingView(store: store)
                     .hideNavBarKeepSwipe()
             }
         }

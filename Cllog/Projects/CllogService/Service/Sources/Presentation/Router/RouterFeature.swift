@@ -10,6 +10,7 @@ import Foundation
 
 import ComposableArchitecture
 import CalendarFeature
+import SettingFeature
 
 @Reducer
 public struct RouterFeature {
@@ -57,6 +58,9 @@ extension RouterFeature {
             // 캘린더 상세 페이지 pop
             state.path.pop(from: id)
             return .none
+        case .path(.element(id: let id, action: .setting(.backButtonTapped))):
+            state.path.pop(from: id)
+            return .none
         default:
             return .none
         }
@@ -67,6 +71,9 @@ extension RouterFeature {
         case let .mainAction(.routerAction(.pushToCalendarDetail(storyId))):
             // 캘린더 상세 페이지 push
             state.path.append(.calendarDetail(CalendarDetailFeature.State(storyId: storyId)))
+            return .none
+        case .mainAction(.routerAction(.pushToSetting)):
+            state.path.append(.setting(SettingFeature.State()))
             return .none
         default:
             return .none

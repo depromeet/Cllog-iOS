@@ -18,6 +18,7 @@ import FolderTabFeature
 import ComposableArchitecture
 import FolderFeature
 import CalendarFeature
+import ReportFeature
 
 /// 구현부
 public struct MainView: View {
@@ -115,6 +116,8 @@ private extension MainView {
 private extension MainView {
     
     var reportTabbarView: some View {
-        Text("3")
+        ReportView(
+            store: store.scope(state: \.reportState, action: \.reportAction)
+        )
     }
 }
