@@ -37,15 +37,18 @@ public struct VideoEditFeature {
     
     @ObservableState
     public struct State: Equatable {
+        @Presents var alert: AlertState<Action.Dialog>?
+        
         var currentTime: Double = 0
-        var isPlaying: Bool = false
+        var isPlaying = false
         var playheadPosition: CGFloat = 0
         var duration: Double = 0
         var stampList: [Stamp] = []
         var popedStampList: [Stamp] = []
         var trimStartPosition: CGFloat = 0
         var trimEndPosition: CGFloat = Constants.totalTrimmingWidth
-        var isVideoReady: Bool = false
+        var isVideoReady = false
+        var shouldDismiss = false
         let videoURL: URL
         
         var formattedCurrentTime: String {
@@ -60,6 +63,7 @@ public struct VideoEditFeature {
     }
     
     public enum Action: Equatable {
+        case alert(PresentationAction<Dialog>)
         case didTapStamp
         case didTapPlayPause
         case didTapUndoStamp
@@ -68,8 +72,8 @@ public struct VideoEditFeature {
         case updateTrimStartPosition(position: CGFloat)
         case updateTrimEndPosition(position: CGFloat)
         case playerResponse(PlayerAction)
-        case dismiss
-        case complete
+        case didTapEditCancel
+        case didTapEditCompelete
         case onAppear
         
         public enum PlayerAction: Equatable {
@@ -78,6 +82,12 @@ public struct VideoEditFeature {
             case timeUpdated(currentTime: Double)
             case playerReady
             case seekCompleted
+        }
+        
+        @CasePathable
+        public enum Dialog: Equatable {
+            case confirm
+            case cancel
         }
     }
     
@@ -196,15 +206,33 @@ public struct VideoEditFeature {
                 case .seekCompleted:
                     return .none
                 }
-            case .dismiss:
-                return .run { _ in
-                    await dismiss()
+            case .didTapEditCancel:
+                state.alert = AlertState {
+                    TextState("편집 취소")
+                } actions: {
+                    ButtonState(action: .confirm) {
+                        TextState("저장 안함")
+                    }
+                    ButtonState(action: .cancel) {
+                        TextState("계속 편집")
+                    }
+                } message: {
+                    TextState("이 페이지를 나가면\n편집 내용이 적용되지 않아요")
                 }
-            case .complete:
+                return .none
+            case .alert(.presented(.confirm)):
+                state.shouldDismiss = true
+                return .none
+            case .alert(.presented(.cancel)):
+                return .none
+            case .didTapEditCompelete:
                 // TODO: 완료 처리 구현
+                return .none
+            default:
                 return .none
             }
         }
+        .ifLet(\.$alert, action: \.alert)
         .onChange(of: \.trimStartPosition) { oldValue, newValue in
             Reduce { state, action in
                 if action == .updateTrimStartPosition(position: newValue) {
