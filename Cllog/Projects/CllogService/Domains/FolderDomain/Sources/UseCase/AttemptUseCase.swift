@@ -7,12 +7,32 @@
 //
 
 import Foundation
+import Shared
+
 import Dependencies
 
 public protocol AttemptUseCase {
     // TODO: 필터링 VO 삽입
     func getAttempts() async throws -> [Attempt]
     func getFilteredAttempts() async throws -> [Attempt]
+}
+
+public struct DefaultAttemptUseCase: AttemptUseCase {
+    private let repository: AttemptRepository
+    
+    public init(repository: AttemptRepository) {
+        self.repository = repository
+    }
+    
+    public func getAttempts() async throws -> [Attempt] {
+        try await repository.getFilteredAttempts()
+    }
+    
+    public func getFilteredAttempts() async throws -> [Attempt] {
+        try await repository.getFilteredAttempts()
+    }
+    
+    
 }
 
 // TODO: Remove
@@ -34,7 +54,8 @@ public struct MockAttemptUseCase: AttemptUseCase {
 }
 
 enum AttemptUseCaseKey: DependencyKey {
-    static let liveValue: AttemptUseCase = MockAttemptUseCase(attemptRepository: MockAttemptRepository())
+//    static let liveValue: AttemptUseCase = MockAttemptUseCase(attemptRepository: MockAttemptRepository())
+    static let liveValue: AttemptUseCase = ClLogDI.container.resolve(AttemptUseCase.self)!
 //    static let liveValue = ClLogDI.container.resolve(FolderListUseCase.self)!
 }
 

@@ -21,10 +21,10 @@ public struct FolderFeature {
         var grades = [Grade]()
         var crags = [Crag]()
         var attempts = [Attempt]()
-        var selectedChip: Set<SelectedChip> = []
-        var selectedCrag: Crag?
-        var selectedGrade: Grade?
-        
+        let chips = SelectedChip.allCases
+        var attemptFilter = AttemptFilter()
+        var selectedChips: Set<SelectedChip> = []
+        var viewState = ViewState.loading
         var showSelectGradeBottomSheet = false
         var showSelectCragBottomSheet = false
         var searchCragName = ""
@@ -44,6 +44,7 @@ public struct FolderFeature {
         case didSelectCrag(_ crag: Crag)
         case didSelectGrade(_ grade: Grade)
         case getFilteredAttempts(_ attempt: [Attempt])
+        case setViewState(_ state: ViewState)
         case getFilterableInfo
         case fail
     }
@@ -58,38 +59,44 @@ public struct FolderFeature {
                 return .none
             case .onAppear:
                 return fetchInitialData()
+                
             case .completeChipTapped:
-                state.selectedChip.formSymmetricDifference([.complete])
+                state.attemptFilter = state.attemptFilter.toggleResult(.complete)
                 return .none
             case .failChipTapped:
-                state.selectedChip.formSymmetricDifference([.fail])
+                state.attemptFilter = state.attemptFilter.toggleResult(.fail)
                 return .none
             case .gradeChipTapped:
-                if state.selectedGrade != nil {
-                    state.selectedGrade = nil
-                } else {
-                    state.showSelectGradeBottomSheet = true
+                guard state.attemptFilter.grade == nil else {
+                    state.attemptFilter = state.attemptFilter.updateGrade(nil)
+                    return .none
                 }
+                state.showSelectGradeBottomSheet = true
+
                 return .none
             case .cragChipTapped:
-                state.searchCragName = ""
-                if state.selectedCrag != nil {
-                    state.selectedCrag = nil
-                } else {
-                    state.showSelectCragBottomSheet = true
+                guard state.attemptFilter.crag == nil else {
+                    state.attemptFilter = state.attemptFilter.updateCrag(nil)
+                    return .none
                 }
+                state.searchCragName = ""
+                state.showSelectCragBottomSheet = true
                 return .none
             case .getFilterableDatas(let grades, let crags):
                 state.grades = grades
                 state.crags = crags
                 return .none
             case .didSelectCrag(let crag):
-                state.selectedCrag = crag
+                state.attemptFilter = state.attemptFilter.updateCrag(crag)
                 state.showSelectCragBottomSheet = false
                 return .none
             case .didSelectGrade(let grade):
-                state.selectedGrade = grade
+                state.attemptFilter = state.attemptFilter.updateGrade(grade)
                 state.showSelectGradeBottomSheet = false
+                return .none
+            case .setViewState(let viewState):
+                
+                state.viewState = viewState
                 return .none
             case .getFilteredAttempts(let attempts):
                 state.attempts = attempts
@@ -110,9 +117,11 @@ public struct FolderFeature {
             
             do {
                 let (gradesResult, cragsResults, attemptsResult) = try await (grades, crags, allAttempts)
-                
                 await send(.getFilterableDatas(grades: gradesResult, crags: cragsResults))
                 await send(.getFilteredAttempts(attemptsResult))
+                await send(.setViewState(attemptsResult.isEmpty ? .empty : .content))
+            } catch {
+                await send(.setViewState(.empty))
             }
         }
     }
@@ -126,9 +135,16 @@ public struct FolderFeature {
             }
         }
     }
+    
 }
 
 extension FolderFeature {
+    public enum ViewState: Equatable {
+        case loading
+        case empty
+        case content
+    }
+    
     enum SelectedChip: Hashable, CaseIterable {
         case complete
         case fail

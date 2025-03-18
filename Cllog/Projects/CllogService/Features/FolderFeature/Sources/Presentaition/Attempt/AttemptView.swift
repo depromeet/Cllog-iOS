@@ -21,7 +21,7 @@ public struct AttemptView: ViewProtocol {
    
     private let attempt = Attempt(
         date: "25.02.08 FRI",
-        grade: Grade(name: "파랑", hexCode: 0x5E7CFF),
+        grade: Grade(id: UUID().uuidString, name: "파랑", hexCode: "0x5E7CFF"),
         result: .complete,
         recordedTime: "00:00:30",
         crag: Crag(name: "클라이밍파크 강남점", address: "강남")

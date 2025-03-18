@@ -66,5 +66,41 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
+        
+        container.register(AttemptUseCase.self) { _ in
+            DefaultAttemptUseCase(
+                repository: DefaultAttemptRepository(
+                    dataSource: DefaultAttemptDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
+        
+        container.register(GradeUseCase.self) { _ in
+            DefaultGradeUseCase(
+                repository: DefaultGradeRepository(
+                    dataSource: DefaultGradeDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
+        
+        container.register(CragUseCase.self) { _ in
+            DefaultCragUseCase(
+                repository: DefaultCragRepository(
+                    dataSource: DefaulCragDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
     }
 }

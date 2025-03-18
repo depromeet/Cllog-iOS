@@ -8,8 +8,15 @@
 
 import Foundation
 
-public enum AttemptResult {
-    case complete
-    case fail
+public enum AttemptResult: String {
+    case complete = "SUCCESS"
+    case fail = "FAILURE"
+    
+    func toggleResult() -> AttemptResult {
+        switch self {
+        case .complete: .fail
+        case .fail:     .complete
+        }
+    }
 }
 
