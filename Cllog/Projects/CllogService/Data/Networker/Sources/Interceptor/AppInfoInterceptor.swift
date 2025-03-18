@@ -1,5 +1,5 @@
 //
-//  AppIntoInterceptor.swift
+//  AppInfoInterceptor.swift
 //  Networker
 //
 //  Created by saeng lin on 3/9/25.
@@ -9,7 +9,7 @@
 import Foundation
 import Starlink
 
-public class AppIntoInterceptor: StarlinkInterceptor {
+public final class AppInfoInterceptor: StarlinkInterceptor, Sendable {
     
     public func adapt(
         _ urlRequest: inout URLRequest
@@ -32,5 +32,10 @@ public class AppIntoInterceptor: StarlinkInterceptor {
         return urlRequest
     }
     
-    
+    public func retry(
+        _ urlRequest: inout URLRequest,
+        response: Starlink.Response
+    ) async throws -> (URLRequest, StartlinkRetryType) {
+        return (urlRequest, .doNotRetry)
+    }
 }

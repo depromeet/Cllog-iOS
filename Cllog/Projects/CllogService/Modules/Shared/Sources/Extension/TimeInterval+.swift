@@ -9,11 +9,12 @@
 import Foundation
 
 extension TimeInterval {
+    // 0.1로 단위로 된 TimeInterval 계산
     public func formatTimeInterval() -> String {
-        let totalSeconds = Int(self)
-        let seconds = totalSeconds % 60
-        let minutes = (totalSeconds / 60) % 60
-        let hours = totalSeconds / 3600
+        let totalCentiseconds = Int(self)
+        let seconds = (totalCentiseconds % 6000) / 100
+        let minutes = (totalCentiseconds / 6000) % 60
+        let hours = totalCentiseconds / 360000
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
 }

@@ -16,58 +16,56 @@ extension Starlink.Request {
             throw StarlinkError.inValidURLPath(ErrorInfo(code: "-999", error: nil, message: nil))
         }
         
-        var urlComponents = URLComponents(string: urlConversion.absoluteString)
+        let urlComponents = URLComponents(string: urlConversion.absoluteString)
         
-        switch method {
-        case .get:
+        var urlRequest = URLRequest(url: urlConversion)
+        urlRequest.httpMethod = "\(method)"
+        
+        if let parameters = params?.toDictionary() {
+            try urlRequest = encoding.encode(&urlRequest, with: parameters)
+        }
+        
+        for interceptor in self.interceptors {
+            urlRequest = try await interceptor.adapt(&urlRequest)
+        }
+        
+        urlRequest.setHeaders(headers)
+        
+        self.trakers.allTrackers().forEach { $0.didRequest(self, urlRequest: urlRequest) }
+        
+        do {
+            let (data, response) = try await session.data(for: urlRequest, delegate: nil)
+            return (data, response)
+        } catch {
             
-            var parameters: [URLQueryItem] = urlComponents?.queryItems ?? []
+            let response = Starlink.Response(response: nil, data: nil, error: error)
+            self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
             
-            params?.forEach({ key, value in
-                parameters.append(URLQueryItem(name: key, value: "\(value)"))
-            })
-            
-            urlComponents?.queryItems = parameters
-            
-            guard let url = urlComponents?.url else {
-                throw StarlinkError.inValidURLPath(ErrorInfo(code: "-999", error: nil, message: nil))
+            // retry Count가 최대 retry 갯수보다 낮으면 retry
+            guard self.retryCount < self.retryLimit else {
+                throw error
             }
             
-            var urlRequest = URLRequest(url: url)
-            urlRequest.httpMethod = "\(method)"
+            // default는 다시 요청 하지 않음
+            var retryResult: StartlinkRetryType = .doNotRetry
+            
+            self.retryCount += 1
             
             for interceptor in self.interceptors {
-                urlRequest = try await interceptor.adapt(&urlRequest)
+                let (retryURLRequest, retryType)  = try await interceptor.retry(&urlRequest, response: response)
+                urlRequest = retryURLRequest
+                retryResult = retryType
             }
             
-            urlRequest.setHeaders(headers)
-            
-            self.trakers.allTrackers().forEach { $0.didRequest(self, urlRequest: urlRequest) }
-            
-            return try await session.data(for: urlRequest, delegate: nil)
-            
-        case .post, .put, .delete:
-            
-            let params = params?.toDictionary() ?? [:]
-            guard JSONSerialization.isValidJSONObject(params) else {
-                throw StarlinkError.inValidParams(ErrorInfo(code: "-999", error: nil, message: nil))
+            switch retryResult {
+            case .retry:
+                // 재요청 이면 요청
+                return try await perform()
+                
+            case .doNotRetry:
+                // retry를 하지 않으면 throw error
+                throw error
             }
-
-            let requestBody = try JSONSerialization.data(withJSONObject: params, options: [])
-            var urlRequest = URLRequest(url: urlConversion)
-            
-            urlRequest.httpMethod = "\(method)"
-            urlRequest.httpBody = requestBody
-            
-            for interceptor in self.interceptors {
-                urlRequest = try await interceptor.adapt(&urlRequest)
-            }
-            urlRequest.setHeader(.init(name: "Content-Type", value: "application/json"))
-            urlRequest.setHeaders(headers)
-            
-            self.trakers.allTrackers().forEach { $0.didRequest(self, urlRequest: urlRequest) }
-            
-            return try await session.data(for: urlRequest)
         }
     }
 }
@@ -75,10 +73,11 @@ extension Starlink.Request {
 extension Starlink.Request: StarlinkRequest {
     
     public func reponsePublisher<T: Decodable>() -> AnyPublisher<T, any Error> {
-        return Future<T, Error> { @Sendable promise in
+        return Future<T, Error> { @Sendable [weak self] promise in
+            guard let self else { return }
             Task {
                 do {
-                    let model: T = try await reponseAsync()
+                    let model: T = try await self.reponseAsync()
                     promise(.success(model))
                     
                 } catch {
@@ -89,34 +88,85 @@ extension Starlink.Request: StarlinkRequest {
     }
     
     public func reponseAsync<T: Decodable>() async throws -> T {
-        
         do {
-            
             let (data, urlResponse) = try await self.perform()
             let response = Starlink.Response(response: urlResponse, data: data, error: nil)
-            
             self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
-            
             let model: T = try self.validResponse(response)
             return model
-            
         } catch {
-            let response = Starlink.Response(response: nil, data: nil, error: error)
-            self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
-            
             throw StarlinkError(error: error)
         }
         
     }
     
     public func response<T: Decodable>(_ complete: @escaping @Sendable (Result<T, any Error>) -> Void) {
-        Task {
+        Task { [weak self] in
+            guard let self else { return }
             do {
                 let model: T = try await reponseAsync()
                 complete(.success(model))
             } catch {
                 complete(.failure(error))
             }
+        }
+    }
+    
+    public func upload<T: Decodable>() async throws -> T {
+        guard let uploadForm = self.uploadForm else {
+            throw StarlinkError.inValidParams(.init(code: "-999", error: nil, message: .init(message: "Upload form is missing")))
+        }
+        
+        guard let urlConversion = try? path.asURL() else {
+            throw StarlinkError.inValidURLPath(ErrorInfo(code: "-999", error: nil, message: nil))
+        }
+        
+        var urlRequest = URLRequest(url: urlConversion)
+        urlRequest.httpMethod = "\(method)"
+        
+        let boundary = UUID().uuidString
+        urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        var httpBody = Data()
+        
+        if let parameters = params?.toDictionary() {
+            for (key, value) in parameters {
+                httpBody.appendFormat("--\(boundary)\r\n".data(using: .utf8))
+                httpBody.appendFormat("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8))
+                httpBody.appendFormat("\(value)\r\n".data(using: .utf8))
+            }
+        }
+        
+        httpBody.appendFormat("--\(boundary)\r\n".data(using: .utf8))
+        httpBody.appendFormat("Content-Disposition: form-data; name=\"\(uploadForm.name)\"; filename=\"\(uploadForm.fileName)\"\r\n".data(using: .utf8))
+        httpBody.appendFormat("Content-Type: \(uploadForm.mimeType)\r\n\r\n".data(using: .utf8))
+        httpBody.append(uploadForm.data)
+        httpBody.appendFormat("\r\n".data(using: .utf8))
+        httpBody.appendFormat("--\(boundary)--".data(using: .utf8))
+        
+        urlRequest.httpBody = httpBody as Data
+        
+        for interceptor in self.interceptors {
+            urlRequest = try await interceptor.adapt(&urlRequest)
+        }
+        
+        urlRequest.setHeaders(headers)
+        
+        self.trakers.allTrackers().forEach { $0.didRequest(self, urlRequest: urlRequest) }
+
+        do {
+            let (data, urlResponse) = try await session.data(for: urlRequest, delegate: nil)
+            let response = Starlink.Response(response: urlResponse, data: data, error: nil)
+
+            self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
+
+            let model: T = try self.validResponse(response)
+            return model
+        } catch {
+            let response = Starlink.Response(response: nil, data: nil, error: error)
+            self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
+
+            throw StarlinkError(error: error)
         }
     }
 }
@@ -155,5 +205,13 @@ extension StarlinkRequest {
             }
         }
         return ErrorInfo(code: "\((response.response as? HTTPURLResponse)?.statusCode ?? -999)", error: response.error, message: message)
+    }
+}
+
+extension Data {
+    mutating func appendFormat(_ data: Data?) {
+        if let data {
+            self.append(data)
+        }
     }
 }

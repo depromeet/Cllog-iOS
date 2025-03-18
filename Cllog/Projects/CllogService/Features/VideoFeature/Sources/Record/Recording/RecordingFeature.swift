@@ -18,10 +18,9 @@ public struct RecordingFeature {
     
     @ObservableState
     public struct State: Equatable {
-        
-        var viewModel: RecordingPlayViewModel = .init()
         var elapsedTime: TimeInterval = 0
         var fileName: String = ""
+        let viewModel: RecordingPlayViewModel = .init()
     }
     
     public enum Action: Equatable {
@@ -43,7 +42,11 @@ public struct RecordingFeature {
         case timerTicked
         case onSTopDuration
         
-        case presentRecorded(fileName: String, path: URL, totalDuration: TimeInterval)
+        // 촬영 완료
+        case finishRecording(path: URL)
+        
+        // 화면 전환
+        case presentRecorded(fileName: String, path: URL)
     }
     
     public var body: some ReducerOf<Self> {
@@ -59,7 +62,6 @@ extension RecordingFeature {
     ) -> Effect<Action> {
         switch action {
         case .onAppear:
-            
             return .run { send in
                 await send(.onStartSession)
                 await send(.onStartRecording)
@@ -93,35 +95,23 @@ extension RecordingFeature {
             }
             
         case .startListening:
-            return .run { [state, weak viewModel = state.viewModel] send in
+            return .run { [weak viewModel = state.viewModel] send in
                 guard let viewModel else { return }
                 for await result in viewModel.recordingOutputAsyncStream {
                     // 촬영 결과를 가져옴
-                    
-                    let filename = state.fileName
-                    let path = result.1
-                    let totalDuration = state.elapsedTime
-                    
                     await viewModel.stopSession()
                     
-                    // 성공/실패 화면으로 전환
-                    await send(.presentRecorded(
-                        fileName: filename,
-                        path: path,
-                        totalDuration: totalDuration)
-                    )
-                    
+                    await send(.finishRecording(path: result.1))
                 }
             }.cancellable(id: "startListening", cancelInFlight: true)
             
         case .onStartDuration:
             return .run { send in
-                for await _ in clock.timer(interval: .seconds(1)) {
-                     await send(.timerTicked)
-                 }
+                for await _ in clock.timer(interval: .seconds(0.01)) {
+                    await send(.timerTicked)
+                }
             }
             .cancellable(id: "Timer", cancelInFlight: true)
-
             
         case .timerTicked:
             state.elapsedTime += 1.0
@@ -129,6 +119,17 @@ extension RecordingFeature {
             
         case .onSTopDuration:
             return .cancel(id: "Timer")
+            
+        case .finishRecording(let path):
+            let fileName = state.fileName
+            let totalDuration = state.elapsedTime
+            return .run { send in
+                // 성공/실패 화면으로 전환
+                await send(.presentRecorded(
+                    fileName: fileName,
+                    path: path)
+                )
+            }
             
         case .presentRecorded:
             return .cancel(id: "startListening")

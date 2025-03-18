@@ -30,6 +30,9 @@ struct Stamp: Identifiable, Equatable {
 
 @Reducer
 public struct VideoEditFeature {
+    
+    public init() {}
+    
     enum Constants {
         static let totalTrimmingWidth = UIScreen.main.bounds.width - 74
         static let playHeadWidth: CGFloat = 5

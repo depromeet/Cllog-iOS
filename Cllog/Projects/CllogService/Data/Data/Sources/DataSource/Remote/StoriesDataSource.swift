@@ -92,4 +92,8 @@ extension StoriesTarget: EndpointType {
     var headers: [Starlink.Header]? {
         nil
     }
+    
+    var encoding: StarlinkEncodable {
+        return Starlink.StarlinkURLEncoding()
+    }
 }

@@ -15,8 +15,8 @@ public class RecordingPlayViewModel: NSObject, ObservableObject {
     private var movieOutput: AVCaptureMovieFileOutput = .init()
     private let sessionQueue = DispatchQueue(label: "RecordingPlay.Session.Queue")
     
-    private var recordingOutputStream: AsyncStream<(AVCaptureFileOutput, URL, [AVCaptureConnection], (any Error)?)>.Continuation?
-    public private(set) lazy var recordingOutputAsyncStream: AsyncStream<(AVCaptureFileOutput, URL, [AVCaptureConnection], (any Error)?)> = AsyncStream { [weak self] in
+    private var recordingOutputStream: AsyncStream<(AVCaptureFileOutput?, URL, [AVCaptureConnection], (any Error)?)>.Continuation?
+    public private(set) lazy var recordingOutputAsyncStream: AsyncStream<(AVCaptureFileOutput?, URL, [AVCaptureConnection], (any Error)?)> = AsyncStream { [weak self] in
         self?.recordingOutputStream = $0
     }
     
@@ -97,19 +97,27 @@ public class RecordingPlayViewModel: NSObject, ObservableObject {
     /// 카메라 Recording on
     /// - Parameter fileURL: 저장 할 파일 URL
     public func startRecording(to fileURL: URL) {
+        #if !targetEnvironment(simulator)
         sessionQueue.asyncAfter(deadline: .now() + 0.4, execute: { [weak movieOutput] in
             guard let movieOutput else { return }
             guard !movieOutput.isRecording else { return }
             movieOutput.startRecording(to: fileURL, recordingDelegate: self)
         })
+        #endif
     }
     
     public func stopRecording() {
+        #if !targetEnvironment(simulator)
         sessionQueue.async { [weak movieOutput] in
             guard let movieOutput else { return }
             guard movieOutput.isRecording else { return }
             movieOutput.stopRecording()
         }
+        #else
+        recordingOutputStream?.yield(
+            (nil, URL(string: "https://www.naver.com")!, [], nil)
+        )
+        #endif
     }
 }
 

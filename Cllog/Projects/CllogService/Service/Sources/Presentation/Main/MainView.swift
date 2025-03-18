@@ -26,7 +26,7 @@ public struct MainView: View {
     // MARK: - Private Properties
     private let store: StoreOf<MainFeature>
     
-    @State private var selectedTab: Int = 0
+    @State private var selectedTab: Int = 1
     
     /// 초기화
     /// - Parameters:

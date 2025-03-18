@@ -12,6 +12,10 @@ public protocol Provider: Sendable {
     func request<T: Decodable>(_ endpoint: EndpointType) async throws -> T
 }
 
+//public protocol UploadProviderable: Provider {
+//    func upload<T: Decodable>(_ endpoint: EndpointType) async throws -> T
+//}
+
 extension Provider {
     func request(
         url: String,
@@ -27,7 +31,8 @@ extension Provider {
             url,
             params: parameters,
             method: endPoint.method,
-            headers: endPoint.headers ?? []
+            headers: endPoint.headers ?? [],
+            encoding: endPoint.encoding
         )
     }
     
@@ -45,7 +50,9 @@ extension Provider {
             url,
             encodable: parameters,
             method: endPoint.method,
-            headers: endPoint.headers ?? []
+            headers: endPoint.headers ?? [],
+            encoding: endPoint.encoding
         )
     }
+    
 }
