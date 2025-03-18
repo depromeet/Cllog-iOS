@@ -24,7 +24,7 @@ public struct FolderFeature {
         let chips = SelectedChip.allCases
         var attemptFilter = AttemptFilter()
         var selectedChips: Set<SelectedChip> = []
-        
+        var viewState = ViewState.loading
         var showSelectGradeBottomSheet = false
         var showSelectCragBottomSheet = false
         var searchCragName = ""
@@ -44,6 +44,7 @@ public struct FolderFeature {
         case didSelectCrag(_ crag: Crag)
         case didSelectGrade(_ grade: Grade)
         case getFilteredAttempts(_ attempt: [Attempt])
+        case setViewState(_ state: ViewState)
         case getFilterableInfo
         case fail
     }
@@ -93,7 +94,10 @@ public struct FolderFeature {
                 state.attemptFilter = state.attemptFilter.updateGrade(grade)
                 state.showSelectGradeBottomSheet = false
                 return .none
+            case .setViewState(let viewState):
                 
+                state.viewState = viewState
+                return .none
             case .getFilteredAttempts(let attempts):
                 state.attempts = attempts
                 return .none
@@ -113,9 +117,11 @@ public struct FolderFeature {
             
             do {
                 let (gradesResult, cragsResults, attemptsResult) = try await (grades, crags, allAttempts)
-                
                 await send(.getFilterableDatas(grades: gradesResult, crags: cragsResults))
                 await send(.getFilteredAttempts(attemptsResult))
+                await send(.setViewState(attemptsResult.isEmpty ? .empty : .content))
+            } catch {
+                await send(.setViewState(.empty))
             }
         }
     }
@@ -129,9 +135,16 @@ public struct FolderFeature {
             }
         }
     }
+    
 }
 
 extension FolderFeature {
+    public enum ViewState: Equatable {
+        case loading
+        case empty
+        case content
+    }
+    
     enum SelectedChip: Hashable, CaseIterable {
         case complete
         case fail

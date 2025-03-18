@@ -28,6 +28,9 @@ public struct FolderView: ViewProtocol {
         makeBodyView()
             .padding(.vertical, 18)
             .background(Color.clLogUI.gray800)
+            .onAppear {
+                store.send(.onAppear)
+            }
             .bottomSheet(isPresented: $store.showSelectGradeBottomSheet) {
                 showSelectGradeBottomSheet()
             }
@@ -39,6 +42,47 @@ public struct FolderView: ViewProtocol {
 
 extension FolderView {
     private func makeBodyView() -> some View {
+        ZStack {
+            switch store.viewState {
+            case .loading:
+                makeLoadingView()
+                
+            case .empty:
+                makeEmptyView()
+                
+            case .content:
+                makeContentView()
+            }
+        }
+    }
+    
+    private func makeLoadingView() -> some View {
+        ZStack {
+            Color.clLogUI.gray800
+                .edgesIgnoringSafeArea(.all)
+            
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: ClLogUI.gray500))
+                .scaleEffect(2)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    
+    }
+    
+    private func makeEmptyView() -> some View {
+        VStack(spacing: 20) {
+            ClLogUI.videoNone
+                .resizable()
+                .frame(width: 60, height: 60)
+            
+            Text("아직 기록이 없어요.")
+                .font(.h3)
+                .foregroundStyle(Color.clLogUI.gray500)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    private func makeContentView() -> some View {
         ScrollView {
             VStack (alignment: .leading) {
                 makeTitleView()
@@ -56,9 +100,6 @@ extension FolderView {
                 .padding(.horizontal, 16)
         }
         .scrollIndicators(.hidden)
-        .onAppear {
-            store.send(.onAppear)
-        }
     }
     
     private func makeTitleView() -> some View {
@@ -67,18 +108,14 @@ extension FolderView {
                 .font(.h3)
                 .foregroundStyle(Color.clLogUI.white)
             
-            if store.attempts.count != 0 {
-                Text("\(store.attempts.count)")
-                    .font(.h3)
-                    .foregroundStyle(Color.clLogUI.gray300)
-            }
+            Text("\(store.attempts.count)")
+                .font(.h3)
+                .foregroundStyle(Color.clLogUI.gray300)
         }
     }
     
     private func makeChipView() -> some View {
-        
-        
-        return HStack {
+        HStack {
             Spacer()
                 .frame(width: 16)
             
