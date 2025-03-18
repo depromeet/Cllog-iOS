@@ -78,6 +78,7 @@ public struct MainFeature {
         public enum RouterAction {
             case pushToCalendarDetail(Int)
             case pushToSetting
+            case pushToAttempt(Int)
         }
     }
     
@@ -246,6 +247,8 @@ private extension MainFeature {
         _ action: FolderFeature.Action
     ) -> Effect<Action> {
         switch action {
+        case .moveToAttempt(let attemptId):
+            return .send(.routerAction(.pushToAttempt(attemptId)))
         default:
             return .none
         }

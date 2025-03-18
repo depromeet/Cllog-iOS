@@ -10,8 +10,7 @@ import Foundation
 import Shared
 
 public struct Attempt: Hashable, Identifiable {
-    public var id = UUID()
-    
+    public var id: Int
     public let date: String
     public let grade: Grade?
     public let result: AttemptResult
@@ -26,7 +25,14 @@ public struct Attempt: Hashable, Identifiable {
         lhs.id == rhs.id
     }
     
-    public init(id: UUID = UUID(), date: String, grade: Grade?, result: AttemptResult, recordedTime: String, crag: Crag?) {
+    public init(
+        id: Int,
+        date: String,
+        grade: Grade?,
+        result: AttemptResult,
+        recordedTime: String,
+        crag: Crag?
+    ) {
         self.id = id
         self.date = date
         self.grade = grade

@@ -183,6 +183,9 @@ extension FolderView {
                     levelColor: Color(hex: attempt.grade?.hexCode ?? "0x00000"),
                     time: attempt.recordedTime
                 )
+                .onTapGesture {
+                    store.send(.moveToAttempt(attempt.id))
+                }
             }
         }
     }

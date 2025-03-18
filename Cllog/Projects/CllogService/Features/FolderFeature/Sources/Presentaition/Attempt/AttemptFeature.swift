@@ -20,8 +20,8 @@ public struct AttemptFeature {
     @ObservableState
     public struct State: Equatable {
         
-        let attemptId: String
-        public init(attemptId: String) {
+        let attemptId: Int
+        public init(attemptId: Int) {
             self.attemptId = attemptId
         }
     }
@@ -29,11 +29,11 @@ public struct AttemptFeature {
     public enum Action {
         
         case onAppear
-        case didTapBackButton
-        case didTapShareButton
-        case didTapMoreButton
-        case didTapVideoView
-        case didTapStampView(id: String)
+        case backButtonTapped
+        case shareButtonTapped
+        case moreButtonTapped
+        case videoTapped
+        case stampTapped(id: String)
     }
     
     public var body: some Reducer<State, Action> {
@@ -41,15 +41,15 @@ public struct AttemptFeature {
             switch action {
             case .onAppear:
                 return .none
-            case .didTapBackButton:
+            case .backButtonTapped:
                 return .none
-            case .didTapShareButton:
+            case .shareButtonTapped:
                 return .none
-            case .didTapMoreButton:
+            case .moreButtonTapped:
                 return .none
-            case .didTapVideoView:
+            case .videoTapped:
                 return .none
-            case .didTapStampView(id: let id):
+            case .stampTapped(id: let id):
                 return .none
             }
         }

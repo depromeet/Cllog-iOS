@@ -22,6 +22,7 @@ public struct AttemptView: ViewProtocol {
     @State var splitXPositions: [CGFloat] = []
    
     private let attempt = Attempt(
+        id: 0,
         date: "25.02.08 FRI",
         grade: Grade(id: UUID().uuidString, name: "파랑", hexCode: "0x5E7CFF"),
         result: .complete,
@@ -43,7 +44,9 @@ public struct AttemptView: ViewProtocol {
 
 extension AttemptView {
     private func makeBodyView() -> some View {
-        VStack {
+        VStack(spacing: 0) {
+            makeAppBar()
+            
             makeChipView()
             
             makeVideoView()
@@ -61,7 +64,7 @@ extension AttemptView {
     private func makeAppBar() -> some View {
         AppBar {
             Button {
-                store.send(.didTapBackButton)
+                store.send(.backButtonTapped)
             } label: {
                 Image.clLogUI.back
                     .resizable()
@@ -71,7 +74,7 @@ extension AttemptView {
         } rightContent: {
             HStack(spacing: 20) {
                 Button {
-                    store.send(.didTapShareButton)
+                    store.send(.shareButtonTapped)
                 } label: {
                     Image.clLogUI.share
                         .resizable()
@@ -79,7 +82,7 @@ extension AttemptView {
                         .foregroundStyle(Color.clLogUI.white)
                 }
                 Button {
-                    store.send(.didTapMoreButton)
+                    store.send(.moreButtonTapped)
                 } label: {
                     Image.clLogUI.dotVertical
                         .resizable()
@@ -206,7 +209,7 @@ extension AttemptView {
                             .foregroundStyle(Color.clLogUI.gray600)
                     )
                     .onTapGesture {
-                        store.send(.didTapStampView(id: timeStamp)) // TODO: ID 또는 시간
+                        store.send(.stampTapped(id: timeStamp)) // TODO: ID 또는 시간
                     }
                 }
             }

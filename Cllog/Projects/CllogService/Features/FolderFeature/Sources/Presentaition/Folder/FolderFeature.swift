@@ -46,6 +46,7 @@ public struct FolderFeature {
         case getFilteredAttempts(_ attempt: [Attempt])
         case setViewState(_ state: ViewState)
         case getFilterableInfo
+        case moveToAttempt(_ attemptId: Int)
         case fail
     }
     
@@ -102,6 +103,8 @@ public struct FolderFeature {
                 state.attempts = attempts
                 return .none
             case .getFilterableInfo:
+                return .none
+            case .moveToAttempt:
                 return .none
             case .fail:
                 return .none

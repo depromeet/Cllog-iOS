@@ -11,6 +11,7 @@ import Foundation
 import ComposableArchitecture
 import CalendarFeature
 import SettingFeature
+import FolderFeature
 
 @Reducer
 public struct RouterFeature {
@@ -61,6 +62,9 @@ extension RouterFeature {
         case .path(.element(id: let id, action: .setting(.backButtonTapped))):
             state.path.pop(from: id)
             return .none
+        case .path(.element(id: let id, action: .attempt(.backButtonTapped))):
+            state.path.pop(from: id)
+            return .none
         default:
             return .none
         }
@@ -74,6 +78,9 @@ extension RouterFeature {
             return .none
         case .mainAction(.routerAction(.pushToSetting)):
             state.path.append(.setting(SettingFeature.State()))
+            return .none
+        case let .mainAction(.routerAction(.pushToAttempt(attemptId))):
+            state.path.append(.attempt(AttemptFeature.State(attemptId: attemptId)))
             return .none
         default:
             return .none
