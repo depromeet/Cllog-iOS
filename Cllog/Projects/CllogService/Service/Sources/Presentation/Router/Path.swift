@@ -9,8 +9,10 @@
 import Foundation
 import ComposableArchitecture
 import CalendarFeature
+import SettingFeature
 
 @Reducer
 public enum Path {
     case calendarDetail(CalendarDetailFeature)
+    case setting(SettingFeature)
 }
