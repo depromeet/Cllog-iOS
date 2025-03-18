@@ -65,7 +65,7 @@ private extension MainView {
             ForEach(Array([AnyView(folderTabbarView), AnyView(videoTabbarView), AnyView(reportTabbarView)].enumerated()), id: \.offset) { index, view in
                 view
                     .tabItem {
-                        selectedTab == index ? Image("icn_folder_selected", bundle: .clLogUIBundle) : Image("icn_folder_unselected", bundle: .clLogUIBundle)
+                        selectedTab == index ? Image.clLogUI.folder : Image.clLogUI.folder
                     }
                     .toolbarBackground(Color.clLogUI.gray700, for: .tabBar)
                     .toolbarBackground(.visible, for: .tabBar)
@@ -80,7 +80,7 @@ private extension MainView {
 // MARK: - Folder Tabbar View
 private extension MainView {
     var folderTabbarView: some View  {
-        FolderTabView(
+        FolderTabView<FolderView, CalendarMainView>(
             store: store.scope(
                 state: \.folderTabState,
                 action: \.folderTabAction
