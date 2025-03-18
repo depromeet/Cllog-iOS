@@ -16,7 +16,7 @@ extension Starlink.Request {
             throw StarlinkError.inValidURLPath(ErrorInfo(code: "-999", error: nil, message: nil))
         }
         
-        var urlComponents = URLComponents(string: urlConversion.absoluteString)
+        let urlComponents = URLComponents(string: urlConversion.absoluteString)
         
         var urlRequest = URLRequest(url: urlConversion)
         urlRequest.httpMethod = "\(method)"
@@ -33,17 +33,51 @@ extension Starlink.Request {
         
         self.trakers.allTrackers().forEach { $0.didRequest(self, urlRequest: urlRequest) }
         
-        return try await session.data(for: urlRequest, delegate: nil)
+        do {
+            let (data, response) = try await session.data(for: urlRequest, delegate: nil)
+            return (data, response)
+        } catch {
+            
+            let response = Starlink.Response(response: nil, data: nil, error: error)
+            self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
+            
+            // retry Count가 최대 retry 갯수보다 낮으면 retry
+            guard self.retryCount < self.retryLimit else {
+                throw error
+            }
+            
+            // default는 다시 요청 하지 않음
+            var retryResult: StartlinkRetryType = .doNotRetry
+            
+            self.retryCount += 1
+            
+            for interceptor in self.interceptors {
+                let (retryURLRequest, retryType)  = try await interceptor.retry(&urlRequest, response: response)
+                urlRequest = retryURLRequest
+                retryResult = retryType
+            }
+            
+            switch retryResult {
+            case .retry:
+                // 재요청 이면 요청
+                return try await perform()
+                
+            case .doNotRetry:
+                // retry를 하지 않으면 throw error
+                throw error
+            }
+        }
     }
 }
 
 extension Starlink.Request: StarlinkRequest {
     
     public func reponsePublisher<T: Decodable>() -> AnyPublisher<T, any Error> {
-        return Future<T, Error> { @Sendable promise in
+        return Future<T, Error> { @Sendable [weak self] promise in
+            guard let self else { return }
             Task {
                 do {
-                    let model: T = try await reponseAsync()
+                    let model: T = try await self.reponseAsync()
                     promise(.success(model))
                     
                 } catch {
@@ -54,28 +88,21 @@ extension Starlink.Request: StarlinkRequest {
     }
     
     public func reponseAsync<T: Decodable>() async throws -> T {
-        
         do {
-            
             let (data, urlResponse) = try await self.perform()
             let response = Starlink.Response(response: urlResponse, data: data, error: nil)
-            
             self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
-            
             let model: T = try self.validResponse(response)
             return model
-            
         } catch {
-            let response = Starlink.Response(response: nil, data: nil, error: error)
-            self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
-            
             throw StarlinkError(error: error)
         }
         
     }
     
     public func response<T: Decodable>(_ complete: @escaping @Sendable (Result<T, any Error>) -> Void) {
-        Task {
+        Task { [weak self] in
+            guard let self else { return }
             do {
                 let model: T = try await reponseAsync()
                 complete(.success(model))

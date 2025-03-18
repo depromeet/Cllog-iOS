@@ -32,5 +32,10 @@ public class AppIntoInterceptor: StarlinkInterceptor {
         return urlRequest
     }
     
-    
+    public func retry(
+        _ urlRequest: inout URLRequest,
+        response: Starlink.Response
+    ) async throws -> (URLRequest, StartlinkRetryType) {
+        return (urlRequest, .doNotRetry)
+    }
 }

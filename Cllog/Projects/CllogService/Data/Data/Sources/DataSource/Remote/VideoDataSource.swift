@@ -33,5 +33,7 @@ public struct VideoTarget: EndpointType {
         return nil
     }
     
-    
+    public var encoding: StarlinkEncodable {
+        return Starlink.StarlinkURLEncoding()
+    }
 }

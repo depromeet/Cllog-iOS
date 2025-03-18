@@ -17,7 +17,7 @@ public protocol StarlinkRequest {
 
 extension Starlink {
 
-    public struct Request: @unchecked Sendable {
+    public final class Request: @unchecked Sendable {
         public let session: Sessionable
         public let path: URLConversion
         public let params: SafeDictionary<String, Any>?
@@ -28,6 +28,8 @@ extension Starlink {
         let interceptors: [any StarlinkInterceptor]
         let encoding: (any StarlinkEncodable)
         var uploadForm: UploadDataForm? = nil
+        var retryLimit: Int = 1
+        var retryCount: Int = 0
 
         /// 초기화
         /// - Parameters:
