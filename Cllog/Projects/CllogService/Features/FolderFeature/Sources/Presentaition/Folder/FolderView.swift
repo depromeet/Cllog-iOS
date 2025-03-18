@@ -74,6 +74,7 @@ extension FolderView {
             ClLogUI.videoNone
                 .resizable()
                 .frame(width: 60, height: 60)
+                .foregroundStyle(Color.clLogUI.gray500)
             
             Text("아직 기록이 없어요.")
                 .font(.h3)
