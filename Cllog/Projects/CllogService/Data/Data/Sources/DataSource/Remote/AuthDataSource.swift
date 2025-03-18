@@ -58,6 +58,7 @@ enum LoginTarget {
 }
 
 extension LoginTarget: EndpointType {
+    
     var baseURL: String {
         return "https://dev-api.climb-log.my"
     }
@@ -98,5 +99,9 @@ extension LoginTarget: EndpointType {
     
     var headers: [Starlink.Header]? {
         nil
+    }
+    
+    var encoding: any StarlinkEncodable {
+        Starlink.StarlinkJSONEncoding()
     }
 }

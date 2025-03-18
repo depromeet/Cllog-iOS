@@ -19,7 +19,9 @@ import ComposableArchitecture
 public struct RecordedView: View {
     
     private weak var on: UIViewController?
-    private let store: StoreOf<RecordedFeature>
+    
+    @Bindable
+    private var store: StoreOf<RecordedFeature>
     
     public init(
         on: UIViewController?,
@@ -34,7 +36,7 @@ public struct RecordedView: View {
             .onAppear {
                 store.send(.onAppear)
             }
-            .debugFrameSize()
+            .presentDialog($store.scope(state: \.alert, action: \.alert), style: .default)
     }
     
     @ViewBuilder
@@ -59,7 +61,7 @@ public struct RecordedView: View {
         ZStack {
             HStack {
                 Button(action: {
-                    store.send(.close)
+                    store.send(.closeButtonTapped)
                 }) {
                     Image.clLogUI.icn_close
                         .renderingMode(.template)
@@ -83,7 +85,7 @@ public struct RecordedView: View {
                 
                 // 오른쪽 버튼 (편집)
                 Button(action: {
-                    
+                    store.send(.editButtonTapped)
                 }) {
                     Text("편집")
                         .font(.h5)
@@ -112,7 +114,7 @@ public struct RecordedView: View {
                 
                 HStack(spacing: 7) {
                     Button(action: {
-                        
+                        store.send(.failtureTapped)
                     }) {
                         Text("실패로 저장")
                             .font(.b1)
@@ -124,7 +126,7 @@ public struct RecordedView: View {
                     }
                     
                     Button(action: {
-                        
+                        store.send(.successTapped)
                     }) {
                         Text("완등으로 저장")
                             .font(.b1)

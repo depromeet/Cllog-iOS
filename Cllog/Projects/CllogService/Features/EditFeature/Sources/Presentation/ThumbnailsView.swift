@@ -42,7 +42,7 @@ struct ThumbnailsView: View {
     private func generateThumbnails() {
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
-        
+         
         Task {
             let assetDuration = try await asset.load(.duration)
             let durationSeconds = assetDuration.seconds

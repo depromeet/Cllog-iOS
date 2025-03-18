@@ -27,10 +27,10 @@ public final class RecordedPlayViewModel: NSObject, ObservableObject {
     private var addPeriodicTimeObserver: Any?
     
     // MARK: - AsynStream Properties
-    private var playTimeStream: AsyncStream<(CMTime)>.Continuation?
+    private var playTimeStream: AsyncStream<(CMTime, CMTime)>.Continuation?
     private var playEndStream: AsyncStream<Void>.Continuation?
     
-    public private(set) lazy var playTimeAsyncStream: AsyncStream<(CMTime)> = AsyncStream { [weak self] in
+    public private(set) lazy var playTimeAsyncStream: AsyncStream<(CMTime, CMTime)> = AsyncStream { [weak self] in
         self?.playTimeStream = $0
     }
     
@@ -55,8 +55,8 @@ public final class RecordedPlayViewModel: NSObject, ObservableObject {
     }
     
     private func configureNotification() {
-        addPeriodicTimeObserver = player?.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.01, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: .main) { [weak self] time in
-            self?.playTimeStream?.yield(time)
+        addPeriodicTimeObserver = player?.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.01, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: .main) { [weak self, weak player] time in
+            self?.playTimeStream?.yield((time, player?.currentItem?.duration ?? .zero))
         }
         
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,

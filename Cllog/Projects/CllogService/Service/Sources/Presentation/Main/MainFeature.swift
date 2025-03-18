@@ -15,13 +15,13 @@ import VideoFeature
 import FolderTabFeature
 import FolderFeature
 import CalendarFeature
+import ReportFeature
 
 // 외부 Module
 import ComposableArchitecture
 
 @Reducer
 public struct MainFeature {
-    public weak var coordinator: Coordinator?
     
     @ObservableState
     public struct State: Equatable {
@@ -47,6 +47,9 @@ public struct MainFeature {
         // CalendarDetail State
         var calendarDetailState: CalendarDetailFeature.State?
         
+        // Report State
+        var reportState: ReportFeature.State = .init()
+        
         var isRecording: Bool = false
         
         var pushToCalendarDetail: Int?
@@ -68,6 +71,14 @@ public struct MainFeature {
         case folderAction(FolderFeature.Action)
         case calendarMainAction(CalendarMainFeature.Action)
         case calendarDetailAction(CalendarDetailFeature.Action)
+        case reportAction(ReportFeature.Action)
+        
+        case routerAction(RouterAction)
+        
+        public enum RouterAction {
+            case pushToCalendarDetail(Int)
+            case pushToSetting
+        }
     }
     
     public var body: some ReducerOf<Self> {
@@ -86,6 +97,10 @@ public struct MainFeature {
         
         Scope(state: \.calendarMainState, action: \.calendarMainAction) {
             CalendarMainFeature()
+        }
+        
+        Scope(state: \.reportState, action: \.reportAction) {
+            ReportFeature()
         }
         
         Reduce(reducerCore)
@@ -140,6 +155,11 @@ private extension MainFeature {
             return calendarMainCore(&state, action)
         case .calendarDetailAction(let action):
             return calendarDetailCore(&state, action)
+        case .reportAction(let action):
+            // 리포트 - Action
+            return reportCore(&state, action)
+        default:
+            return .none
         }
     }
 }
@@ -162,6 +182,10 @@ private extension MainFeature {
             return .run { send in
                 await send(.videoTabAction(.onStartSession))
             }
+            
+        case .moveEditRecord(let path):
+//            coordinator?.pushToRecordEdit(path: path)
+            return .none
         default:
             return .none
         }
@@ -241,9 +265,7 @@ private extension MainFeature {
         switch action {
         case .moveToCalendarDetail(let storyId):
             // 캘린더 상세 페이지로 이동
-            coordinator?.pushToCalendarDetail(storyId)
-            
-            return .none
+            return .send(.routerAction(.pushToCalendarDetail(storyId)))
         default:
             return .none
         }
@@ -261,8 +283,25 @@ private extension MainFeature {
         _ action: CalendarDetailFeature.Action
     ) -> Effect<Action> {
         switch action {
-        case .backButtonTapped:
+        default:
             return .none
+        }
+    }
+}
+
+private extension MainFeature {
+    /// Report Action
+    /// - Parameters:
+    ///   - state: 저장소
+    ///   - action: CalendarDetailFeature Action
+    /// - Returns: Effect
+    func reportCore(
+        _ state: inout State,
+        _ action: ReportFeature.Action
+    ) -> Effect<Action> {
+        switch action {
+        case .settingTapped:
+            return .send(.routerAction(.pushToSetting))
         default:
             return .none
         }

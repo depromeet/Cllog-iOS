@@ -30,6 +30,7 @@ public struct FolderTabView<FolderView: ViewProtocol, CalendarView: ViewProtocol
     
     public var body: some View {
         makeBody()
+            .debugFrameSize()
     }
 }
 

@@ -18,6 +18,7 @@ import FolderTabFeature
 import ComposableArchitecture
 import FolderFeature
 import CalendarFeature
+import ReportFeature
 
 /// 구현부
 public struct MainView: View {
@@ -25,7 +26,7 @@ public struct MainView: View {
     // MARK: - Private Properties
     private let store: StoreOf<MainFeature>
     
-    @State private var selectedTab: Int = 0
+    @State private var selectedTab: Int = 1
     
     /// 초기화
     /// - Parameters:
@@ -50,8 +51,8 @@ private extension MainView {
             tabView
             
             // 영상 녹화 화면
-            IfLetStore(store.scope(state: \.recordState, action: \.recordFeatureAction)) { [weak on] store in
-                RecordHomeView(on: on, store: store)
+            IfLetStore(store.scope(state: \.recordState, action: \.recordFeatureAction)) { store in
+                RecordHomeView(store: store)
             }
         }
     }
@@ -65,14 +66,13 @@ private extension MainView {
             ForEach(Array([AnyView(folderTabbarView), AnyView(videoTabbarView), AnyView(reportTabbarView)].enumerated()), id: \.offset) { index, view in
                 view
                     .tabItem {
-                        selectedTab == index ? Image("icn_folder_selected", bundle: .clLogUIBundle) : Image("icn_folder_unselected", bundle: .clLogUIBundle)
+                        selectedTab == index ? Image.clLogUI.folder : Image.clLogUI.folder
                     }
                     .toolbarBackground(Color.clLogUI.gray700, for: .tabBar)
                     .toolbarBackground(.visible, for: .tabBar)
                     .onAppear {
                         store.send(.selectedTab(index))
                     }
-                    .safeAreaPadding()
             }
         }
     }
@@ -81,7 +81,7 @@ private extension MainView {
 // MARK: - Folder Tabbar View
 private extension MainView {
     var folderTabbarView: some View  {
-        FolderTabView(
+        FolderTabView<FolderView, CalendarMainView>(
             store: store.scope(
                 state: \.folderTabState,
                 action: \.folderTabAction
@@ -116,6 +116,8 @@ private extension MainView {
 private extension MainView {
     
     var reportTabbarView: some View {
-        Text("3")
+        ReportView(
+            store: store.scope(state: \.reportState, action: \.reportAction)
+        )
     }
 }

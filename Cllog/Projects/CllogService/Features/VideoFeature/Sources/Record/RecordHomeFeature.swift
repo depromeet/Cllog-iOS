@@ -30,6 +30,7 @@ public struct RecordHomeFeature {
         // Recorded Action: - 녹화 완료 / 성공, 실패, 편집, close 할 수 있는 화면
         case recordedAction(RecordedFeature.Action)
         
+        case moveEditRecord(URL)
         case recordEnd
     }
     
@@ -69,6 +70,8 @@ extension RecordHomeFeature {
         case .recordedAction(let action):
             return recordedReduceCore(&state, action)
         
+        case .moveEditRecord(let path):
+            return .none
         }
     }
 }
@@ -85,8 +88,11 @@ private extension RecordHomeFeature {
         _ action: RecordingFeature.Action
     ) -> Effect<Action> {
         switch action {
-        case .presentRecorded(let fileName, let path, let totalDuration):
-            state.recordedState = .init(fileName: fileName, elapsedTime: totalDuration, path: path)
+        case .presentRecorded(let fileName, let path):
+            state.recordedState = .init(
+                fileName: fileName,
+                path: path
+            )
             state.recordingState = nil
             return .none
         default:
@@ -107,6 +113,10 @@ private extension RecordHomeFeature {
         _ action: RecordedFeature.Action
     ) -> Effect<Action> {
         switch action {
+        case .moveEditRecord(let path):
+            return .run { send in
+                await send(.moveEditRecord(path))
+            }
         case .close:
             state.recordingState = nil
             state.recordedState = nil
