@@ -17,7 +17,6 @@ import Shared
 
 @Reducer
 public struct RootFeature {
-    public weak var coordinator: Coordinator?
     
     @ObservableState
     public struct State: Equatable {
@@ -48,10 +47,7 @@ public struct RootFeature {
                 LoginFeature()
             }
             .ifLet(\.mainState, action: \.mainAction) {
-                var feature = MainFeature()
-                feature.coordinator = self.coordinator
-                
-                return feature
+                MainFeature()
             }
     }
     
