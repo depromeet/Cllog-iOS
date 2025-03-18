@@ -12,16 +12,18 @@ import Starlink
 import Networker
 
 public protocol VideoDataSourceLogic {
-    func uploadThumbnail(name: String, fileName: String, min: String, data: Data) async throws
+    func uploadThumbnail(name: String, fileName: String, min: String, data: Data) async throws -> VideoUploadResponseDTO
     func uploadVideo() async throws
 }
 
 public struct VideoDataSource: VideoDataSourceLogic {
     
-    private let provider: Provider
+    private let videoProvider: UploadProvider
+    private let authProvider: AuthProvider
     
-    public init(with provider: Provider) {
-        self.provider = provider
+    public init(videoProvider: UploadProvider, authProvider: AuthProvider) {
+        self.videoProvider = videoProvider
+        self.authProvider = authProvider
     }
     
     public func uploadThumbnail(
@@ -29,8 +31,16 @@ public struct VideoDataSource: VideoDataSourceLogic {
         fileName: String,
         min: String,
         data: Data
-    ) async throws {
-
+    ) async throws -> VideoUploadResponseDTO {
+        let request = VideoUploadDTO(name: name, fileName: fileName, min: min, data: data)
+        
+        let response: BaseResponseDTO<VideoUploadResponseDTO> = try await videoProvider.upload(VideoEndPoint.uploadThumbnail(request), .init(name: name, fileName: fileName, data: data, mimeType: min))
+        
+        guard let data = response.data else {
+            throw StarlinkError.inValidJSONData(nil)
+        }
+        
+        return data
     }
     
     public func uploadVideo() async throws {
@@ -41,7 +51,7 @@ public struct VideoDataSource: VideoDataSourceLogic {
 }
 
 public enum VideoEndPoint: EndpointType {
-    case uploadThumbnail
+    case uploadThumbnail(VideoUploadDTO)
     case uploadVideo
     
     public var baseURL: String {
@@ -53,7 +63,7 @@ public enum VideoEndPoint: EndpointType {
             return ""
             
         case .uploadThumbnail:
-            return ""
+            return "/api/v1/thumbnails/upload"
         }
     }
     
@@ -67,8 +77,24 @@ public enum VideoEndPoint: EndpointType {
         }
     }
     
-    public var parameters: ParameterType? { nil }
-    public var encodable: (any Encodable)? { nil }
+    public var parameters: ParameterType? {
+        switch self {
+        case .uploadThumbnail(let request):
+            return .encodable(request)
+            
+        case .uploadVideo:
+            return nil
+        }
+    }
+    public var encodable: (any Encodable)? {
+        switch self {
+        case .uploadThumbnail(let request):
+            return request
+            
+        case .uploadVideo:
+            return nil
+        }
+    }
     public var headers: [Starlink.Header]? { nil }
     
     public var encoding: StarlinkEncodable {

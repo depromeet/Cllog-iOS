@@ -15,12 +15,12 @@ import Swinject
 
 public struct VideoRecordRepositry: VideoRepository {
 
-    private let provider: Networker.Provider
+    private let dataSource: VideoDataSource
     
     public init(
-        provider: Networker.Provider
+        dataSource: VideoDataSource
     ) {
-        self.provider = provider
+        self.dataSource = dataSource
     }
     
     public func saveVideo(fileURL: URL) async throws {
@@ -87,9 +87,8 @@ public struct VideoRecordRepositry: VideoRepository {
         fileName: String,
         min: String,
         value: Data
-    ) async throws {
-        
-//        let format =
+    ) async throws -> Videothumbnails {
+        return try await dataSource.uploadThumbnail(name: name, fileName: fileName, min: min, data: value).toDomain()
     }
     
 }

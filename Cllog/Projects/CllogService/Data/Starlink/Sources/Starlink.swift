@@ -122,6 +122,7 @@ public final class Starlink: @unchecked Sendable {
             session: session,
             path: urlConversion,
             params: safeParams,
+            uploadForm: uploadForm,
             method: method,
             headers: headers,
             trakers: trackers,

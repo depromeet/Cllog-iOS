@@ -15,6 +15,8 @@ import UIKit
 @Reducer
 public struct RecordedFeature {
     
+    @Dependency(\.videoUsecase) var videoUsecase
+    
     @ObservableState
     public struct State: Equatable {
         
@@ -148,21 +150,33 @@ extension RecordedFeature {
             return .none
             
         case .successTapped:
-            return .run { [state] send in
+            return .merge(
+                .send(.pause),
+                .run(operation: { [state] send in
+                    do {
+                        let generator = AVAssetImageGenerator(asset: AVAsset(url: state.path))
+                        generator.appliesPreferredTrackTransform = true
+                        let cmTime = CMTime(seconds: 0, preferredTimescale: 600)
+                        let thumbnail = try await generator.image(at: cmTime)
+                        await send(.upload(type: .success, image: UIImage(cgImage: thumbnail.image)))
+                        
+                    } catch {
+                        print("에러")
+                    }
+                })
+            )
+
+        case .upload(let type, let image):
+//            state.image = image
+            
+            return .run { send in
                 do {
-                    let generator = AVAssetImageGenerator(asset: AVAsset(url: state.path))
-                    generator.appliesPreferredTrackTransform = true
-                    let cmTime = CMTime(seconds: 0, preferredTimescale: 600)
-                    let thumbnail = try await generator.image(at: cmTime)
-                    await send(.upload(type: .success, image: UIImage(cgImage: thumbnail.image)))
-                    
+                    let response = try await videoUsecase.execute(name: "asdf", fileName: "123123", min: "image/png", value: image.resizedPNGData()!)
+                    print("image :: response: \(response)")
                 } catch {
-                    print("에러")
+                    print("image :: error: \(error)")
                 }
             }
-        case .upload(let type, let image):
-            state.image = image
-            return .none
         case .failtureTapped:
             return .none
             
@@ -177,5 +191,38 @@ extension RecordedFeature {
             state.viewModel.play()
             return .none
         }
+    }
+}
+
+extension UIImage {
+    func resizedPNGData(targetSizeInBytes: Int = 1_000_000) -> Data? {
+        guard var currentData = self.pngData() else { return nil }
+        
+        // 이미지의 해상도를 줄여서 targetSizeInBytes 미만이 될 때까지 반복
+        var currentImage = self
+        let scaleFactor: CGFloat = 0.9
+        
+        while currentData.count > targetSizeInBytes,
+              currentImage.size.width > 100, currentImage.size.height > 100 {
+            let newSize = CGSize(width: currentImage.size.width * scaleFactor,
+                                 height: currentImage.size.height * scaleFactor)
+            
+            UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
+            currentImage.draw(in: CGRect(origin: .zero, size: newSize))
+            guard let resizedImage = UIGraphicsGetImageFromCurrentImageContext() else {
+                UIGraphicsEndImageContext()
+                break
+            }
+            UIGraphicsEndImageContext()
+            
+            currentImage = resizedImage
+            if let data = currentImage.pngData() {
+                currentData = data
+            } else {
+                break
+            }
+        }
+        
+        return currentData.count <= targetSizeInBytes ? currentData : nil
     }
 }

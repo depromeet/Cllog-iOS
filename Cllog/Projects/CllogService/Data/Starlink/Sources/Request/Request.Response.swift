@@ -129,20 +129,22 @@ extension Starlink.Request: StarlinkRequest {
         
         var httpBody = Data()
         
-        if let parameters = params?.toDictionary() {
-            for (key, value) in parameters {
-                httpBody.appendFormat("--\(boundary)\r\n".data(using: .utf8))
-                httpBody.appendFormat("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8))
-                httpBody.appendFormat("\(value)\r\n".data(using: .utf8))
-            }
-        }
+//        if let parameters = params?.toDictionary() {
+//            for (key, value) in parameters {
+//                httpBody.appendFormat("--\(boundary)\r\n".data(using: .utf8))
+//                httpBody.appendFormat("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8))
+//                httpBody.appendFormat("\(value)\r\n".data(using: .utf8))
+//            }
+//        }
         
         httpBody.appendFormat("--\(boundary)\r\n".data(using: .utf8))
         httpBody.appendFormat("Content-Disposition: form-data; name=\"\(uploadForm.name)\"; filename=\"\(uploadForm.fileName)\"\r\n".data(using: .utf8))
         httpBody.appendFormat("Content-Type: \(uploadForm.mimeType)\r\n\r\n".data(using: .utf8))
         httpBody.append(uploadForm.data)
         httpBody.appendFormat("\r\n".data(using: .utf8))
-        httpBody.appendFormat("--\(boundary)--".data(using: .utf8))
+        httpBody.appendFormat("--\(boundary)--\r\n".data(using: .utf8))
+        
+        
         
         urlRequest.httpBody = httpBody as Data
         

@@ -12,9 +12,12 @@ public protocol Provider: Sendable {
     func request<T: Decodable>(_ endpoint: EndpointType) async throws -> T
 }
 
-//public protocol UploadProviderable: Provider {
-//    func upload<T: Decodable>(_ endpoint: EndpointType) async throws -> T
-//}
+public protocol UploadProviderable {
+    func upload<T: Decodable>(
+        _ endpoint: EndpointType,
+        _ uploadData: UploadDataForm
+    ) async throws -> T
+}
 
 extension Provider {
     func request(

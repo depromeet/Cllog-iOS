@@ -41,6 +41,7 @@ extension Starlink {
             session: Sessionable,
             path: URLConversion,
             params: SafeDictionary<String, Any>? = nil,
+            uploadForm: UploadDataForm? = nil,
             method: Method,
             headers: [Starlink.Header] = [],
             requestTime: Date = Date(),
@@ -51,6 +52,7 @@ extension Starlink {
             self.session = session
             self.path = path
             self.params = params
+            self.uploadForm = uploadForm
             self.method = method
             self.headers = headers
             self.requestTime = requestTime

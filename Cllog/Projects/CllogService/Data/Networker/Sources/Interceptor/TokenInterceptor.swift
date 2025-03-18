@@ -17,13 +17,13 @@ public final class TokenInterceptor: StarlinkInterceptor, Sendable {
     }
     
     public func adapt(_ urlRequest: inout URLRequest) async throws -> URLRequest {
-        guard let token = tokenProvider() else {
-            return urlRequest
-        }
+//        guard let token = tokenProvider() else {
+//            return urlRequest
+//        }
         
         var request = urlRequest
-        request.setHeader(.init(name: "Authorization", value: token.accessToken))
-        request.setHeader(.init(name: "Provider", value: token.provider))
+        request.setHeader(.init(name: "Authorization", value: "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNSIsInVzZXJJZCI6MTUsImxvZ2luSWQiOiJ0ZXN0MTIzIiwicHJvdmlkZXIiOiJMT0NBTCIsImV4cCI6MTc0MjMxNDUzMH0.FUaEQtgcaKdRj_AYG2ED6g_9xfzgKEiXowJi3g5mQy8PaV2LOKh_WKiUcA_PVvbTzKBmDsgjLD_EuThoDX_vSg"))
+//        request.setHeader(.init(name: "Provider", value: token.provider))
         return request
     }
     
