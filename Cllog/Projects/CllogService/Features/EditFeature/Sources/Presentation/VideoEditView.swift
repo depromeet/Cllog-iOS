@@ -41,7 +41,7 @@ public struct VideoEditView: View {
     }
     
     private var currentTime: some View {
-        Text(store.currentTimeString)
+        Text(store.formattedCurrentTime)
             .font(.h5)
     }
     

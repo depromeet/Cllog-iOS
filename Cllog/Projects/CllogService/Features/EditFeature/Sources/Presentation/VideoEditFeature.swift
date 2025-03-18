@@ -9,14 +9,16 @@
 import UIKit
 import ComposableArchitecture
 
-// TODO: 스탬프 시간 추가, 코드 위치 이동
+// TODO: 코드 위치 이동
 struct Stamp: Identifiable, Equatable {
-    let id: Double
+    let id: UUID
+    let stampTime: Double
     let xPos: CGFloat
     let isValid: Bool
     
-    init(xPos: CGFloat, isValid: Bool) {
-        self.id = Double(xPos)
+    init(stampTime: Double, xPos: CGFloat, isValid: Bool) {
+        self.id = UUID()
+        self.stampTime = stampTime
         self.xPos = xPos
         self.isValid = isValid
     }
@@ -35,7 +37,7 @@ public struct VideoEditFeature {
     
     @ObservableState
     public struct State: Equatable {
-        var currentTimeString: String = "00:00"
+        var currentTime: Double = 0
         var isPlaying: Bool = false
         var playheadPosition: CGFloat = 0
         var duration: Double = 0
@@ -45,6 +47,12 @@ public struct VideoEditFeature {
         var trimEndPosition: CGFloat = Constants.totalTrimmingWidth
         var isVideoReady: Bool = false
         let videoURL: URL
+        
+        var formattedCurrentTime: String {
+            let minutes = Int(currentTime) / 60
+            let seconds = Int(currentTime) % 60
+            return String(format: "%02d:%02d", minutes, seconds)
+        }
         
         public init(videoURL: URL) {
             self.videoURL = videoURL
@@ -90,7 +98,7 @@ public struct VideoEditFeature {
                         .map { .playerResponse($0) }
                 )
             case .didTapStamp:
-                state.stampList.append(Stamp(xPos: state.playheadPosition, isValid: isStampValid(position: state.playheadPosition, state: state)))
+                state.stampList.append(Stamp(stampTime: state.currentTime, xPos: state.playheadPosition, isValid: isStampValid(position: state.playheadPosition, state: state)))
                 return .none
             case .didTapPlayPause:
                 state.isPlaying.toggle()
@@ -128,7 +136,7 @@ public struct VideoEditFeature {
                 return .none
             case let .updatePlayHead(newPosition):
                 // 플레이헤드 위치가 트리밍 범위 내에 있도록 제한
-                let constrainedPosition = min(max(newPosition, state.trimStartPosition), state.trimEndPosition)
+                let constrainedPosition = min(max(newPosition, state.trimStartPosition), state.trimEndPosition - Constants.playHeadWidth)
                 state.playheadPosition = constrainedPosition
                 
                 // 플레이헤드 위치에 해당하는 시간으로 비디오 탐색
@@ -157,7 +165,7 @@ public struct VideoEditFeature {
                     state.isPlaying = isPlaying
                     return .none
                 case let .timeUpdated(currentTime):
-                    state.currentTimeString = formatTime(currentTime)
+                    state.currentTime = currentTime
                     
                     // 플레이헤드 위치 계산 및 업데이트
                     let screenWidth = Constants.totalTrimmingWidth
@@ -217,17 +225,11 @@ public struct VideoEditFeature {
     
     private func updateStampValidity(state: inout State) {
         state.stampList = state.stampList.map { stamp in
-            Stamp(xPos: stamp.xPos, isValid: isStampValid(position: stamp.xPos, state: state))
+            Stamp(stampTime: stamp.stampTime, xPos: stamp.xPos, isValid: isStampValid(position: stamp.xPos, state: state))
         }
     }
     
     private func isStampValid(position: CGFloat, state: State) -> Bool {
-        return position >= state.trimStartPosition && position <= state.trimEndPosition
-    }
-    
-    private func formatTime(_ seconds: Double) -> String {
-        let minutes = Int(seconds) / 60
-        let seconds = Int(seconds) % 60
-        return String(format: "%02d:%02d", minutes, seconds)
+        return position >= state.trimStartPosition && position <= state.trimEndPosition - Constants.playHeadWidth
     }
 }
