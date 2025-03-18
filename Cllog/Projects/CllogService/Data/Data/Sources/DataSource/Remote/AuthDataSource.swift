@@ -99,4 +99,8 @@ extension LoginTarget: EndpointType {
     var headers: [Starlink.Header]? {
         nil
     }
+    
+    var encoding: StarlinkEncodable {
+        return Starlink.StarlinkJSONEncoding()
+    }
 }

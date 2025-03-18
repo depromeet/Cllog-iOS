@@ -26,6 +26,8 @@ extension Starlink {
         public let requestTime: Date
         let trakers: SafeTrackers
         let interceptors: [any StarlinkInterceptor]
+        let encoding: (any StarlinkEncodable)
+        var uploadForm: UploadDataForm? = nil
 
         /// 초기화
         /// - Parameters:
@@ -41,7 +43,8 @@ extension Starlink {
             headers: [Starlink.Header] = [],
             requestTime: Date = Date(),
             trakers: SafeTrackers,
-            interceptors: [any StarlinkInterceptor] = []
+            interceptors: [any StarlinkInterceptor] = [],
+            encoding: (any StarlinkEncodable)
         ) {
             self.session = session
             self.path = path
@@ -51,6 +54,7 @@ extension Starlink {
             self.requestTime = requestTime
             self.trakers = trakers
             self.interceptors = interceptors
+            self.encoding = encoding
         }
     }
 }

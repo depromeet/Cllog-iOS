@@ -27,7 +27,8 @@ extension Provider {
             url,
             params: parameters,
             method: endPoint.method,
-            headers: endPoint.headers ?? []
+            headers: endPoint.headers ?? [],
+            encoding: endPoint.encoding
         )
     }
     
@@ -45,7 +46,8 @@ extension Provider {
             url,
             encodable: parameters,
             method: endPoint.method,
-            headers: endPoint.headers ?? []
+            headers: endPoint.headers ?? [],
+            encoding: endPoint.encoding
         )
     }
 }
