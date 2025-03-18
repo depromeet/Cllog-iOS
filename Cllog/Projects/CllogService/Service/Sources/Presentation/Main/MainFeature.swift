@@ -172,7 +172,7 @@ private extension MainFeature {
             }
             
         case .moveEditRecord(let path):
-            coordinator?.pushToRecordEdit(path: path)
+//            coordinator?.pushToRecordEdit(path: path)
             return .none
         default:
             return .none
