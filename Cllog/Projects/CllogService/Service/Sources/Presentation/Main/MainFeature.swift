@@ -21,7 +21,6 @@ import ComposableArchitecture
 
 @Reducer
 public struct MainFeature {
-    public weak var coordinator: Coordinator?
     
     @ObservableState
     public struct State: Equatable {
@@ -68,6 +67,13 @@ public struct MainFeature {
         case folderAction(FolderFeature.Action)
         case calendarMainAction(CalendarMainFeature.Action)
         case calendarDetailAction(CalendarDetailFeature.Action)
+        
+        case routerAction(RouterAction)
+        
+        public enum RouterAction {
+            case pushToCalendarDetail(Int)
+            case pop
+        }
     }
     
     public var body: some ReducerOf<Self> {
@@ -140,6 +146,8 @@ private extension MainFeature {
             return calendarMainCore(&state, action)
         case .calendarDetailAction(let action):
             return calendarDetailCore(&state, action)
+        default:
+            return .none
         }
     }
 }
@@ -241,9 +249,7 @@ private extension MainFeature {
         switch action {
         case .moveToCalendarDetail(let storyId):
             // 캘린더 상세 페이지로 이동
-            coordinator?.pushToCalendarDetail(storyId)
-            
-            return .none
+            return .send(.routerAction(.pushToCalendarDetail(storyId)))
         default:
             return .none
         }
@@ -262,7 +268,7 @@ private extension MainFeature {
     ) -> Effect<Action> {
         switch action {
         case .backButtonTapped:
-            return .none
+            return .send(.routerAction(.pop))
         default:
             return .none
         }

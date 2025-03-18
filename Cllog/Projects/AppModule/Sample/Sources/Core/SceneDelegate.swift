@@ -14,7 +14,6 @@ import CllogService
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    var coordinator: Coordinator = DefaultCoordinator()
 
     func scene(
         _ scene: UIScene,
@@ -22,10 +21,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         options connectionOptions: UIScene.ConnectionOptions
     ) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
+        
+        let view = RouterView(store: RouterFeature.initialStore)
+        
         window = ClLogWindow(windowScene: windowScene)
         window?.backgroundColor = .clear
-        window?.rootViewController = coordinator.navigationController
-        coordinator.start()
+        window?.rootViewController = UIHostingController(rootView: view)
         window?.makeKeyAndVisible()
     }
     
