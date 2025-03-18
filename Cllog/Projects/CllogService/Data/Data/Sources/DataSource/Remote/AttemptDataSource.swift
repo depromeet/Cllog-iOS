@@ -39,6 +39,10 @@ enum AttemptTarget {
 }
 
 extension AttemptTarget: EndpointType {
+    var encoding: any StarlinkEncodable {
+        Starlink.StarlinkURLEncoding()
+    }
+    
    
     var baseURL: String {
         return "https://dev-api.climb-log.my"

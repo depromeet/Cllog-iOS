@@ -41,6 +41,10 @@ enum CragTarget {
 }
 
 extension CragTarget: EndpointType {
+    var encoding: any StarlinkEncodable {
+        Starlink.StarlinkURLEncoding()
+    }
+    
     var baseURL: String {
         "https://dev-api.climb-log.my"
     }
