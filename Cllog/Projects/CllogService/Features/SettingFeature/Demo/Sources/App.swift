@@ -1,12 +1,21 @@
 import SwiftUI
 
+import SettingFeature
+import ComposableArchitecture
+
 @main
-struct App: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+struct SettingApp: App {
     
     var body: some Scene {
         WindowGroup {
-            
+            SettingView(
+                store: .init(
+                    initialState: SettingFeature.State(),
+                    reducer: {
+                        SettingFeature()
+                    }
+                )
+            )
         }
     }
 }
