@@ -68,9 +68,9 @@ public struct ClLogServiceAssembly: Assembly {
             )
         }
         
-        container.register(AttemptUseCase.self) { _ in
-            DefaultAttemptUseCase(
-                repository: DefaultAttemptRepository(
+        container.register(FilteredAttemptsUseCase.self) { _ in
+            DefaultFilteredAttemptsUseCase(
+                attemptRepository: DefaultAttemptRepository(
                     dataSource: DefaultAttemptDataSource(
                         provider: AuthProvider(
                             tokenProvider: DefaultTokenDataSource().loadToken

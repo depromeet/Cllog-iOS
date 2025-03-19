@@ -12,7 +12,7 @@ import Shared
 
 @Reducer
 public struct FolderFeature {
-    @Dependency(\.attemptUseCase) private var attemptUseCase
+    @Dependency(\.filteredAttemptsUseCase) private var filteredAttemptsUseCase
     @Dependency(\.fetchFilterableAttemptInfoUseCase) private var fetchFilterableAttemptInfoUseCase
     
     @ObservableState
@@ -92,7 +92,6 @@ public struct FolderFeature {
                 state.showSelectGradeBottomSheet = false
                 return .none
             case .setViewState(let viewState):
-                
                 state.viewState = viewState
                 return .none
             case .getFilteredAttempts(let attempts):
@@ -109,7 +108,7 @@ public struct FolderFeature {
     private func fetchInitialData() -> Effect<Action> {
         return .run { send in
             async let requestFilterableInfo = fetchFilterableAttemptInfoUseCase.execute()
-            async let allAttempts = attemptUseCase.getAttempts()
+            async let allAttempts = filteredAttemptsUseCase.execute(nil)
             
             do {
                 let (filterableInfo, attemptsResult) = try await (requestFilterableInfo, allAttempts)
@@ -125,7 +124,7 @@ public struct FolderFeature {
     private func getAttempts() -> Effect<Action> {
         return .run { send in
             do {
-                let attempts = try await attemptUseCase.getFilteredAttempts()
+                let attempts = try await filteredAttemptsUseCase.execute(nil)
                 await send(.getFilteredAttempts(attempts))
                 
             }
