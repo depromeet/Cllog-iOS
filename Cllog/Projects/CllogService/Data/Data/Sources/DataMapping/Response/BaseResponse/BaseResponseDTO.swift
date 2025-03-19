@@ -11,3 +11,5 @@ import Foundation
 struct BaseResponseDTO<T: Decodable>: Decodable {
     let data: T?
 }
+
+struct EmptyResponseDTO: Decodable { }

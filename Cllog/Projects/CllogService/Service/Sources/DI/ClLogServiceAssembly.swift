@@ -10,13 +10,14 @@ import Foundation
 
 import Data
 import Domain
-import LoginDomain
+import AccountDomain
 import FolderDomain
 import CalendarDomain
 import VideoDomain
 import StoryDomain
 import Networker
 import Swinject
+import AccountDomain
 
 public struct ClLogServiceAssembly: Assembly {
     public init() {}
@@ -24,7 +25,7 @@ public struct ClLogServiceAssembly: Assembly {
     public func assemble(container: Container) {
         container.register(LoginUseCase.self) { _ in
             DefaultLoginUseCase(
-                loginRepository: DefaultLoginRepository(
+                repository: DefaultLoginRepository(
                     authDataSource: DefaultAuthDataSource(
                         provider: UnAuthProvider()
                     ),
@@ -99,6 +100,19 @@ public struct ClLogServiceAssembly: Assembly {
                             tokenProvider: DefaultTokenDataSource().loadToken
                         )
                     )
+                )
+            )
+        }
+        
+        container.register(LogoutUseCase.self) { _ in
+            DefaultLogoutUseCase(
+                repository: DefaultLogoutRepository(
+                    userDataSource: DefaultUserDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    ),
+                    tokenDataSource: DefaultTokenDataSource()
                 )
             )
         }

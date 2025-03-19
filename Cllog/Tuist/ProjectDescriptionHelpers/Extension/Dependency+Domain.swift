@@ -13,7 +13,7 @@ public extension TargetDependency {
         public struct Folder {}
         public struct Calendar {}
         public struct Video {}
-        public struct Login {}
+        public struct Account {}
         public struct Domain {}
     }
 }
@@ -38,8 +38,8 @@ public extension TargetDependency.Domains.Domain {
     }
 }
 
-public extension TargetDependency.Domains.Login {
-    static let name = "Login"
+public extension TargetDependency.Domains.Account {
+    static let name = "Account"
     
     static let domain = TargetDependency.Domains.project(
         name: "\(name)Domain",
