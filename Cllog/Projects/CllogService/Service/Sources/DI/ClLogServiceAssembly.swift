@@ -10,13 +10,14 @@ import Foundation
 
 import Data
 import Domain
-import LoginDomain
+import AccountDomain
 import FolderDomain
 import CalendarDomain
 import VideoDomain
 import StoryDomain
 import Networker
 import Swinject
+import AccountDomain
 
 public struct ClLogServiceAssembly: Assembly {
     public init() {}

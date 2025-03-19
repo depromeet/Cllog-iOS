@@ -16,6 +16,6 @@ let project = Project.configure(
         .Domains.Folder.domain,
         .Domains.Calendar.domain,
         .Domains.Video.domain,
-        .Domains.Login.domain,
+        .Domains.Account.domain,
     ]
 )

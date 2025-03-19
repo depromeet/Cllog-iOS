@@ -1,6 +1,6 @@
 //
 //  LoginUseCase.swift
-//  LoginDomain
+//  AccountDomain
 //
 //  Created by soi on 3/1/25.
 //  Copyright © 2025 Supershy. All rights reserved.
