@@ -14,7 +14,7 @@ public protocol CragDataSource {
     func crags() async throws -> [FolderCragResponseDTO]
 }
 
-public final class DefaulCragDataSource: CragDataSource {
+public final class DefaultCragDataSource: CragDataSource {
    
     private let provider: Provider
     

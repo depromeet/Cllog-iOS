@@ -201,7 +201,7 @@ extension FolderView {
                 .foregroundStyle(Color.clLogUI.gray600)
             
             LazyVGrid(columns: rows) {
-                ForEach(store.grades, id: \.self) { grade in
+                ForEach(store.filterableAttemptInfo?.grades ?? [], id: \.self) { grade in
                     LevelChip(
                         name: grade.name,
                         color: Color(hex: grade.hexCode)
@@ -225,7 +225,7 @@ extension FolderView {
                 text: $store.searchCragName
             )
             
-            ForEach(store.crags.filter { crag in
+            ForEach(store.filterableAttemptInfo?.crags ?? [].filter { crag in
                 if store.searchCragName.isEmpty {
                     return true
                 }

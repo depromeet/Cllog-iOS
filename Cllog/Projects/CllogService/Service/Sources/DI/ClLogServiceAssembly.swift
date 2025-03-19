@@ -79,27 +79,20 @@ public struct ClLogServiceAssembly: Assembly {
             )
         }
         
-        container.register(GradeUseCase.self) { _ in
-            DefaultGradeUseCase(
-                repository: DefaultGradeRepository(
-                    dataSource: DefaultGradeDataSource(
-                        provider: AuthProvider(
-                            tokenProvider: DefaultTokenDataSource().loadToken
-                        )
-                    )
-                )
+        container.register(FetchFilterableAttemptInfoUseCase.self) { resolver in
+            let authProvider = AuthProvider(
+                tokenProvider: DefaultTokenDataSource().loadToken
             )
-        }
-        
-        container.register(CragUseCase.self) { _ in
-            DefaultCragUseCase(
-                repository: DefaultCragRepository(
-                    dataSource: DefaulCragDataSource(
-                        provider: AuthProvider(
-                            tokenProvider: DefaultTokenDataSource().loadToken
-                        )
-                    )
-                )
+            let gradeRepository = DefaultGradeRepository(
+                dataSource: DefaultGradeDataSource(provider: authProvider)
+            )
+            let cragRepository = DefaultCragRepository(
+                dataSource: DefaultCragDataSource(provider: authProvider)
+            )
+            
+            return DefaultFetchFilterableAttemptInfoUseCase(
+                gradeRepository: gradeRepository,
+                cragRepository: cragRepository
             )
         }
     }
