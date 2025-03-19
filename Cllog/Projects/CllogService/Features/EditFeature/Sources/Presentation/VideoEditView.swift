@@ -13,10 +13,12 @@ import DesignKit
 import Combine
 
 public struct VideoEditView: View {
-    private let store: StoreOf<VideoEditFeature>
+    @Bindable var store: StoreOf<VideoEditFeature>
     @State private var isDraggingPlayhead = false
     @State private var isInitialized = false
     @State private var timeObserverCancellable: AnyCancellable?
+    
+    @Environment(\.presentationMode) var presentationMode
     
     public init(store: StoreOf<VideoEditFeature>) {
         self.store = store
@@ -24,7 +26,7 @@ public struct VideoEditView: View {
     
     private var closeButton: some View {
         Button {
-            store.send(.dismiss)
+            store.send(.didTapEditCancel)
         } label: {
             Image.clLogUI.close
         }
@@ -32,7 +34,7 @@ public struct VideoEditView: View {
     
     private var completeButton: some View {
         Button {
-            store.send(.complete)
+            store.send(.didTapEditCompelete)
         } label: {
             Text("완료")
                 .font(.b2)
@@ -200,6 +202,7 @@ public struct VideoEditView: View {
             .padding(.bottom, 32)
             .tooltip(text: "드래그로 영상을 자를 수 있어요!", position: .topCenter, verticalOffset: 1)
         }
+        .presentDialog($store.scope(state: \.alert, action: \.alert), style: .default)
         .background(Color.clLogUI.gray900)
         .onAppear {
             if !isInitialized {
@@ -216,6 +219,11 @@ public struct VideoEditView: View {
         }
         .onDisappear {
             timeObserverCancellable?.cancel()
+        }
+        .onReceive(store.publisher.shouldDismiss) { shouldDismiss in
+            if shouldDismiss {
+                presentationMode.wrappedValue.dismiss()
+            }
         }
     }
 }
