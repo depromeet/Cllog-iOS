@@ -22,7 +22,7 @@ public struct DefaultTokenDataSource: TokenDataSource {
         AppData.token = token
     }
     
-    public func loadToken() -> TokenDTO? {
+    @Sendable public func loadToken() -> TokenDTO? {
         AppData.token?.toToken()
     }
     

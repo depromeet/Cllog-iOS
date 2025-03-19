@@ -2,7 +2,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.configure(
-    moduleType: .domain(name: "Login"),
+    moduleType: .domain(name: "Account"),
     product: .staticFramework,
     dependencies: [
         .Modules.shared(.cllog)

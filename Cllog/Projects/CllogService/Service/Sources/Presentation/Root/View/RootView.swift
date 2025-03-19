@@ -10,8 +10,8 @@ import SwiftUI
 
 import DesignKit
 
-import LoginDomain
 import LoginFeature
+import AccountDomain
 
 import ComposableArchitecture
 

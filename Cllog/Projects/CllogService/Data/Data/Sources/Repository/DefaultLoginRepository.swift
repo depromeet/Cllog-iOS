@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import LoginDomain
+import AccountDomain
 
 public struct DefaultLoginRepository: LoginRepository {
     private let authDataSource: AuthDataSource

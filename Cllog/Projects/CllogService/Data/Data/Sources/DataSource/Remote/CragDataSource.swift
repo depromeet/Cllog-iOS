@@ -15,7 +15,6 @@ public protocol CragDataSource {
 }
 
 public final class DefaultCragDataSource: CragDataSource {
-   
     private let provider: Provider
     
     public init(provider: Provider) {

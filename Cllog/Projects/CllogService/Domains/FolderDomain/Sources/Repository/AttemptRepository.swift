@@ -32,6 +32,7 @@ public struct MockAttemptRepository: AttemptRepository {
                 date: "2024-03-12",
                 grade: Grade(id: UUID().uuidString, name: "V7", hexCode: "0x33FF57"),
                 result: .fail,
+                
                 recordedTime: "01:30",
                 crag: Crag(name: "Incheon Rock Gym", address: "Incheon, South Korea")
             ),
