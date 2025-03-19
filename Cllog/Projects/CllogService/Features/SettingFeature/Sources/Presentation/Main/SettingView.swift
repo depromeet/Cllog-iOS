@@ -12,7 +12,7 @@ import ComposableArchitecture
 import DesignKit
 
 public struct SettingView: View {
-    private let store: StoreOf<SettingFeature>
+    @Bindable private var store: StoreOf<SettingFeature>
     
     public init(store: StoreOf<SettingFeature>) {
         self.store = store
@@ -21,9 +21,7 @@ public struct SettingView: View {
     public var body: some View {
         makeBody()
             .background(Color.clLogUI.gray800)
-            .onAppear {
-                
-            }
+            .presentDialog($store.scope(state: \.alert, action: \.alert), style: .delete)
     }
 }
 

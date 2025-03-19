@@ -61,6 +61,11 @@ extension RouterFeature {
         case .path(.element(id: let id, action: .setting(.backButtonTapped))):
             state.path.pop(from: id)
             return .none
+        case .path(.element(id: let id, action: .setting(.logoutSuccess))):
+            state.path.pop(from: id)
+            state.rootState.mainState = nil
+            state.rootState.loginState = .init()
+            return .none
         default:
             return .none
         }
