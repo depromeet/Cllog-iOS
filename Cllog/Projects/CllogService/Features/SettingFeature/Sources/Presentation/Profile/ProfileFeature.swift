@@ -1,5 +1,5 @@
 //
-//  SettingFeature.swift
+//  ProfileFeature.swift
 //  SettingFeature
 //
 //  Created by Junyoung on 3/18/25.
@@ -11,28 +11,25 @@ import Foundation
 import ComposableArchitecture
 
 @Reducer
-public struct SettingFeature {
+public struct ProfileFeature {
     @ObservableState
     public struct State: Equatable {
-        public init() {}
+        
     }
     
     public enum Action: Equatable {
-        case backButtonTapped
+        
     }
     
-    public init() {}
+    init() {}
     
     public var body: some Reducer<State, Action> {
         Reduce(reducerCore)
     }
 }
 
-extension SettingFeature {
+extension ProfileFeature {
     func reducerCore(_ state: inout State, _ action: Action) -> Effect<Action> {
-        switch action {
-        default:
-            return .none
-        }
+        
     }
 }
