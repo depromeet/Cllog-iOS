@@ -22,5 +22,5 @@ public struct TokenDTO: Sendable {
     
     let accessToken: String
     let refreshToken: String
-    let provider: String
+    public let provider: String
 }
