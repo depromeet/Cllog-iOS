@@ -19,6 +19,11 @@ public struct DefaultTokenDataSource: TokenDataSource {
     public init () {}
     
     public func saveToken(_ token: AuthTokenDTO) {
+        try? KeychainManager.shared.deleteItem(
+            ofClass: AppData.LoginUserKeychainKey.token.itemClass,
+            key: AppData.LoginUserKeychainKey.token.rawValue
+        )
+
         AppData.token = token
     }
     
