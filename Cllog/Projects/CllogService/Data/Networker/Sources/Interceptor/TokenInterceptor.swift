@@ -22,6 +22,7 @@ public final class TokenInterceptor: StarlinkInterceptor, Sendable {
         }
         
         var request = urlRequest
+        request.setHeader(.init(name: "Authorization", value: token.accessToken))
         request.setHeader(.init(name: "Provider", value: token.provider))
         return request
     }

@@ -43,6 +43,20 @@ extension VideoUploadUsesCase: VideoUseCase {
     public func execute(name: String, fileName: String, mimeType: String, value: Data) async throws -> Videothumbnails {
         try await videoRepository.uploadVideoThumbnail(name: name, fileName: fileName, min: mimeType, value: value)
     }
+
+    
+    /// 시도 등록 API
+    /// - Parameters:
+    ///   - status: SUCCESS, FAILURE
+    ///   - problemId: 암장 ID
+    ///   - localPath: 비디오
+    public func execute(
+        status: String,
+        problemId: String,
+        localPath: String
+    ) {
+        
+    }
 }
 
 public enum VideoUploadUsesCaseDepdencyKey: DependencyKey {

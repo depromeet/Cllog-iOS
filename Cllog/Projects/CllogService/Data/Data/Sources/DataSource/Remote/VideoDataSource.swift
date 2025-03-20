@@ -32,7 +32,6 @@ public struct VideoDataSource: VideoDataSourceLogic {
         min: String,
         data: Data
     ) async throws -> VideoUploadResponseDTO {
-        let request = VideoUploadDTO(fileName: fileName)
         
         let response: BaseResponseDTO<VideoUploadResponseDTO> = try await videoProvider.uploadRequest(VideoEndPoint.uploadThumbnail, .init(
             name: name,

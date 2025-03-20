@@ -19,9 +19,8 @@ import ComposableArchitecture
 public struct RecordedView: View {
     
     private weak var on: UIViewController?
-    
-    @Bindable
-    private var store: StoreOf<RecordedFeature>
+
+    @Bindable private var store: StoreOf<RecordedFeature>
     
     public init(
         on: UIViewController?,
@@ -37,6 +36,29 @@ public struct RecordedView: View {
                 store.send(.onAppear)
             }
             .presentDialog($store.scope(state: \.alert, action: \.alert), style: .default)
+            .showCragBottomSheet(
+                isPresented: .init(get: {
+                    store.showSelectCragBottomSheet
+                }, set: { newValue in
+                    store.send(.cragisPresentAction(newValue))
+                }),
+                didTapSaveButton: { designCrag in
+                    store.send(.cragSaveButtonTapped(designCrag))
+                }, didTapSkipButton: {
+                    store.send(.cragNameSkipButtonTapped)
+                }, didChangeSearchText: { keyword in
+                    store.send(.cragName(keyWord: keyword))
+                }, crags: $store.designCrag)
+            .presentDialog($store.scope(state: \.cragAlert, action: \.cragAlert))
+            .showGradeBottomSheet(
+                isPresented: $store.showSelectCragDifficultyBottomSheet,
+                cragName: store.selectedDesignCrag?.name ?? "",
+                grades: store.designGrades,
+                didTapSaveButton: { DesignGrade in
+                    
+                }, didTapCragTitleButton: {
+                    
+                })
     }
     
     @ViewBuilder
