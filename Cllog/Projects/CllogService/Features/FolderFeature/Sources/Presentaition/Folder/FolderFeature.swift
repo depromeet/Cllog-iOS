@@ -12,14 +12,12 @@ import Shared
 
 @Reducer
 public struct FolderFeature {
-    @Dependency(\.attemptUseCase) private var attemptUseCase
-    @Dependency(\.gradeUseCase) private var gradeUseCase
-    @Dependency(\.cragUseCase) private var cragUseCase
+    @Dependency(\.filteredAttemptsUseCase) private var filteredAttemptsUseCase
+    @Dependency(\.fetchFilterableAttemptInfoUseCase) private var fetchFilterableAttemptInfoUseCase
     
     @ObservableState
     public struct State: Equatable {
-        var grades = [Grade]()
-        var crags = [Crag]()
+        var filterableAttemptInfo: FilterableAttemptInfo?
         var attempts = [Attempt]()
         let chips = SelectedChip.allCases
         var attemptFilter = AttemptFilter()
@@ -40,12 +38,12 @@ public struct FolderFeature {
         case failChipTapped
         case gradeChipTapped
         case cragChipTapped
-        case getFilterableDatas(grades: [Grade], crags: [Crag])
+        case getFilterableInfo(_ data: FilterableAttemptInfo)
         case didSelectCrag(_ crag: Crag)
         case didSelectGrade(_ grade: Grade)
         case getFilteredAttempts(_ attempt: [Attempt])
         case setViewState(_ state: ViewState)
-        case getFilterableInfo
+        case moveToAttempt(_ attemptId: Int)
         case fail
     }
     
@@ -82,9 +80,8 @@ public struct FolderFeature {
                 state.searchCragName = ""
                 state.showSelectCragBottomSheet = true
                 return .none
-            case .getFilterableDatas(let grades, let crags):
-                state.grades = grades
-                state.crags = crags
+            case .getFilterableInfo(let info):
+                state.filterableAttemptInfo = info
                 return .none
             case .didSelectCrag(let crag):
                 state.attemptFilter = state.attemptFilter.updateCrag(crag)
@@ -95,13 +92,12 @@ public struct FolderFeature {
                 state.showSelectGradeBottomSheet = false
                 return .none
             case .setViewState(let viewState):
-                
                 state.viewState = viewState
                 return .none
             case .getFilteredAttempts(let attempts):
                 state.attempts = attempts
                 return .none
-            case .getFilterableInfo:
+            case .moveToAttempt:
                 return .none
             case .fail:
                 return .none
@@ -111,13 +107,12 @@ public struct FolderFeature {
     
     private func fetchInitialData() -> Effect<Action> {
         return .run { send in
-            async let grades = gradeUseCase.getGrades()
-            async let crags = cragUseCase.getCrags()
-            async let allAttempts = attemptUseCase.getAttempts()
+            async let requestFilterableInfo = fetchFilterableAttemptInfoUseCase.execute()
+            async let allAttempts = filteredAttemptsUseCase.execute(nil)
             
             do {
-                let (gradesResult, cragsResults, attemptsResult) = try await (grades, crags, allAttempts)
-                await send(.getFilterableDatas(grades: gradesResult, crags: cragsResults))
+                let (filterableInfo, attemptsResult) = try await (requestFilterableInfo, allAttempts)
+                await send(.getFilterableInfo(filterableInfo))
                 await send(.getFilteredAttempts(attemptsResult))
                 await send(.setViewState(attemptsResult.isEmpty ? .empty : .content))
             } catch {
@@ -129,7 +124,7 @@ public struct FolderFeature {
     private func getAttempts() -> Effect<Action> {
         return .run { send in
             do {
-                let attempts = try await attemptUseCase.getFilteredAttempts()
+                let attempts = try await filteredAttemptsUseCase.execute(nil)
                 await send(.getFilteredAttempts(attempts))
                 
             }

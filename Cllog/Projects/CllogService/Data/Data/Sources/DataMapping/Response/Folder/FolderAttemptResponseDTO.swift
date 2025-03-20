@@ -20,6 +20,7 @@ public struct FolderAttemptResponseDTO: Decodable {
     
     func toDomain() -> Attempt {
         Attempt(
+            id: attemptId,
             date: date,
             grade: color?.toDomain(),
             result: AttemptResult(rawValue: status) ?? .complete,
