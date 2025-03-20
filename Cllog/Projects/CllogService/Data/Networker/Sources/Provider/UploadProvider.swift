@@ -6,10 +6,14 @@
 //  Copyright © 2025 Supershy. All rights reserved.
 //
 
-import Starlink
-import Pulse
-
+// Apple Module
 import Foundation
+
+// 내부 Module
+import Starlink
+
+// 외부 Module
+import Pulse
 
 public final class UploadProvider: UploadProviderable, Sendable {
     
@@ -19,7 +23,7 @@ public final class UploadProvider: UploadProviderable, Sendable {
         self.tokenInterceptor = TokenInterceptor(provider: tokenProvider)
     }
     
-    public func upload<T: Decodable>(
+    public func uploadRequest<T: Decodable>(
         _ endpoint: EndpointType,
         _ uploadData: UploadDataForm
     ) async throws -> T {
@@ -27,39 +31,30 @@ public final class UploadProvider: UploadProviderable, Sendable {
         
         let configure = Starlink.default()
         let session = URLSessionProxy(configuration: .default, delegate: configure.delegate)
-        
-        switch endpoint.parameters {
+        let reqeust = switch endpoint.parameters {
         case .none:
-            return try await Starlink.init(
-                session: session,
-                interceptors: [
-                    AppInfoInterceptor(),
-                    tokenInterceptor
-                ]
-            )
-            .uploadResponse(url, encodable: nil, method: .post, uploadForm: uploadData)
+            fatalError()
             
         case .some(let type):
             switch type {
             case .dictionary(let parameters):
-                return try await Starlink.init(
+                fatalError()
+            case .encodable(let parameters):
+                uploadRequest(
+                    url: url,
+                    endPoint: endpoint,
+                    uploadForm: uploadData,
                     session: session,
+                    parameters: parameters,
                     interceptors: [
                         AppInfoInterceptor(),
                         tokenInterceptor
                     ]
                 )
-                .uploadResponse(url, encodable: nil, method: .post, uploadForm: uploadData)
-                
-            case .encodable(let parameters):
-                return try await Starlink.init(
-                    session: session,
-                    interceptors: [
-                        AppInfoInterceptor(),
-                        tokenInterceptor
-                    ]
-                ).uploadResponse(url, encodable: parameters, method: .post, uploadForm: uploadData)
             }
         }
+        let response: T = try await reqeust.uploadResponse()
+        
+        return response
     }
 }

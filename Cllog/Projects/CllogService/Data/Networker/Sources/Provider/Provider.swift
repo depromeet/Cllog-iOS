@@ -12,8 +12,8 @@ public protocol Provider: Sendable {
     func request<T: Decodable>(_ endpoint: EndpointType) async throws -> T
 }
 
-public protocol UploadProviderable {
-    func upload<T: Decodable>(
+public protocol UploadProviderable: Sendable {
+    func uploadRequest<T: Decodable>(
         _ endpoint: EndpointType,
         _ uploadData: UploadDataForm
     ) async throws -> T
@@ -30,7 +30,9 @@ extension Provider {
         return Starlink.init(
             session: session,
             interceptors: interceptors
-        ).request(
+        )
+        .option([StarlinkLogTraking()])
+        .request(
             url,
             params: parameters,
             method: endPoint.method,
@@ -49,13 +51,42 @@ extension Provider {
         return Starlink.init(
             session: session,
             interceptors: interceptors
-        ).request(
+        )
+        .option([StarlinkLogTraking()])
+        .request(
             url,
             encodable: parameters,
             method: endPoint.method,
             headers: endPoint.headers ?? [],
-            encoding: endPoint.encoding
+            encoding: endPoint.encoding,
+            uploadForm: nil
         )
     }
     
+}
+
+extension UploadProvider {
+    
+    func uploadRequest(
+        url: String,
+        endPoint: EndpointType,
+        uploadForm: UploadDataForm,
+        session: Sessionable,
+        parameters: Encodable,
+        interceptors: [any StarlinkInterceptor] = []
+    ) -> StarlinkRequest {
+        return Starlink.init(
+            session: session,
+            interceptors: interceptors
+        )
+        .option([StarlinkLogTraking()])
+        .request(
+            url,
+            encodable: parameters,
+            method: endPoint.method,
+            headers: endPoint.headers ?? [],
+            encoding: endPoint.encoding,
+            uploadForm: uploadForm
+        )
+    }
 }

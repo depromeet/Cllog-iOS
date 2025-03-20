@@ -32,10 +32,15 @@ public struct VideoDataSource: VideoDataSourceLogic {
         min: String,
         data: Data
     ) async throws -> VideoUploadResponseDTO {
-        let request = VideoUploadDTO(name: name, fileName: fileName, min: min, data: data)
+        let request = VideoUploadDTO(fileName: fileName)
         
-        let response: BaseResponseDTO<VideoUploadResponseDTO> = try await videoProvider.upload(VideoEndPoint.uploadThumbnail(request), .init(name: name, fileName: fileName, data: data, mimeType: min))
-        
+        let response: BaseResponseDTO<VideoUploadResponseDTO> = try await videoProvider.uploadRequest(VideoEndPoint.uploadThumbnail, .init(
+            name: name,
+            fileName: fileName,
+            data: data,
+            mimeType: min
+        ))
+
         guard let data = response.data else {
             throw StarlinkError.inValidJSONData(nil)
         }
@@ -51,7 +56,7 @@ public struct VideoDataSource: VideoDataSourceLogic {
 }
 
 public enum VideoEndPoint: EndpointType {
-    case uploadThumbnail(VideoUploadDTO)
+    case uploadThumbnail
     case uploadVideo
     
     public var baseURL: String {
@@ -79,8 +84,8 @@ public enum VideoEndPoint: EndpointType {
     
     public var parameters: ParameterType? {
         switch self {
-        case .uploadThumbnail(let request):
-            return .encodable(request)
+        case .uploadThumbnail:
+            return .encodable(EmptyModel())
             
         case .uploadVideo:
             return nil
@@ -88,8 +93,8 @@ public enum VideoEndPoint: EndpointType {
     }
     public var encodable: (any Encodable)? {
         switch self {
-        case .uploadThumbnail(let request):
-            return request
+        case .uploadThumbnail:
+            return nil
             
         case .uploadVideo:
             return nil
@@ -107,3 +112,5 @@ public enum VideoEndPoint: EndpointType {
         }
     }
 }
+
+struct EmptyModel: Encodable {}

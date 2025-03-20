@@ -9,20 +9,11 @@
 import Foundation
 
 public struct VideoUploadDTO: Encodable {
-    let name: String
     let fileName: String
-    let min: String
-    let data: Data
     
     public init(
-        name: String,
-        fileName: String,
-        min: String,
-        data: Data
+        fileName: String
     ) {
-        self.name = name
         self.fileName = fileName
-        self.min = min
-        self.data = data
     }
 }

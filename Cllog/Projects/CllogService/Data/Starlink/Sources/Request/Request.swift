@@ -13,6 +13,7 @@ public protocol StarlinkRequest {
     func reponsePublisher<T: Decodable>() -> AnyPublisher<T, any Error>
     func reponseAsync<T: Decodable>() async throws -> T
     func response<T: Decodable>(_ complete: @escaping @Sendable (Result<T, any Error>) -> Void)
+    func uploadResponse<T: Decodable>() async throws -> T
 }
 
 extension Starlink {

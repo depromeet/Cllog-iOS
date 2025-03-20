@@ -16,7 +16,7 @@ public protocol VideoUseCase: Sendable {
     func execute(saveFile fileURL: URL) async throws
     func execute(loadName: String) async throws -> URL?
     
-    func execute(name: String, fileName: String, min: String, value: Data) async throws -> Videothumbnails
+    func execute(name: String, fileName: String, mimeType: String, value: Data) async throws -> Videothumbnails
 }
 
 public struct VideoUploadUsesCase {
@@ -40,8 +40,8 @@ extension VideoUploadUsesCase: VideoUseCase {
         try await videoRepository.readSavedVideo(fileName: loadName)
     }
     
-    public func execute(name: String, fileName: String, min: String, value: Data) async throws -> Videothumbnails {
-        try await videoRepository.uploadVideoThumbnail(name: name, fileName: fileName, min: min, value: value)
+    public func execute(name: String, fileName: String, mimeType: String, value: Data) async throws -> Videothumbnails {
+        try await videoRepository.uploadVideoThumbnail(name: name, fileName: fileName, min: mimeType, value: value)
     }
 }
 

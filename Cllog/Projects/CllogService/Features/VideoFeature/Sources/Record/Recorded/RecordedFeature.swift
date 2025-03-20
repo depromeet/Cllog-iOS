@@ -9,6 +9,8 @@
 import Foundation
 import AVFoundation
 
+import Alamofire
+
 import ComposableArchitecture
 import UIKit
 
@@ -165,17 +167,38 @@ extension RecordedFeature {
                     }
                 })
             )
-
-        case .upload(let type, let image):
-//            state.image = image
             
+        case .upload(let type, let image):
             return .run { send in
                 do {
-                    let response = try await videoUsecase.execute(name: "asdf", fileName: "123123", min: "image/png", value: image.resizedPNGData()!)
-                    print("image :: response: \(response)")
+                    let videothumbnails = try await videoUsecase.execute(name: "MyImages", fileName: "MyImages.png", mimeType: "image/png", value: image.resizedPNGData()!)
+                    print("videothumbnails : \(videothumbnails)")
                 } catch {
-                    print("image :: error: \(error)")
+                    print("videothumbnails error")
                 }
+                
+//                let data: Data = await withCheckedContinuation { continuation in
+//                    if let uploadURL = URL(string: "https://dev-api.climb-log.my/api/v1/thumbnails/upload") {
+//                        
+//                        NetworkManager.shared.uploadImage(url: uploadURL,
+//                                                          image: image,
+//                                                          fileName: "MyImages.png",
+//                                                          parameters: [:]) { result in
+//                            switch result {
+//                            case .success(let data):
+//                                print("업로드 성공! 응답 데이터: \(data)")
+//                                continuation.resume(returning: data)
+//                            case .failure(let error):
+//                                print("업로드 실패: \(error.localizedDescription)")
+//                            }
+//                        }
+//                    }
+//                }
+//                
+//                guard let model = try? JSONDecoder().decode(BaseResponseDTOs<VideoUploadDTOss>.self, from: data) else {
+//                    return
+//                }
+//                print("123123:: \(model.data?.fileUrl)")
             }
         case .failtureTapped:
             return .none
@@ -225,4 +248,68 @@ extension UIImage {
         
         return currentData.count <= targetSizeInBytes ? currentData : nil
     }
+}
+
+class NetworkManager {
+    static let shared = NetworkManager()
+    private init() {}
+    
+    /// 이미지를 multipart/form-data 방식으로 업로드하는 메서드
+    /// - Parameters:
+    ///   - url: 업로드할 서버 URL
+    ///   - image: 업로드할 UIImage 객체
+    ///   - fileName: 서버에 전송할 파일 이름 (예: "example.png")
+    ///   - parameters: 추가로 전송할 텍스트 파라미터 (옵션)
+    ///   - completion: 업로드 완료 후 반환되는 결과 클로저
+    func uploadImage(url: URL,
+                     image: UIImage,
+                     fileName: String = "example.png",
+                     parameters: [String: String] = [:],
+                     completion: @escaping (Result<Data, Error>) -> Void) {
+        
+        // 필요하다면 추가 헤더 (여기서는 accept 헤더만 추가)
+        let headers: HTTPHeaders = [
+            "Accept": "*/*",
+            "Authorization": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNSIsInVzZXJJZCI6MTUsImxvZ2luSWQiOiJ0ZXN0MTIzIiwicHJvdmlkZXIiOiJMT0NBTCIsImV4cCI6MTc0MjM4NDAwOX0.2MNvThmheMjEPpbUYs0hkLBt5rGIwWkTL6l04Fbuoikccw_zeg80zGUgRqkZ_N1xnQ6c3NITtIungyL2z-xBcw"
+        ]
+        
+        // Alamofire의 upload 메서드 사용
+        AF.upload(multipartFormData: { multipartFormData in
+            // 1. 이미지 데이터를 file 필드로 추가 (서버가 file= 으로 받길 기대)
+            if let imageData = image.pngData() {
+                multipartFormData.append(imageData,
+                                         withName: "file",
+                                         fileName: fileName,
+                                         mimeType: "image/png")
+            }
+            
+            // 2. 추가 텍스트 파라미터가 있다면 함께 추가
+            for (key, value) in parameters {
+                if let valueData = value.data(using: .utf8) {
+                    multipartFormData.append(valueData, withName: key)
+                }
+            }
+        },
+                  to: url,
+                  method: .post,
+                  headers: headers)
+        .validate()  // HTTP 상태 코드 200~299 확인
+        .responseData { response in
+            switch response.result {
+            case .success(let data):
+                completion(.success(data))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+}
+public struct VideoUploadDTOss: Codable {
+    let fileUrl: String
+}
+
+struct BaseResponseDTOs<T: Decodable>: Decodable {
+//    let success: Bool
+    let data: T?
+//    let error: ErrorResponseDTO?
 }

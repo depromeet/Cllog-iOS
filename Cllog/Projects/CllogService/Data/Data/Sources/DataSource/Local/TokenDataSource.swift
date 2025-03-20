@@ -24,7 +24,6 @@ public struct DefaultTokenDataSource: TokenDataSource {
     
     public func loadToken() -> TokenDTO? {
         let token = AppData.token?.toToken()
-        print("AppData.token?: \(token)")
         return token
     }
     
