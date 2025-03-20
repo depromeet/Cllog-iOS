@@ -11,10 +11,12 @@ import ComposableArchitecture
 import CalendarFeature
 import SettingFeature
 import FolderFeature
+import Core
 
 @Reducer
 public enum Path {
     case calendarDetail(CalendarDetailFeature)
     case setting(SettingFeature)
+    case webView(WebViewFeature)
     case attempt(AttemptFeature)
 }

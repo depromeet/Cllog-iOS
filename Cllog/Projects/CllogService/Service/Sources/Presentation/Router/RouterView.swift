@@ -12,6 +12,7 @@ import ComposableArchitecture
 import CalendarFeature
 import SettingFeature
 import FolderFeature
+import Core
 
 public struct RouterView: View {
     @Bindable private var store: StoreOf<RouterFeature>
@@ -39,6 +40,9 @@ public struct RouterView: View {
                     .navigationBarBackButtonHidden(true)
             case .attempt(let store):
                 AttemptView(store: store)
+                    .navigationBarBackButtonHidden(true)
+            case .webView(let store):
+                WebView(store: store)
                     .navigationBarBackButtonHidden(true)
             }
         }
