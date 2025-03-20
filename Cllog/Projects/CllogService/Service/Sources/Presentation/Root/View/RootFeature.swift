@@ -13,6 +13,7 @@ import VideoFeature
 
 import ComposableArchitecture
 import LoginFeature
+import SplashFeature
 import Shared
 
 @Reducer
@@ -20,16 +21,16 @@ public struct RootFeature {
     
     @ObservableState
     public struct State: Equatable {
-        var autoLoginState: AutoLoginFeature.State?
         var loginState: LoginFeature.State?
         var mainState: MainFeature.State?
+        var splashState: SplashFeature.State?
     }
     
     public enum Action {
         case onAppear
         
-        // autoLogin
-        case autoLoginAction(AutoLoginFeature.Action)
+        // Splash
+        case splashAction(SplashFeature.Action)
         
         // login
         case loginAction(LoginFeature.Action)
@@ -40,14 +41,14 @@ public struct RootFeature {
     
     public var body: some ReducerOf<Self> {
         Reduce(reducerCore)
-            .ifLet(\.autoLoginState, action: \.autoLoginAction) {
-                AutoLoginFeature()
-            }
             .ifLet(\.loginState, action: \.loginAction) {
                 LoginFeature()
             }
             .ifLet(\.mainState, action: \.mainAction) {
                 MainFeature()
+            }
+            .ifLet(\.splashState, action: \.splashAction) {
+                SplashFeature()
             }
     }
     
@@ -62,11 +63,11 @@ public struct RootFeature {
     ) -> Effect<Action> {
         switch action {
         case .onAppear:
-            state.autoLoginState = .init()
+            state.splashState = .init()
             return .none
             
-        case .autoLoginAction(let action):
-            return autoLoginCore(&state, action)
+        case .splashAction(let action):
+            return splashCore(&state, action)
             
         case .loginAction(let action):
             return loginCore(&state, action)
@@ -85,15 +86,21 @@ private extension RootFeature {
     ///   - state: 저장소
     ///   - action: AutoLogin Action
     /// - Returns: Effect
-    func autoLoginCore(
+    func splashCore(
         _ state: inout State,
-        _ action: (AutoLoginFeature.Action)
+        _ action: (SplashFeature.Action)
     ) -> Effect<Action> {
         switch action {
-        case .onAppear:
-            state.loginState = LoginFeature.State()
-//            state.mainState = .init()
-            state.autoLoginState = nil
+        case .finish(let destination):
+            state.splashState = nil
+            switch destination {
+            case .login:
+                state.loginState = LoginFeature.State()
+            case .main:
+                state.mainState = MainFeature.State()
+            }
+            return .none
+        default:
             return .none
         }
     }
