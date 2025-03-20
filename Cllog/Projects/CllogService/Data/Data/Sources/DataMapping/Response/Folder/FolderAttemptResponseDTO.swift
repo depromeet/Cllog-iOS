@@ -14,7 +14,7 @@ public struct FolderAttemptResponseDTO: Decodable {
     let attemptId: Int
     let date: String
     let video: FolderVideoResponseDTO
-    let crag: FolderAttemptCragResponseDTO?
+    let crag: FolderCragResponseDTO?
     let color: FolderAttemptColorResponseDTO?
     let status: String
     

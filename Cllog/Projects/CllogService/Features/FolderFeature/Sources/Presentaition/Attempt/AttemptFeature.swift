@@ -14,6 +14,7 @@ import ComposableArchitecture
 
 @Reducer
 public struct AttemptFeature {
+    @Dependency(\.attemptUseCase) private var attemptUseCase
     
     public init() {}
     
@@ -21,6 +22,8 @@ public struct AttemptFeature {
     public struct State: Equatable {
         
         let attemptId: Int
+        var attempt: ReadAttempt?
+        var stampPositions = [CGFloat]()
         public init(attemptId: Int) {
             self.attemptId = attemptId
         }
@@ -33,14 +36,17 @@ public struct AttemptFeature {
         case shareButtonTapped
         case moreButtonTapped
         case videoTapped
-        case stampTapped(id: String)
+        case stampTapped(id: Int)
+        
+        case onSplitPositionsCalculated(positions: [CGFloat])
+        case getAttempt(attempt: ReadAttempt)
     }
     
     public var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
             case .onAppear:
-                return .none
+                return fetchAttempt(state.attemptId)
             case .backButtonTapped:
                 return .none
             case .shareButtonTapped:
@@ -49,8 +55,29 @@ public struct AttemptFeature {
                 return .none
             case .videoTapped:
                 return .none
-            case .stampTapped(id: let id):
+            case .stampTapped(let id):
                 return .none
+                
+            case .onSplitPositionsCalculated(let positions):
+                state.stampPositions = positions
+                return .none
+            case .getAttempt(let attempt):
+                state.attempt = attempt
+                return .none
+            }
+        }
+    }
+}
+
+extension AttemptFeature {
+    private func fetchAttempt(_ attemptId: Int) -> Effect<Action> {
+        return .run { send in
+            do {
+                let attempt = try await attemptUseCase.execute(attemptId: attemptId)
+                await send(.getAttempt(attempt: attempt))
+            } catch {
+                // TODO: show error message
+                debugPrint(error.localizedDescription)
             }
         }
     }

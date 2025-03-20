@@ -112,7 +112,7 @@ struct SelectGradeView: View {
                 .padding(.top, 16)
                 .padding(.bottom, 10)
             
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 36, maximum: 36), spacing: 28)]) {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 36, maximum: 36), spacing: 28)], spacing: 18) {
                 ForEach(grades, id: \.self) { grade in
                     gradeGradeChip(for: grade)
                 }
