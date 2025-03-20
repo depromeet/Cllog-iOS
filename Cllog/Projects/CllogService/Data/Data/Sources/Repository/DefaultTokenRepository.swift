@@ -12,10 +12,14 @@ import Networker
 
 public struct DefaultTokenRepository: TokenRepository {
     public init() {}
-    public func fetch() -> LoginType {
+    public func fetchLoginType() -> LoginType {
         guard let provider = DefaultTokenDataSource().loadToken()?.provider else {
             return .apple
         }
         return LoginType.init(provider)
+    }
+    
+    public func fetchValidateUserSession() -> Bool {
+        return DefaultTokenDataSource().loadToken()?.refreshToken != nil
     }
 }

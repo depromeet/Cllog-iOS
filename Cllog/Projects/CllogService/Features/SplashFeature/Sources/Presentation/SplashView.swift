@@ -24,6 +24,7 @@ public struct SplashView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.clLogUI.gray900)
             .onAppear {
+                store.send(.onAppear)
                 withAnimation(.easeInOut(duration: 1)) {
                     opacity = 1
                 } completion: {

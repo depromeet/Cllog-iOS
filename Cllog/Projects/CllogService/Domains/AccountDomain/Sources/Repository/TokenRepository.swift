@@ -9,5 +9,6 @@
 import Foundation
 
 public protocol TokenRepository {
-    func fetch() -> LoginType
+    func fetchLoginType() -> LoginType
+    func fetchValidateUserSession() -> Bool
 }
