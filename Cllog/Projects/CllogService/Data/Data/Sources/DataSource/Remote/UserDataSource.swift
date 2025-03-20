@@ -42,7 +42,7 @@ enum UserTarget {
 
 extension UserTarget: EndpointType {
     var baseURL: String {
-        return "https://dev-api.climb-log.my/api/v1/user"
+        return "https://dev-api.climb-log.my/api/v1/users"
     }
     
     var path: String {

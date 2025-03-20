@@ -14,7 +14,7 @@ public protocol LogoutUseCase {
     func execute() async throws
 }
 
-public struct DefaultLogoutUseCase: LogoutUseCase {
+public struct Logout: LogoutUseCase {
     public init(repository: LogoutRepository) {
         self.repository = repository
     }

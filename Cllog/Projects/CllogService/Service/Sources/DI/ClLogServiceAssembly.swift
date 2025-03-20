@@ -98,7 +98,7 @@ public struct ClLogServiceAssembly: Assembly {
         }
         
         container.register(LogoutUseCase.self) { _ in
-            DefaultLogoutUseCase(
+            Logout(
                 repository: DefaultLogoutRepository(
                     userDataSource: DefaultUserDataSource(
                         provider: AuthProvider(
@@ -107,6 +107,31 @@ public struct ClLogServiceAssembly: Assembly {
                     ),
                     tokenDataSource: DefaultTokenDataSource()
                 )
+            )
+        }
+        
+        container.register(WithdrawUseCase.self) { _ in
+            Withdraw(
+                repository: DefaultWithdrawRepository(
+                    userDataSource: DefaultUserDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    ),
+                    tokenDataSource: DefaultTokenDataSource()
+                )
+            )
+        }
+        
+        container.register(LoginTypeFetcherUseCase.self) { _ in
+            LoginTypeFetcher(
+                repository: DefaultTokenRepository()
+            )
+        }
+        
+        container.register(ValidateUserSessionUseCase.self) { _ in
+            ValidateUserSession(
+                repository: DefaultTokenRepository()
             )
         }
     }

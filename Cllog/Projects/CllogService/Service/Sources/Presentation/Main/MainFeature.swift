@@ -53,6 +53,12 @@ public struct MainFeature {
         var isRecording: Bool = false
         
         var pushToCalendarDetail: Int?
+        
+        var tabImages: [Image] = [
+            Image.clLogUI.folder,
+            Image.clLogUI.camera,
+            Image.clLogUI.report
+        ]
     }
     
     public enum Action {
