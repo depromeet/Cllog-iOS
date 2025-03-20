@@ -7,8 +7,18 @@
 //
 
 import Foundation
+import FolderDomain
 
 struct AttemptStampResponseDTO: Decodable {
     let id: Int
     let timeMs: Int
+    
+    func toDomain(durationMs: Int) -> AttemptStamp {
+        let position = durationMs > 0 ? Float(timeMs / durationMs) : 0
+        return AttemptStamp(
+            id: id,
+            timeMs: timeMs,
+            position: position
+        )
+    }
 }

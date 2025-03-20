@@ -134,5 +134,17 @@ public struct ClLogServiceAssembly: Assembly {
                 repository: DefaultTokenRepository()
             )
         }
+        
+        container.register(AttemptUseCase.self) { _ in
+            DefaultAttemptUseCase(
+                attemptRepository: DefaultAttemptRepository(
+                    dataSource: DefaultAttemptDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
     }
 }

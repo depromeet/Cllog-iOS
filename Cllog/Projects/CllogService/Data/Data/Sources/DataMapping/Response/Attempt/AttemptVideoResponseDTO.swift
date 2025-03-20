@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import FolderDomain
 
 struct AttemptVideoResponseDTO: Decodable {
     let id: Int
@@ -14,4 +15,14 @@ struct AttemptVideoResponseDTO: Decodable {
     let thumbnailUrl: String
     let durationMs: Int
     let stamps: [AttemptStampResponseDTO]
+    
+    func toDomain() -> AttemptVideo {
+        AttemptVideo(
+            id: id,
+            localPath: localPath,
+            thumbnailUrl: thumbnailUrl,
+            durationMs: durationMs,
+            stamps: stamps.map { $0.toDomain(durationMs: durationMs) }
+        )
+    }
 }

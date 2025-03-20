@@ -8,16 +8,18 @@
 
 import Foundation
 
-// TODO: Stroy Stamp와 동일
 public struct AttemptStamp: Hashable, Equatable {
     public let id: Int
     public let timeMs: Int
+    public let position: Float
     
     public init(
         id: Int,
-        timeMs: Int
+        timeMs: Int,
+        position: Float
     ) {
         self.id = id
         self.timeMs = timeMs
+        self.position = position
     }
 }

@@ -20,4 +20,8 @@ public struct DefaultAttemptRepository: AttemptRepository {
     public func getFilteredAttempts() async throws -> [FolderDomain.Attempt] {
         try await dataSource.attempts().map { $0.toDomain() }
     }
+    
+    public func getAttempt(attemptId: Int) async throws -> FolderDomain.ReadAttempt {
+        try await dataSource.attempt(attemptId).toDomain()
+    }
 }

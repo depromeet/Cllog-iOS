@@ -7,11 +7,23 @@
 //
 
 import Foundation
+import FolderDomain
 
-struct DetailAttemptResponseDTO: Decodable {
+public struct DetailAttemptResponseDTO: Decodable {
     let storyId: Int
     let problemId: Int
     let color: FolderAttemptColorResponseDTO?
     let crag: FolderCragResponseDTO?
     let attempt: AttemptResponseDTO
+    
+    func toDomain() -> ReadAttempt {
+        ReadAttempt(
+            storyId: storyId,
+            problemId: problemId,
+            grade: color?.toDomain(),
+            crag: crag?.toDomain(),
+            result: AttemptResult(rawValue: attempt.status) ?? .complete,
+            attempt: attempt.toDomain()
+        )
+    }
 }

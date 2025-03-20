@@ -7,8 +7,16 @@
 //
 
 import Foundation
+import FolderDomain
 
 struct AttemptResponseDTO: Decodable {
     let status: String
     let video: AttemptVideoResponseDTO
+    
+    func toDomain() -> ReadAttemptDetail {
+        ReadAttemptDetail(
+            status: AttemptResult(rawValue: status) ?? .complete,
+            video: video.toDomain()
+        )
+    }
 }

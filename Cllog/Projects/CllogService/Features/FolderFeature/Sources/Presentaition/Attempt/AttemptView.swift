@@ -21,17 +21,9 @@ public struct AttemptView: ViewProtocol {
     @State var progressValue: Float = 0.5
     @State var splitXPositions: [CGFloat] = []
    
-    private let attempt = Attempt(
-        id: 0,
-        date: "25.02.08 FRI",
-        grade: Grade(id: UUID().uuidString, name: "파랑", hexCode: "0x5E7CFF"),
-        result: .complete,
-        recordedTime: "00:00:30",
-        crag: Crag(name: "클라이밍파크 강남점", address: "강남")
-    )
-    
     public var body: some View {
         makeBodyView()
+            .background(Color.clLogUI.gray800)
             .onAppear() {
                 store.send(.onAppear)
             }
@@ -44,21 +36,45 @@ public struct AttemptView: ViewProtocol {
 
 extension AttemptView {
     private func makeBodyView() -> some View {
-        VStack(spacing: 0) {
+        VStack {
             makeAppBar()
             
-            makeChipView()
+            if let attempt = store.attempt {
+                makeContentView(with: attempt)
+            } else {
+                makeLoadingView()
+            }
+        }
+    }
+    
+    private func makeContentView(with attempt: ReadAttempt) -> some View {
+        VStack(spacing: 0) {
             
-            makeVideoView()
+            makeChipView(attempt)
+            
+            makeVideoView(attempt)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 12)
             
-            makeAttemptInfoView()
+            makeAttemptInfoView(attempt)
                 .padding(.horizontal, 12)
         }
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.clLogUI.gray800)
+        
+    }
+    
+    private func makeLoadingView() -> some View {
+        ZStack {
+            Color.clLogUI.gray800
+                .edgesIgnoringSafeArea(.all)
+            
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: ClLogUI.gray500))
+                .scaleEffect(2)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    
     }
     
     private func makeAppBar() -> some View {
@@ -93,7 +109,7 @@ extension AttemptView {
         }
     }
     
-    private func makeChipView() -> some View {
+    private func makeChipView(_ attempt: ReadAttempt) -> some View {
         let result: ChallengeResult = attempt.result == .complete ? .complete : .fail
         return ScrollView(.horizontal) {
             HStack {
@@ -130,41 +146,28 @@ extension AttemptView {
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
     }
     
-    private func makeVideoView() -> some View {
-        
-        return ZStack(alignment: .bottom) {
+    private func makeVideoView(_ attempt: ReadAttempt) -> some View {
+        ZStack(alignment: .bottom) {
             RoundedRectangle(cornerRadius: 6)
                 .foregroundStyle(Color.clLogUI.dim)
                 .onTapGesture {
                     print("재생 또는 정지")
                 }
-            VStack(alignment: .leading, spacing: 3) {
-                ZStack(alignment: .bottomLeading) {
-                    ForEach(splitXPositions.indices, id: \.self) { index in
-                        ClLogUI.stamp
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                            .foregroundStyle(Color.clLogUI.primary)
-                            .offset(x: splitXPositions[index] - CGFloat(15)) // 이미지 중앙 정렬을 위한 width/2
-                    }
-                }
-                
+            
                 PlayerProgressBar(
                     value: $progressValue,
-                    splitPositions: [0.2, 0.4, 0.7],
-                    onSplitPositionsCalculated: { positions in
-                        
-                        splitXPositions = positions
+                    splitItems: attempt.attempt.video.stamps.map { ProgressSplitItem(id: $0.id, position: $0.position) },
+                    onSplitItemTapped: { stampId in
+                        store.send(.stampTapped(id: stampId))
                     }
                 )
-                .frame(height: 10)
-            }
         }
     }
     
-    private func makeAttemptInfoView() -> some View {
+    private func makeAttemptInfoView(_ attempt: ReadAttempt) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(attempt.date)
+            Text("TEST")
+//            Text(attempt.date) // TODO: 서버 작업 후 추가
                 .font(.h1)
                 .foregroundStyle(Color.clLogUI.white)
             
@@ -175,29 +178,22 @@ extension AttemptView {
                 .font(.h3)
                 .foregroundStyle(Color.clLogUI.primary)
             
-            makeStampView()
+            makeStampView(attempt.attempt.video.stamps)
                 .padding(.top, 10)
         }
     }
     
-    private func makeStampView() -> some View {
-        let mockStamps = [
-            "00:00",
-            "00:10",
-            "00:40",
-            "00:35",
-            "00:24",
-        ]
-        return ScrollView(.horizontal) {
+    private func makeStampView(_ stamps: [AttemptStamp]) -> some View {
+        ScrollView(.horizontal) {
             HStack(spacing: 12) {
-                ForEach(mockStamps, id: \.self) { timeStamp in
+                ForEach(stamps, id: \.self) { timeStamp in
                     HStack {
                         ClLogUI.stampSmall
                             .resizable()
                             .frame(width: 11, height: 15)
                             .foregroundStyle(Color.clLogUI.primary)
                         
-                        Text(timeStamp)
+                        Text(timeStamp.timeMs.msToTimeString)
                         
                     }
                     .font(.h5)
@@ -209,7 +205,8 @@ extension AttemptView {
                             .foregroundStyle(Color.clLogUI.gray600)
                     )
                     .onTapGesture {
-                        store.send(.stampTapped(id: timeStamp)) // TODO: ID 또는 시간
+                        store.send(.stampTapped(id: timeStamp.id))
+                        print(timeStamp.id)
                     }
                 }
             }

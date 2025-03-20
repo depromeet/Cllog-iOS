@@ -11,10 +11,12 @@ import Shared
 
 public protocol AttemptRepository {
     func getFilteredAttempts() async throws -> [Attempt]
+    func getAttempt(attemptId: Int) async throws -> ReadAttempt
 }
 
 // TODO: Remove
 public struct MockAttemptRepository: AttemptRepository {
+    
     public init() {}
     
     public func getFilteredAttempts() async throws -> [Attempt] {
@@ -62,4 +64,9 @@ public struct MockAttemptRepository: AttemptRepository {
             )
         ]
     }
+    
+    public func getAttempt(attemptId: Int) async throws -> ReadAttempt {
+        throw NSError(domain: "attempt error", code: 0)
+    }
+    
 }

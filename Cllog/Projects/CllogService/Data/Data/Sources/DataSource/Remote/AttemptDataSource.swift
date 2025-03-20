@@ -12,6 +12,7 @@ import Starlink
 
 public protocol AttemptDataSource {
     func attempts() async throws -> [FolderAttemptResponseDTO]
+    func attempt(_ attemptId: Int) async throws -> DetailAttemptResponseDTO
 }
 
 public final class DefaultAttemptDataSource: AttemptDataSource {
@@ -32,10 +33,22 @@ public final class DefaultAttemptDataSource: AttemptDataSource {
         
         return attempts
     }
+    
+    public func attempt(_ attemptId: Int) async throws -> DetailAttemptResponseDTO {
+        let response: BaseResponseDTO<DetailAttemptResponseDTO> = try await provider.request(AttemptTarget.detailAttempt(id: attemptId)
+        )
+        
+        guard let attempt = response.data else {
+            throw StarlinkError.inValidJSONData(nil)
+        }
+        
+        return attempt
+    }
 }
 
 enum AttemptTarget {
     case attempts
+    case detailAttempt(id: Int)
 }
 
 extension AttemptTarget: EndpointType {
@@ -51,30 +64,31 @@ extension AttemptTarget: EndpointType {
     var path: String {
         switch self {
         case .attempts: "/api/v1/attempts"
+        case .detailAttempt(let id): "/api/v1/attempts/\(id)"
         }
     }
     
     var method: Starlink.Method {
         switch self {
-        case .attempts: .get
+        case .attempts, .detailAttempt: .get
         }
     }
     
     var encodable: Encodable? {
         switch self {
-        case .attempts: nil
+        case .attempts, .detailAttempt: nil
         }
     }
     
     var parameters: Networker.ParameterType? {
         switch self {
-        case .attempts: nil
+        case .attempts, .detailAttempt: nil
         }
     }
     
     var headers: [Starlink.Header]? {
         switch self {
-        case .attempts: nil
+        case .attempts, .detailAttempt: nil
         }
     }
 }
