@@ -57,6 +57,11 @@ public struct ThumbnailView: View {
                             case .success(let image):
                                 image.resizable()
                                     .scaledToFit()
+                            case .failure:
+                                Image.clLogUI.alert
+                                    .resizable()
+                                    .frame(width: 60, height: 60)
+                                    .foregroundStyle(Color.clLogUI.gray500)
                             default:
                                 Image(systemName: "photo")
                                     .foregroundColor(.clLogUI.gray600)
