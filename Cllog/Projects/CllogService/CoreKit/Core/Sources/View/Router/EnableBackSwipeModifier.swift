@@ -1,12 +1,11 @@
 //
 //  EnableBackSwipeModifier.swift
-//  CllogService
+//  Core
 //
-//  Created by Junyoung Lee on 3/18/25.
+//  Created by Junyoung on 3/20/25.
 //  Copyright © 2025 Supershy. All rights reserved.
 //
 
-import Foundation
 import SwiftUI
 
 struct EnableBackSwipeModifier: ViewModifier {

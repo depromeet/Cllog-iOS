@@ -71,7 +71,8 @@ public enum SettingItemType: Equatable, Hashable {
         [
             .privacyPolicy,
             .termsOfService,
-            .feedback,
+            // TODO: MVP 제외 추후 개발 예정
+            //.feedback,
             .versionInfo("v.\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "v.1.0.0")")
         ]
     }
