@@ -135,5 +135,11 @@ public struct ClLogServiceAssembly: Assembly {
                 repository: DefaultTokenRepository()
             )
         }
+        
+        container.register(ValidateUserSessionUseCase.self) { _ in
+            ValidateUserSession(
+                repository: DefaultTokenRepository()
+            )
+        }
     }
 }

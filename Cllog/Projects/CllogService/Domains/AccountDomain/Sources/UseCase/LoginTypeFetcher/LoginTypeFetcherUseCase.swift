@@ -31,7 +31,7 @@ public struct LoginTypeFetcher: LoginTypeFetcherUseCase {
     private let repository: TokenRepository
     
     public func fetch() -> LoginType {
-        repository.fetch()
+        repository.fetchLoginType()
     }
 }
 
