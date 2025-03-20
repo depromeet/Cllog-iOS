@@ -18,7 +18,7 @@ public struct AppConfiguration {
     let shortVersion: String = "1.0.0"
     let bundleIdentifier: String = "$(PRODUCT_BUNDLE_IDENTIFIER)"
     let displayName: String = "클로그"
-    let destination: Set<Destination> = [.iPhone, .iPad]
+    let destination: Set<Destination> = [.iPhone]
     var entitlements: Entitlements? = "CllogProduction.entitlements"
     let deploymentTarget: DeploymentTargets = .iOS("17.0")
     let kakaoNativeAppKey: String = "$(KAKAO_NATIVE_APP_KEY)"
