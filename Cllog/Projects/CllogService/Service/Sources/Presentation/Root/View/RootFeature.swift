@@ -28,6 +28,7 @@ public struct RootFeature {
     
     public enum Action {
         case onAppear
+        case changeDestination(Destination)
         
         // Splash
         case splashAction(SplashFeature.Action)
@@ -74,6 +75,17 @@ public struct RootFeature {
             
         case .mainAction(let action):
             return mainCore(&state, action)
+        case .changeDestination(let destination):
+            state.splashState = nil
+            switch destination {
+            case .login:
+                state.mainState = nil
+                state.loginState = LoginFeature.State()
+            case .main:
+                state.loginState = nil
+                state.mainState = MainFeature.State()
+            }
+            return .none
         }
     }
 }
@@ -81,10 +93,10 @@ public struct RootFeature {
 // MARK: - Login Action
 private extension RootFeature {
     
-    /// 자동 로그인 Action
+    /// 스플레시 Action
     /// - Parameters:
     ///   - state: 저장소
-    ///   - action: AutoLogin Action
+    ///   - action: Splash Action
     /// - Returns: Effect
     func splashCore(
         _ state: inout State,
@@ -92,14 +104,7 @@ private extension RootFeature {
     ) -> Effect<Action> {
         switch action {
         case .finish(let destination):
-            state.splashState = nil
-            switch destination {
-            case .login:
-                state.loginState = LoginFeature.State()
-            case .main:
-                state.mainState = MainFeature.State()
-            }
-            return .none
+            return .send(.changeDestination(destination))
         default:
             return .none
         }
@@ -116,10 +121,7 @@ private extension RootFeature {
     ) -> Effect<Action> {
         switch action {
         case .successLogin:
-            // 로그인 성공
-            state.mainState = .init()
-            state.loginState = nil
-            return .none
+            return .send(.changeDestination(.main))
         default:
             return .none
         }
