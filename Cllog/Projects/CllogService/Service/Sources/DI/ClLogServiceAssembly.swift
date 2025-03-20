@@ -10,13 +10,14 @@ import Foundation
 
 import Data
 import Domain
-import LoginDomain
+import AccountDomain
 import FolderDomain
 import CalendarDomain
 import VideoDomain
 import StoryDomain
 import Networker
 import Swinject
+import AccountDomain
 
 public struct ClLogServiceAssembly: Assembly {
     public init() {}
@@ -24,7 +25,7 @@ public struct ClLogServiceAssembly: Assembly {
     public func assemble(container: Container) {
         container.register(LoginUseCase.self) { _ in
             DefaultLoginUseCase(
-                loginRepository: DefaultLoginRepository(
+                repository: DefaultLoginRepository(
                     authDataSource: DefaultAuthDataSource(
                         provider: UnAuthProvider()
                     ),
@@ -61,6 +62,72 @@ public struct ClLogServiceAssembly: Assembly {
             )
         }
         
+        container.register(FilteredAttemptsUseCase.self) { _ in
+            DefaultFilteredAttemptsUseCase(
+                attemptRepository: DefaultAttemptRepository(
+                    dataSource: DefaultAttemptDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
+        
+        container.register(FetchFilterableAttemptInfoUseCase.self) { resolver in
+            let authProvider = AuthProvider(
+                tokenProvider: DefaultTokenDataSource().loadToken
+            )
+            let gradeRepository = DefaultGradeRepository(
+                dataSource: DefaultGradeDataSource(provider: authProvider)
+            )
+            let cragRepository = DefaultCragRepository(
+                dataSource: DefaultCragDataSource(provider: authProvider)
+            )
+            
+            return DefaultFetchFilterableAttemptInfoUseCase(
+                gradeRepository: gradeRepository,
+                cragRepository: cragRepository
+            )
+        }
+        
+        container.register(LogoutUseCase.self) { _ in
+            Logout(
+                repository: DefaultLogoutRepository(
+                    userDataSource: DefaultUserDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    ),
+                    tokenDataSource: DefaultTokenDataSource()
+                )
+            )
+        }
+        
+        container.register(WithdrawUseCase.self) { _ in
+            Withdraw(
+                repository: DefaultWithdrawRepository(
+                    userDataSource: DefaultUserDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    ),
+                    tokenDataSource: DefaultTokenDataSource()
+                )
+            )
+        }
+        
+        container.register(LoginTypeFetcherUseCase.self) { _ in
+            LoginTypeFetcher(
+                repository: DefaultTokenRepository()
+            )
+        }
+        
+        container.register(ValidateUserSessionUseCase.self) { _ in
+            ValidateUserSession(
+                repository: DefaultTokenRepository()
+            )
+        }
         container.register(VideoRepository.self) { resolver in
             VideoRecordRepositry(
                 dataSource: VideoDataSource(

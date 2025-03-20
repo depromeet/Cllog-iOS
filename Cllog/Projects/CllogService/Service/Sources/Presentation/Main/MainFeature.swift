@@ -15,6 +15,7 @@ import VideoFeature
 import FolderTabFeature
 import FolderFeature
 import CalendarFeature
+import ReportFeature
 
 // 외부 Module
 import ComposableArchitecture
@@ -46,9 +47,18 @@ public struct MainFeature {
         // CalendarDetail State
         var calendarDetailState: CalendarDetailFeature.State?
         
+        // Report State
+        var reportState: ReportFeature.State = .init()
+        
         var isRecording: Bool = false
         
         var pushToCalendarDetail: Int?
+        
+        var tabImages: [Image] = [
+            Image.clLogUI.folder,
+            Image.clLogUI.camera,
+            Image.clLogUI.report
+        ]
     }
     
     public enum Action {
@@ -67,12 +77,14 @@ public struct MainFeature {
         case folderAction(FolderFeature.Action)
         case calendarMainAction(CalendarMainFeature.Action)
         case calendarDetailAction(CalendarDetailFeature.Action)
+        case reportAction(ReportFeature.Action)
         
         case routerAction(RouterAction)
         
         public enum RouterAction {
             case pushToCalendarDetail(Int)
-            case pop
+            case pushToSetting
+            case pushToAttempt(Int)
         }
     }
     
@@ -92,6 +104,10 @@ public struct MainFeature {
         
         Scope(state: \.calendarMainState, action: \.calendarMainAction) {
             CalendarMainFeature()
+        }
+        
+        Scope(state: \.reportState, action: \.reportAction) {
+            ReportFeature()
         }
         
         Reduce(reducerCore)
@@ -146,6 +162,9 @@ private extension MainFeature {
             return calendarMainCore(&state, action)
         case .calendarDetailAction(let action):
             return calendarDetailCore(&state, action)
+        case .reportAction(let action):
+            // 리포트 - Action
+            return reportCore(&state, action)
         default:
             return .none
         }
@@ -234,6 +253,8 @@ private extension MainFeature {
         _ action: FolderFeature.Action
     ) -> Effect<Action> {
         switch action {
+        case .moveToAttempt(let attemptId):
+            return .send(.routerAction(.pushToAttempt(attemptId)))
         default:
             return .none
         }
@@ -271,8 +292,25 @@ private extension MainFeature {
         _ action: CalendarDetailFeature.Action
     ) -> Effect<Action> {
         switch action {
-        case .backButtonTapped:
-            return .send(.routerAction(.pop))
+        default:
+            return .none
+        }
+    }
+}
+
+private extension MainFeature {
+    /// Report Action
+    /// - Parameters:
+    ///   - state: 저장소
+    ///   - action: CalendarDetailFeature Action
+    /// - Returns: Effect
+    func reportCore(
+        _ state: inout State,
+        _ action: ReportFeature.Action
+    ) -> Effect<Action> {
+        switch action {
+        case .settingTapped:
+            return .send(.routerAction(.pushToSetting))
         default:
             return .none
         }

@@ -18,6 +18,7 @@ import FolderTabFeature
 import ComposableArchitecture
 import FolderFeature
 import CalendarFeature
+import ReportFeature
 
 /// 구현부
 public struct MainView: View {
@@ -65,7 +66,7 @@ private extension MainView {
             ForEach(Array([AnyView(folderTabbarView), AnyView(videoTabbarView), AnyView(reportTabbarView)].enumerated()), id: \.offset) { index, view in
                 view
                     .tabItem {
-                        selectedTab == index ? Image.clLogUI.folder : Image.clLogUI.folder
+                        store.tabImages[index]
                     }
                     .toolbarBackground(Color.clLogUI.gray700, for: .tabBar)
                     .toolbarBackground(.visible, for: .tabBar)
@@ -74,6 +75,7 @@ private extension MainView {
                     }
             }
         }
+        .tint(Color.clLogUI.white)
     }
 }
 
@@ -115,6 +117,8 @@ private extension MainView {
 private extension MainView {
     
     var reportTabbarView: some View {
-        Text("3")
+        ReportView(
+            store: store.scope(state: \.reportState, action: \.reportAction)
+        )
     }
 }

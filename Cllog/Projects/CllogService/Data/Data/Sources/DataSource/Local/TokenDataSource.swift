@@ -19,12 +19,16 @@ public struct DefaultTokenDataSource: TokenDataSource {
     public init () {}
     
     public func saveToken(_ token: AuthTokenDTO) {
+        try? KeychainManager.shared.deleteItem(
+            ofClass: AppData.LoginUserKeychainKey.token.itemClass,
+            key: AppData.LoginUserKeychainKey.token.rawValue
+        )
+
         AppData.token = token
     }
     
-    public func loadToken() -> TokenDTO? {
-        let token = AppData.token?.toToken()
-        return token
+    @Sendable public func loadToken() -> TokenDTO? {
+        AppData.token?.toToken()
     }
     
     public func clearToken() {

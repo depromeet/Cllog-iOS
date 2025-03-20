@@ -10,6 +10,8 @@ import SwiftUI
 
 import ComposableArchitecture
 import CalendarFeature
+import SettingFeature
+import FolderFeature
 
 public struct RouterView: View {
     @Bindable private var store: StoreOf<RouterFeature>
@@ -26,11 +28,18 @@ public struct RouterView: View {
                     action: \.rootAction
                 )
             )
+            .navigationBarBackButtonHidden(true)
         } destination: { store in
             switch store.case {
             case .calendarDetail(let store):
                 CalendarDetailView(store: store)
-                    .hideNavBarKeepSwipe()
+                    .navigationBarBackButtonHidden(true)
+            case .setting(let store):
+                SettingView(store: store)
+                    .navigationBarBackButtonHidden(true)
+            case .attempt(let store):
+                AttemptView(store: store)
+                    .navigationBarBackButtonHidden(true)
             }
         }
     }

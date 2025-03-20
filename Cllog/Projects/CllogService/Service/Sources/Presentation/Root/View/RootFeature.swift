@@ -13,6 +13,7 @@ import VideoFeature
 
 import ComposableArchitecture
 import LoginFeature
+import SplashFeature
 import Shared
 
 @Reducer
@@ -20,16 +21,17 @@ public struct RootFeature {
     
     @ObservableState
     public struct State: Equatable {
-        var autoLoginState: AutoLoginFeature.State?
         var loginState: LoginFeature.State?
         var mainState: MainFeature.State?
+        var splashState: SplashFeature.State?
     }
     
     public enum Action {
         case onAppear
+        case changeDestination(Destination)
         
-        // autoLogin
-        case autoLoginAction(AutoLoginFeature.Action)
+        // Splash
+        case splashAction(SplashFeature.Action)
         
         // login
         case loginAction(LoginFeature.Action)
@@ -40,14 +42,14 @@ public struct RootFeature {
     
     public var body: some ReducerOf<Self> {
         Reduce(reducerCore)
-            .ifLet(\.autoLoginState, action: \.autoLoginAction) {
-                AutoLoginFeature()
-            }
             .ifLet(\.loginState, action: \.loginAction) {
                 LoginFeature()
             }
             .ifLet(\.mainState, action: \.mainAction) {
                 MainFeature()
+            }
+            .ifLet(\.splashState, action: \.splashAction) {
+                SplashFeature()
             }
     }
     
@@ -62,17 +64,28 @@ public struct RootFeature {
     ) -> Effect<Action> {
         switch action {
         case .onAppear:
-            state.autoLoginState = .init()
+            state.splashState = .init()
             return .none
             
-        case .autoLoginAction(let action):
-            return autoLoginCore(&state, action)
+        case .splashAction(let action):
+            return splashCore(&state, action)
             
         case .loginAction(let action):
             return loginCore(&state, action)
             
         case .mainAction(let action):
             return mainCore(&state, action)
+        case .changeDestination(let destination):
+            state.splashState = nil
+            switch destination {
+            case .login:
+                state.mainState = nil
+                state.loginState = LoginFeature.State()
+            case .main:
+                state.loginState = nil
+                state.mainState = MainFeature.State()
+            }
+            return .none
         }
     }
 }
@@ -80,19 +93,19 @@ public struct RootFeature {
 // MARK: - Login Action
 private extension RootFeature {
     
-    /// 자동 로그인 Action
+    /// 스플레시 Action
     /// - Parameters:
     ///   - state: 저장소
-    ///   - action: AutoLogin Action
+    ///   - action: Splash Action
     /// - Returns: Effect
-    func autoLoginCore(
+    func splashCore(
         _ state: inout State,
-        _ action: (AutoLoginFeature.Action)
+        _ action: (SplashFeature.Action)
     ) -> Effect<Action> {
         switch action {
-        case .onAppear:
-            state.loginState = LoginFeature.State()
-            state.autoLoginState = nil
+        case .finish(let destination):
+            return .send(.changeDestination(destination))
+        default:
             return .none
         }
     }
@@ -108,10 +121,7 @@ private extension RootFeature {
     ) -> Effect<Action> {
         switch action {
         case .successLogin:
-            // 로그인 성공
-            state.mainState = .init()
-            state.loginState = nil
-            return .none
+            return .send(.changeDestination(.main))
         default:
             return .none
         }

@@ -10,8 +10,9 @@ import SwiftUI
 
 import DesignKit
 
-import LoginDomain
 import LoginFeature
+import AccountDomain
+import SplashFeature
 
 import ComposableArchitecture
 
@@ -34,16 +35,14 @@ struct RootView: View {
     
     private var bodyView: some View {
         ZStack {
-            // 자동 로그인
-            IfLetStore(store.scope(state: \.autoLoginState, action: \.autoLoginAction), then: AutoLoginView.init)
+            // 스플레시
+            IfLetStore(store.scope(state: \.splashState, action: \.splashAction), then: SplashView.init)
             
             // 로그인
             IfLetStore(store.scope(state: \.loginState, action: \.loginAction), then: LoginView.init)
             
             // 메인
-            IfLetStore(store.scope(state: \.mainState, action: \.mainAction), then: { store in
-                MainView(store: store)
-            })
+            IfLetStore(store.scope(state: \.mainState, action: \.mainAction), then: MainView.init)
         }
     }
 }

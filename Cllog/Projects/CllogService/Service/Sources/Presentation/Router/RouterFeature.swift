@@ -10,6 +10,8 @@ import Foundation
 
 import ComposableArchitecture
 import CalendarFeature
+import SettingFeature
+import FolderFeature
 
 @Reducer
 public struct RouterFeature {
@@ -57,6 +59,17 @@ extension RouterFeature {
             // 캘린더 상세 페이지 pop
             state.path.pop(from: id)
             return .none
+        case .path(.element(id: let id, action: .setting(.backButtonTapped))):
+            state.path.pop(from: id)
+            return .none
+        case .path(.element(id: let id, action: .attempt(.backButtonTapped))):
+            state.path.pop(from: id)
+            return .none
+        case .path(.element(id: let id, action: .setting(.exitToStart))):
+            state.path.pop(from: id)
+            state.rootState.mainState = nil
+            state.rootState.loginState = .init()
+            return .none
         default:
             return .none
         }
@@ -67,6 +80,12 @@ extension RouterFeature {
         case let .mainAction(.routerAction(.pushToCalendarDetail(storyId))):
             // 캘린더 상세 페이지 push
             state.path.append(.calendarDetail(CalendarDetailFeature.State(storyId: storyId)))
+            return .none
+        case .mainAction(.routerAction(.pushToSetting)):
+            state.path.append(.setting(SettingFeature.State()))
+            return .none
+        case let .mainAction(.routerAction(.pushToAttempt(attemptId))):
+            state.path.append(.attempt(AttemptFeature.State(attemptId: attemptId)))
             return .none
         default:
             return .none

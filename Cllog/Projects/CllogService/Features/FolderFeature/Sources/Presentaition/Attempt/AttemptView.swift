@@ -15,13 +15,16 @@ import Core
 import ComposableArchitecture
 
 public struct AttemptView: ViewProtocol {
+    private let store: StoreOf<AttemptFeature>
+    
     // TODO: Feature로 이동
     @State var progressValue: Float = 0.5
     @State var splitXPositions: [CGFloat] = []
    
     private let attempt = Attempt(
+        id: 0,
         date: "25.02.08 FRI",
-        grade: Grade(name: "파랑", hexCode: 0x5E7CFF),
+        grade: Grade(id: UUID().uuidString, name: "파랑", hexCode: "0x5E7CFF"),
         result: .complete,
         recordedTime: "00:00:30",
         crag: Crag(name: "클라이밍파크 강남점", address: "강남")
@@ -29,14 +32,21 @@ public struct AttemptView: ViewProtocol {
     
     public var body: some View {
         makeBodyView()
+            .onAppear() {
+                store.send(.onAppear)
+            }
     }
     
-    public init() {}
+    public init(store: StoreOf<AttemptFeature>) {
+        self.store = store
+    }
 }
 
 extension AttemptView {
     private func makeBodyView() -> some View {
-        VStack {
+        VStack(spacing: 0) {
+            makeAppBar()
+            
             makeChipView()
             
             makeVideoView()
@@ -49,6 +59,38 @@ extension AttemptView {
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.clLogUI.gray800)
+    }
+    
+    private func makeAppBar() -> some View {
+        AppBar {
+            Button {
+                store.send(.backButtonTapped)
+            } label: {
+                Image.clLogUI.back
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(Color.clLogUI.white)
+            }
+        } rightContent: {
+            HStack(spacing: 20) {
+                Button {
+                    store.send(.shareButtonTapped)
+                } label: {
+                    Image.clLogUI.share
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(Color.clLogUI.white)
+                }
+                Button {
+                    store.send(.moreButtonTapped)
+                } label: {
+                    Image.clLogUI.dotVertical
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(Color.clLogUI.white)
+                }
+            }
+        }
     }
     
     private func makeChipView() -> some View {
@@ -166,6 +208,9 @@ extension AttemptView {
                         RoundedRectangle(cornerRadius: 6)
                             .foregroundStyle(Color.clLogUI.gray600)
                     )
+                    .onTapGesture {
+                        store.send(.stampTapped(id: timeStamp)) // TODO: ID 또는 시간
+                    }
                 }
             }
         }

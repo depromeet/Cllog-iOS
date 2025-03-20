@@ -7,8 +7,8 @@
 //
 
 import ComposableArchitecture
-import LoginDomain
 import KakaoSDKUser
+import AccountDomain
 
 @Reducer
 public struct LoginFeature {
