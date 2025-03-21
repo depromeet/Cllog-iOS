@@ -6,7 +6,7 @@
 //  Copyright © 2025 Supershy. All rights reserved.
 //
 
-import Foundation
+import SwiftUI
 import FolderDomain
 import Shared
 
@@ -23,18 +23,23 @@ public struct AttemptFeature {
         
         let attemptId: Int
         var attempt: ReadAttempt?
+        let editActions = AttemptEditAction.allCases
         var stampPositions = [CGFloat]()
+        
+        var showEditAttemptBottomSheet = false
         public init(attemptId: Int) {
             self.attemptId = attemptId
         }
     }
     
-    public enum Action {
+    public enum Action: BindableAction {
+        case binding(BindingAction<State>)
         
         case onAppear
         case backButtonTapped
         case shareButtonTapped
         case moreButtonTapped
+        case moreActionTapped(_ action: AttemptEditAction)
         case videoTapped
         case stampTapped(id: Int)
         
@@ -43,8 +48,12 @@ public struct AttemptFeature {
     }
     
     public var body: some Reducer<State, Action> {
+        BindingReducer()
         Reduce { state, action in
             switch action {
+            case .binding:
+                return .none
+                
             case .onAppear:
                 return fetchAttempt(state.attemptId)
             case .backButtonTapped:
@@ -52,7 +61,11 @@ public struct AttemptFeature {
             case .shareButtonTapped:
                 return .none
             case .moreButtonTapped:
+                state.showEditAttemptBottomSheet = true
                 return .none
+            case .moreActionTapped(let action):
+                return .none
+                
             case .videoTapped:
                 return .none
             case .stampTapped(let id):
@@ -78,6 +91,42 @@ extension AttemptFeature {
             } catch {
                 // TODO: show error message
                 debugPrint(error.localizedDescription)
+            }
+        }
+    }
+}
+
+extension AttemptFeature {
+    public enum AttemptEditAction: CaseIterable {
+        case video
+        case result
+        case info
+        case delete
+        
+        var title: String {
+            switch self {
+            case .video:    "영상/스탬프 편집"
+            case .result:   "완등/실패 수정"
+            case .info:     "암장 정보, 난이도 수정"
+            case .delete:   "영상 기록 삭제"
+            }
+        }
+        
+        var leadingIcon: Image {
+            switch self {
+            case .video:    Image.clLogUI.cut
+            case .result:   Image.clLogUI.tag
+            case .info:     Image.clLogUI.location
+            case .delete:   Image.clLogUI.delete
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .video, .result, .info:
+                Color.clLogUI.white
+            case .delete:
+                Color.clLogUI.fail
             }
         }
     }

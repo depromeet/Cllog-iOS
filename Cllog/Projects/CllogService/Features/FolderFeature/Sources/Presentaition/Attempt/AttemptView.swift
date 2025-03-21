@@ -15,7 +15,7 @@ import Core
 import ComposableArchitecture
 
 public struct AttemptView: ViewProtocol {
-    private let store: StoreOf<AttemptFeature>
+    @Bindable private var store: StoreOf<AttemptFeature>
     
     // TODO: Feature로 이동
     @State var progressValue: Float = 0.5
@@ -26,6 +26,9 @@ public struct AttemptView: ViewProtocol {
             .background(Color.clLogUI.gray800)
             .onAppear() {
                 store.send(.onAppear)
+            }
+            .bottomSheet(isPresented: $store.showEditAttemptBottomSheet) {
+                makeEditAttemptBottomSheet()
             }
     }
     
@@ -213,5 +216,29 @@ extension AttemptView {
         }
         .scrollIndicators(.hidden)
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
+    }
+    
+    private func makeEditAttemptBottomSheet() -> some View {
+        VStack(alignment: .leading) {
+            ForEach(store.editActions, id: \.self) { action in
+                Button {
+                    store.send(.moreActionTapped(action))
+                } label: {
+                    HStack(spacing: 10) {
+                        action.leadingIcon
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .foregroundStyle(action.color)
+                        
+                        Text(action.title)
+                            .font(.h4)
+                            .foregroundStyle(action.color)
+                    }
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 8)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
     }
 }
