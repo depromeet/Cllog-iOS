@@ -9,5 +9,5 @@
 import Foundation
 
 public protocol WithdrawRepository {
-    func execute() async throws
+    func execute(_ authorizationCode: String?) async throws
 }
