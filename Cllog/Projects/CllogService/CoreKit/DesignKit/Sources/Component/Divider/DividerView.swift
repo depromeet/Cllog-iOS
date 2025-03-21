@@ -1,29 +1,34 @@
 //
 //  DividerView.swift
-//  CalendarFeature
+//  DesignKit
 //
-//  Created by Junyoung on 3/8/25.
+//  Created by Junyoung on 3/21/25.
 //  Copyright © 2025 Supershy. All rights reserved.
 //
 
 import SwiftUI
 
-enum DividerType {
+public enum DividerType {
     case horizontal
     case vertical
 }
 
-struct DividerView: View {
+public struct DividerView: View {
     private let type: DividerType
+    private let color: Color
     
-    init(_ type: DividerType) {
+    public init(
+        _ type: DividerType,
+        color: Color = Color.clLogUI.gray800
+    ) {
         self.type = type
+        self.color = color
     }
     
-    var body: some View {
+    public var body: some View {
         ZStack(alignment: .center) {
             Rectangle()
-                .fill(Color.clLogUI.gray800)
+                .fill(color)
                 .frame(
                     width: type == .vertical ? 1 : nil,
                     height: type == .horizontal ? 1 : nil
