@@ -11,7 +11,7 @@ import Networker
 import Starlink
 
 public protocol UserDataSource {
-    func leave() async throws
+    func leave(_ request: AppleWithdrawCodeRequestDTO?) async throws
     func logout() async throws
 }
 
@@ -22,21 +22,21 @@ public final class DefaultUserDataSource: UserDataSource {
         self.provider = provider
     }
     
-    public func leave() async throws {
-        let response: BaseResponseDTO<EmptyResponseDTO> = try await provider.request(
-            UserTarget.leave
+    public func leave(_ request: AppleWithdrawCodeRequestDTO?) async throws {
+        let _ : BaseResponseDTO<EmptyResponseDTO> = try await provider.request(
+            UserTarget.leave(request)
         )
     }
     
     public func logout() async throws {
-        let response: BaseResponseDTO<EmptyResponseDTO> = try await provider.request(
+        let _ : BaseResponseDTO<EmptyResponseDTO> = try await provider.request(
             UserTarget.logout
         )
     }
 }
 
 enum UserTarget {
-    case leave
+    case leave(AppleWithdrawCodeRequestDTO?)
     case logout
 }
 
@@ -61,7 +61,14 @@ extension UserTarget: EndpointType {
     
     var parameters: Networker.ParameterType? {
         switch self {
-        case .leave, .logout: .none
+        case .logout:
+            return .none
+        case .leave(let request):
+            if let request {
+                return .encodable(request)
+            } else {
+                return .none
+            }
         }
     }
     
@@ -70,7 +77,7 @@ extension UserTarget: EndpointType {
     }
     
     var encoding: any StarlinkEncodable {
-        Starlink.StarlinkURLEncoding()
+        Starlink.StarlinkJSONEncoding()
     }
     
     var headers: [Starlink.Header]? {

@@ -140,14 +140,15 @@ extension SettingFeature {
             
             switch type {
             case .kakao:
-                try await withdrawUseCase.execute()
+                try await withdrawUseCase.execute(nil)
                 await send(.exitToStart)
             case .apple:
                 let handler = await AppleAuthenticationHandler()
                 do {
                     let authCode = try await handler.revokeAppleAccount()
                     print("authCode: \(authCode)")
-//                    try await withdrawUseCase.execute()
+                    try await withdrawUseCase.execute(authCode)
+                    
                     await send(.exitToStart)
                 } catch {
                     print("Apple 회원탈퇴 실패: \(error.localizedDescription)")
