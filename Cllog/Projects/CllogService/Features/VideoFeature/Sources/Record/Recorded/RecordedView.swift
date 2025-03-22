@@ -102,22 +102,20 @@ public struct RecordedView: View {
     
     @ViewBuilder
     private var footerActionsView: some View {
-        ZStack {
-            Color.clLogUI.gray900
-                .edgesIgnoringSafeArea(.bottom)
+        VStack(spacing: .zero) {
+            PlayerProgressBar(
+                progress: store.progress,
+                stamps: [35, 89, 110, 220].map {
+                    TempStamp(id: $0, position: CGFloat($0))
+                }
+            )
             
-            VStack(spacing: .zero) {
-                
-                RecordProgressBar(progress: store.progress)
-                
-                Spacer()
-                
+            Group {
                 HStack(spacing: 7) {
                     Button(action: {
                         store.send(.failtureTapped)
                     }) {
                         Text("실패로 저장")
-                            .font(.b1)
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color.clLogUI.gray600)
@@ -129,7 +127,6 @@ public struct RecordedView: View {
                         store.send(.successTapped)
                     }) {
                         Text("완등으로 저장")
-                            .font(.b1)
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color.clLogUI.white)
@@ -137,9 +134,14 @@ public struct RecordedView: View {
                             .cornerRadius(12)
                     }
                 }
+                .font(.b1)
                 .padding(.horizontal, 16)
             }
+            .frame(height: 94)
+            .background(
+                Color.clLogUI.gray900
+                    .edgesIgnoringSafeArea(.bottom)
+            )
         }
-        .frame(height: 94)
     }
 }
