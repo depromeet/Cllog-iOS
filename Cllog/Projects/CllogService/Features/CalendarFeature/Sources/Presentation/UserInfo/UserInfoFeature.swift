@@ -17,6 +17,7 @@ public struct UserInfoFeature {
     @ObservableState
     public struct State: Equatable {
         var isOpen: Bool = false
+        var isEditMemo : Bool = false
         var currentMonth: Int = 0
         
         var numOfClimbDays: Int = 0
@@ -27,6 +28,7 @@ public struct UserInfoFeature {
         var totalSuccessCount: Int = 0
         var totalFailCount: Int = 0
         var memo: String = ""
+        var editMemo: String = ""
         var problems: [StorySummaryProblem] = []
         
         public init() {}
@@ -37,6 +39,8 @@ public struct UserInfoFeature {
         case updateCurrentMonth(Int)
         case updateCalendarInfo(CalendarSummary)
         case updateStoryInfo(StorySummary)
+        case updateMemo(String)
+        case editMemo(Bool)
         case dropdownTapped
     }
     
@@ -71,6 +75,18 @@ public struct UserInfoFeature {
             case let .updateCurrentMonth(month):
                 state.currentMonth = month
                 return .none
+                
+            case let .editMemo(isEdit):
+                state.isEditMemo = isEdit
+                if isEdit {
+                    state.editMemo = state.memo
+                }
+                return .none
+                
+            case let .updateMemo(text):
+                state.memo = text
+                return .none
+                
             default:
                 return .none
             }

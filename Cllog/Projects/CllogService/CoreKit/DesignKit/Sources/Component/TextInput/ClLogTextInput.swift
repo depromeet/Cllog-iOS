@@ -22,7 +22,8 @@ public struct ClLogTextInput: View {
         self._text = text
         self.configuration = TextInputConfiguration(
             state: .normal,
-            type: .filed
+            type: .filed,
+            background: .gray900
         )
     }
     
@@ -74,7 +75,7 @@ extension ClLogTextInput {
         .font(.b1)
         .foregroundStyle(configuration.state.foregroundColor)
         .frame(height: configuration.type == .editor ? 128 : 48)
-        .background(configuration.state.backgroundColor)
+        .background(configuration.background.color)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay (
             Group {
@@ -90,7 +91,7 @@ extension ClLogTextInput {
         .disabled(configuration.state == .disable)
     }
     
-    func state(_ state: TextInputState) -> ClLogTextInput {
+    public func state(_ state: TextInputState) -> ClLogTextInput {
         var newConfig = self.configuration
         
         newConfig.state = state
@@ -98,10 +99,18 @@ extension ClLogTextInput {
         return ClLogTextInput(self.placeHolder ,$text, newConfig)
     }
     
-    func type(_ type: TextInputType) -> ClLogTextInput {
+    public func type(_ type: TextInputType) -> ClLogTextInput {
         var newConfig = self.configuration
         
         newConfig.type = type
+        
+        return ClLogTextInput(self.placeHolder ,$text, newConfig)
+    }
+    
+    public func background(_ type: TextInputBackground) -> ClLogTextInput {
+        var newConfig = self.configuration
+        
+        newConfig.background = type
         
         return ClLogTextInput(self.placeHolder ,$text, newConfig)
     }

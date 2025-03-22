@@ -61,22 +61,32 @@ extension CalendarDetailView {
 
         } rightContent: {
             HStack(spacing: 20) {
-                // TODO: 공유 버튼 작업
-//                Button {
-//                    store.send(.shareButtonTapped)
-//                } label: {
-//                    Image.clLogUI.share
-//                        .resizable()
-//                        .frame(width: 24, height: 24)
-//                        .foregroundStyle(Color.clLogUI.white)
-//                }
-                Button {
-                    store.send(.moreButtonTapped)
-                } label: {
-                    Image.clLogUI.dotVertical
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundStyle(Color.clLogUI.white)
+                if store.isMemoEditMode {
+                    Button {
+                        store.send(.editCompleteTapped)
+                    } label: {
+                        Text("완료")
+                            .font(.h4)
+                            .foregroundStyle(Color.clLogUI.white)
+                    }
+                } else {
+                    // TODO: 공유 버튼 작업
+    //                Button {
+    //                    store.send(.shareButtonTapped)
+    //                } label: {
+    //                    Image.clLogUI.share
+    //                        .resizable()
+    //                        .frame(width: 24, height: 24)
+    //                        .foregroundStyle(Color.clLogUI.white)
+    //                }
+                    Button {
+                        store.send(.moreButtonTapped)
+                    } label: {
+                        Image.clLogUI.dotVertical
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(Color.clLogUI.white)
+                    }
                 }
             }
         }

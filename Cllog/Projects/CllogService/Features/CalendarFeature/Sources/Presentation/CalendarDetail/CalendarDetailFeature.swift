@@ -23,6 +23,7 @@ public struct CalendarDetailFeature {
         var storiesState = StoriesFeature.State()
         var isPresentMoreBottomSheet: Bool = false
         var moreBottomSheetItem: [MoreItem] = MoreItem.allCases
+        var isMemoEditMode: Bool = false
         
         var storyId: Int
         
@@ -41,8 +42,11 @@ public struct CalendarDetailFeature {
         case shareButtonTapped
         case moreButtonTapped
         case moreItemTapped(MoreItem)
+        case editCompleteTapped
+        case switchingToMemoEditMode(Bool)
         case fetchStorySuccess(Story)
         case fetchSummarySuccess(StorySummary)
+        case editMemoSuccess(String)
         case fetchFailure(Error)
     }
     
@@ -81,8 +85,27 @@ extension CalendarDetailFeature {
             return .none
             
         case .moreItemTapped(let moreItem):
+            switch moreItem {
+            case .edit:
+                state.isMemoEditMode = true
+            case .delete:
+                return .none
+            }
             state.isPresentMoreBottomSheet = false
-            return .none
+            return .send(.switchingToMemoEditMode(state.isMemoEditMode))
+            
+        case .editCompleteTapped:
+            state.isMemoEditMode = false
+            return .merge(
+                .send(.switchingToMemoEditMode(state.isMemoEditMode)),
+                executeEditMemo(storyId: state.storyId, text: state.userInfoState.editMemo)
+            )
+            
+        case .switchingToMemoEditMode(let isEdit):
+            return .send(.userInfoAction(.editMemo(state.isMemoEditMode)))
+            
+        case .editMemoSuccess(let text):
+            return .send(.userInfoAction(.updateMemo(text)))
             
         case .fetchStorySuccess(let story):
             return .send(
@@ -124,6 +147,17 @@ extension CalendarDetailFeature {
             do {
                 let summary = try await fetchStoryUseCase.fetchSummary(storyId)
                 await send(.fetchSummarySuccess(summary))
+            } catch {
+                await send(.fetchFailure(error))
+            }
+        }
+    }
+    
+    func executeEditMemo(storyId: Int, text: String) -> Effect<Action> {
+        .run { send in
+            do {
+                print("text: \(text)")
+                await send(.editMemoSuccess(text))
             } catch {
                 await send(.fetchFailure(error))
             }
