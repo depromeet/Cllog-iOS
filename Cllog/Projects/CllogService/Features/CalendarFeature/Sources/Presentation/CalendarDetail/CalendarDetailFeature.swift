@@ -14,6 +14,7 @@ import StoryDomain
 @Reducer
 public struct CalendarDetailFeature {
     @Dependency(\.fetchStoryUseCase) var fetchStoryUseCase
+    @Dependency(\.editMemoUseCase) var editMemoUseCase
     
     public init() {}
     
@@ -156,7 +157,7 @@ extension CalendarDetailFeature {
     func executeEditMemo(storyId: Int, text: String) -> Effect<Action> {
         .run { send in
             do {
-                print("text: \(text)")
+                try await editMemoUseCase.execute(storyId: storyId, memo: text)
                 await send(.editMemoSuccess(text))
             } catch {
                 await send(.fetchFailure(error))
