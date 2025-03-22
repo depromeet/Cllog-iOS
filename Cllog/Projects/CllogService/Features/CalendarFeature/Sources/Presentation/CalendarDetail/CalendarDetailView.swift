@@ -12,7 +12,7 @@ import ComposableArchitecture
 import DesignKit
 
 public struct CalendarDetailView: View {
-    private let store: StoreOf<CalendarDetailFeature>
+    @Bindable private var store: StoreOf<CalendarDetailFeature>
     
     public init(store: StoreOf<CalendarDetailFeature>) {
         self.store = store
@@ -24,6 +24,16 @@ public struct CalendarDetailView: View {
             .onAppear {
                 store.send(.onAppear)
             }
+            .bottomSheet(
+                isPresented: $store.isPresentMoreBottomSheet) {
+                    VStack(spacing: 0) {
+                        ForEach(store.moreBottomSheetItem, id: \.self) { item in
+                            MoreItemRow(item: item) { selectedItem in
+                                store.send(.moreItemTapped(selectedItem))
+                            }
+                        }
+                    }
+                }
     }
 }
 
@@ -51,14 +61,15 @@ extension CalendarDetailView {
 
         } rightContent: {
             HStack(spacing: 20) {
-                Button {
-                    store.send(.shareButtonTapped)
-                } label: {
-                    Image.clLogUI.share
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundStyle(Color.clLogUI.white)
-                }
+                // TODO: 공유 버튼 작업
+//                Button {
+//                    store.send(.shareButtonTapped)
+//                } label: {
+//                    Image.clLogUI.share
+//                        .resizable()
+//                        .frame(width: 24, height: 24)
+//                        .foregroundStyle(Color.clLogUI.white)
+//                }
                 Button {
                     store.send(.moreButtonTapped)
                 } label: {

@@ -21,6 +21,8 @@ public struct CalendarDetailFeature {
     public struct State: Equatable {
         var userInfoState = UserInfoFeature.State()
         var storiesState = StoriesFeature.State()
+        var isPresentMoreBottomSheet: Bool = false
+        var moreBottomSheetItem: [MoreItem] = MoreItem.allCases
         
         var storyId: Int
         
@@ -29,7 +31,8 @@ public struct CalendarDetailFeature {
         }
     }
     
-    public enum Action {
+    public enum Action: BindableAction {
+        case binding(BindingAction<State>)
         case userInfoAction(UserInfoFeature.Action)
         case storiesAction(StoriesFeature.Action)
         
@@ -37,6 +40,7 @@ public struct CalendarDetailFeature {
         case backButtonTapped
         case shareButtonTapped
         case moreButtonTapped
+        case moreItemTapped(MoreItem)
         case fetchStorySuccess(Story)
         case fetchSummarySuccess(StorySummary)
         case fetchFailure(Error)
@@ -50,6 +54,8 @@ public struct CalendarDetailFeature {
         Scope(state: \.storiesState, action: \.storiesAction) {
             StoriesFeature()
         }
+        
+        BindingReducer()
         
         Reduce(reducerCore)
     }
@@ -66,9 +72,16 @@ extension CalendarDetailFeature {
             
         case .backButtonTapped:
             return .none
+            
         case .shareButtonTapped:
             return .none
+            
         case .moreButtonTapped:
+            state.isPresentMoreBottomSheet = true
+            return .none
+            
+        case .moreItemTapped(let moreItem):
+            state.isPresentMoreBottomSheet = false
             return .none
             
         case .fetchStorySuccess(let story):
