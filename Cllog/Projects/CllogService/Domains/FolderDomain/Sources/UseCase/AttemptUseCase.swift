@@ -13,6 +13,7 @@ import ComposableArchitecture
 
 public protocol AttemptUseCase {
     func execute(attemptId: Int) async throws -> ReadAttempt
+    func delete(attemptId: Int) async throws
 }
 
 enum AttemptUseCaseKey: DependencyKey {
@@ -35,5 +36,9 @@ public struct DefaultAttemptUseCase: AttemptUseCase {
     
     public func execute(attemptId: Int) async throws -> ReadAttempt {
         try await attemptRepository.getAttempt(attemptId: attemptId)
+    }
+    
+    public func delete(attemptId: Int) async throws {
+        try await attemptRepository.deleteAttempt(attemptId: attemptId)
     }
 }

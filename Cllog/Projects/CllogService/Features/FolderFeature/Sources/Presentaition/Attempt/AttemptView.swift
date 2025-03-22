@@ -32,6 +32,10 @@ public struct AttemptView: ViewProtocol {
                     .presentationDragIndicator(.visible)
                     .presentationBackground(Color.clLogUI.gray800)
             }
+            .presentDialog(
+                $store.scope(state: \.alert, action: \.alert),
+                style: .delete
+            )
     }
     
     public init(store: StoreOf<AttemptFeature>) {
