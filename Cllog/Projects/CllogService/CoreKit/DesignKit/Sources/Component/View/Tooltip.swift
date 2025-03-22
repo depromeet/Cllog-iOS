@@ -124,12 +124,14 @@ struct TooltipModifier: ViewModifier {
     private let verticalOffset: CGFloat
     private let isVisible: Bool
     @State private var tooltipSize: CGSize = .zero
+    private let onTouchHandeler: (() -> Void)?
     
-    init(text: String, position: Tooltip.Position, verticalOffset: CGFloat, isVisible: Bool = true) {
+    init(text: String, position: Tooltip.Position, verticalOffset: CGFloat, isVisible: Bool = true, onTouchHandeler: (() -> Void)?) {
         self.text = text
         self.position = position
         self.verticalOffset = verticalOffset
         self.isVisible = isVisible
+        self.onTouchHandeler = onTouchHandeler
     }
     
     func body(content: Content) -> some View {
@@ -147,6 +149,9 @@ struct TooltipModifier: ViewModifier {
                                         }
                                 }
                             )
+                            .onTapGesture {
+                                onTouchHandeler?()
+                            }
                         .position(
                             x: tooltipXPos(targetViewWidth: geometry.size.width, toolTipWidth: tooltipSize.width),
                             y: position.isOnTop
@@ -155,7 +160,6 @@ struct TooltipModifier: ViewModifier {
                         )
                     }
                 }
-                .allowsHitTesting(false)
             )
     }
     
@@ -174,8 +178,13 @@ struct TooltipModifier: ViewModifier {
 }
 
 public extension View {
-    func tooltip(text: String, position: Tooltip.Position, verticalOffset: CGFloat = 0, isVisible: Bool = true) -> some View {
-        return self.modifier(TooltipModifier(text: text, position: position, verticalOffset: verticalOffset, isVisible: isVisible))
+    func tooltip(text: String,
+                 position: Tooltip.Position,
+                 verticalOffset: CGFloat = 0,
+                 isVisible: Bool = true,
+                 onTouchHandeler: (() -> Void)? = nil
+    ) -> some View {
+        return self.modifier(TooltipModifier(text: text, position: position, verticalOffset: verticalOffset, isVisible: isVisible, onTouchHandeler: onTouchHandeler))
     }
 }
 
