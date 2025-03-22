@@ -20,15 +20,35 @@ public struct AttemptFeature {
     
     @ObservableState
     public struct State: Equatable {
-        
         let attemptId: Int
         var attempt: ReadAttempt?
         let editActions = AttemptEditAction.allCases
+        
+        var selectedAction: AttemptEditAction?
         var stampPositions = [CGFloat]()
         
         var showEditAttemptBottomSheet = false
+        var showGradeBottomSheet = false
+        var showEditGradeSheet = false
+        var test = false
+        var currentNavigationPath: AttemptNavigationPath? = nil
+
         public init(attemptId: Int) {
             self.attemptId = attemptId
+        }
+        
+        var dynamicSheetHeight: CGFloat {
+            switch selectedAction {
+            case .video:
+                251
+            case .result:
+                250
+            case .info:
+                700
+            case .delete:
+                300
+            case nil: 300
+            }
         }
     }
     
@@ -40,6 +60,7 @@ public struct AttemptFeature {
         case shareButtonTapped
         case moreButtonTapped
         case moreActionTapped(_ action: AttemptEditAction)
+        case navigateToPath(_ path: AttemptNavigationPath?)
         case videoTapped
         case stampTapped(id: Int)
         
@@ -64,6 +85,11 @@ public struct AttemptFeature {
                 state.showEditAttemptBottomSheet = true
                 return .none
             case .moreActionTapped(let action):
+                state.selectedAction = action
+                return .send(.navigateToPath(.editDetail(action)))
+                
+            case .navigateToPath(let path):
+                state.currentNavigationPath = path
                 return .none
                 
             case .videoTapped:
@@ -127,6 +153,26 @@ extension AttemptFeature {
                 Color.clLogUI.white
             case .delete:
                 Color.clLogUI.fail
+            }
+        }
+    }
+    
+    
+    public enum AttemptNavigationPath: Equatable, Hashable {
+        case editDetail(AttemptEditAction)
+        
+        public func hash(into hasher: inout Hasher) {
+            switch self {
+            case .editDetail(let action):
+                hasher.combine(0)
+                hasher.combine(action)
+            }
+        }
+        
+        public static func == (lhs: AttemptNavigationPath, rhs: AttemptNavigationPath) -> Bool {
+            switch (lhs, rhs) {
+            case (.editDetail(let lhsAction), .editDetail(let rhsAction)):
+                return lhsAction == rhsAction
             }
         }
     }

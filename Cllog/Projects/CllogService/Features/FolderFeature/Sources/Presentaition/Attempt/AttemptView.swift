@@ -20,15 +20,17 @@ public struct AttemptView: ViewProtocol {
     // TODO: Feature로 이동
     @State var progressValue: Float = 0.5
     @State var splitXPositions: [CGFloat] = []
-   
     public var body: some View {
         makeBodyView()
             .background(Color.clLogUI.gray800)
-            .onAppear() {
+            .onAppear {
                 store.send(.onAppear)
             }
-            .bottomSheet(isPresented: $store.showEditAttemptBottomSheet) {
+            .sheet(isPresented: $store.showEditAttemptBottomSheet) {
                 makeEditAttemptBottomSheet()
+                    .presentationDetents([.height(store.dynamicSheetHeight)])
+                    .presentationDragIndicator(.visible)
+                    .presentationBackground(Color.clLogUI.gray800)
             }
     }
     
@@ -219,26 +221,67 @@ extension AttemptView {
     }
     
     private func makeEditAttemptBottomSheet() -> some View {
-        VStack(alignment: .leading) {
-            ForEach(store.editActions, id: \.self) { action in
-                Button {
-                    store.send(.moreActionTapped(action))
-                } label: {
-                    HStack(spacing: 10) {
-                        action.leadingIcon
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                            .foregroundStyle(action.color)
-                        
-                        Text(action.title)
-                            .font(.h4)
-                            .foregroundStyle(action.color)
+        ZStack {
+            if store.currentNavigationPath == nil {
+                VStack(alignment: .leading) {
+                    ForEach(store.editActions, id: \.self) { action in
+                        Button {
+                            store.send(.moreActionTapped(action))
+                        } label: {
+                            HStack(spacing: 10) {
+                                action.leadingIcon
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                                    .foregroundStyle(action.color)
+                                
+                                Text(action.title)
+                                    .font(.h4)
+                                    .foregroundStyle(action.color)
+                            }
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 8)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .padding(.vertical, 12)
-                    .padding(.horizontal, 8)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                VStack {
+                    HStack {
+                        Button {
+                            store.send(.navigateToPath(nil))
+                        } label: {
+                            HStack {
+                                ClLogUI.back
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                                
+                                Text("뒤로")
+                            }
+                        }
+                        Spacer()
+                    }
+                    .padding()
+                    
+                    switch store.currentNavigationPath {
+                    case .editDetail(let action):
+                        makeDetailView(for: action)
+                    case .none:
+                        EmptyView()
+                    }
+                    
+                    Spacer()
+                }
             }
+        }
+    }
+    
+    private func makeDetailView(for action: AttemptFeature.AttemptEditAction) -> some View {
+        VStack {
+            Text("\(action.title) 상세 화면")
+                .font(.h3)
+                .padding()
+            
+            Spacer()
         }
     }
 }
