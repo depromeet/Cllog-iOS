@@ -160,6 +160,17 @@ public struct ClLogServiceAssembly: Assembly {
             )
         }
         
+        container.register(DeleteStoryUseCase.self) { _ in
+            DeleteStory(
+                repository: DefaultDeleteStoryRepository(
+                    dataSource: DefaultStoriesDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
         container.register(ReportFetcherUseCase.self) { _ in
             ReportFetcher(
                 repository: DefaultReportRepository(
