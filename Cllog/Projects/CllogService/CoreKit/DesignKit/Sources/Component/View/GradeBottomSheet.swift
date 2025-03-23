@@ -84,7 +84,8 @@ struct SelectGradeView: View {
     
     // MARK: - UI Components
     private var cragTitleSection: some View {
-        VStack(alignment: .leading) {
+        let isExistCragName = !cragName.isEmpty
+        return VStack(alignment: .leading) {
             Text("암장명")
                 .font(.h3)
                 .foregroundStyle(Color.clLogUI.white)
@@ -92,9 +93,9 @@ struct SelectGradeView: View {
             Button {
                 didTapCragTitleButton()
             } label: {
-                Text(cragName)
+                Text(isExistCragName ? cragName : "암장을 선택해주세요")
                     .font(.b1)
-                    .foregroundStyle(Color.clLogUI.gray50)
+                    .foregroundStyle(isExistCragName ? Color.clLogUI.gray50 : Color.clLogUI.gray400)
                     .padding(.vertical, 12)
                     .padding(.horizontal, 16)
                     .frame(maxWidth: .infinity, alignment: .leading)

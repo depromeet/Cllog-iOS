@@ -34,6 +34,10 @@ public struct AttemptFeature {
         var selectedAction: AttemptEditAction?
         var stampPositions = [CGFloat]()
         
+        // 난이도 & 암장 수정 -> 연결되는 State
+        var selectedEditCrag: Crag?
+        var selectedEditCragGrades: [Grade]?
+        
         // Bottom sheet
         var showEditAttemptBottomSheet = false
         var showCragBottomSheet = false
@@ -75,9 +79,10 @@ public struct AttemptFeature {
         case deleteActionTapped
         case editCragTapped
         case cancelEditCragTapped
-        case saveEditCragTapped
+        case saveEditCragTapped(crag: Crag)
         case attemptResultActionTapped(attempt: AttemptResult)
         case patchedResult(_ result: AttemptResult)
+        case skipEditCragTapped
         case deletedAttempt
         
         @CasePathable
@@ -164,12 +169,24 @@ public struct AttemptFeature {
                     return .none
                 }
                 return patchResult(attempt: currentAttempt, result: newAction)
-            
+            case .skipEditCragTapped:
+                state.selectedEditCrag = nil
+                state.selectedEditCragGrades = nil
+                state.showCragBottomSheet = false
+                state.showGradeBottomSheet = true
+                return .none
+            case .saveEditCragTapped(let crag):
+                state.selectedEditCrag = crag
+                state.showCragBottomSheet = false
+                state.showGradeBottomSheet = true
+                return .none
             case .patchedResult(let result):
                 let newAttempt = state.attempt?.copyWith(result: result)
                 state.showEditAttemptBottomSheet = false
                 state.selectedAction = nil
                 state.attempt = newAttempt
+                state.selectedEditCrag = state.attempt?.crag
+                state.selectedEditCragGrades = nil
                 return .none
                 
             case .alert(.presented(.cancel)):

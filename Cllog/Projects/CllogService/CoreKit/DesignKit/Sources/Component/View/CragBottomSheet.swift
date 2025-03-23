@@ -30,14 +30,14 @@ public extension View {
 }
 
 public struct DesignCrag: Hashable, Identifiable {
-    public var id: UUID
     
-    public init(name: String, address: String) {
-        self.id = UUID()
+    public init(id: String? = nil, name: String, address: String) {
+        self.id = id ?? UUID().uuidString
         self.name = name
         self.address = address
     }
     
+    public let id: String
     public let name: String
     public let address: String
 }

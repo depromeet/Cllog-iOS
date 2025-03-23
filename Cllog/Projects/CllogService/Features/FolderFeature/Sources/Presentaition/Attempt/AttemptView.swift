@@ -28,7 +28,7 @@ public struct AttemptView: ViewProtocol {
             }
             .showGradeBottomSheet(
                 isPresented: $store.showGradeBottomSheet,
-                cragName: store.attempt?.crag?.name ?? "",
+                cragName: store.selectedEditCrag?.name ?? "",
                 grades: [],
                 didTapSaveButton: { newGrade in
                     print("did tap new grade")
@@ -37,16 +37,23 @@ public struct AttemptView: ViewProtocol {
                     store.send(.editCragTapped)
                 }
             )
-        
             .showCragBottomSheet(
                 isPresented: $store.showCragBottomSheet,
                 didTapSaveButton: { crag in
-                    print(crag.name)
-                }, didTapSkipButton: {
-                    print("did tap skip button")
-                }, didChangeSearchText: { text in
+                    let selectedCrag = Crag(
+                        id: crag.id,
+                        name: crag.name,
+                        address: crag.address
+                    )
+                    store.send(.saveEditCragTapped(crag: selectedCrag))
+                },
+                didTapSkipButton: {
+                    store.send(.skipEditCragTapped)
+                },
+                didChangeSearchText: { text in
                     print("text")
-                }, crags: .constant([
+                },
+                crags: .constant([
                     DesignCrag(name: "강남점", address: "서울 강남구"),
                     DesignCrag(name: "홍대점", address: "서울 마포구"),
                     DesignCrag(name: "신촌점", address: "서울 서대문구")
