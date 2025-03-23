@@ -14,6 +14,7 @@ import VideoFeature
 import ComposableArchitecture
 import LoginFeature
 import SplashFeature
+import OnboardingFeature
 import Shared
 
 @Reducer
@@ -24,6 +25,7 @@ public struct RootFeature {
         var loginState: LoginFeature.State?
         var mainState: MainFeature.State?
         var splashState: SplashFeature.State?
+        var onBoardingState: OnboardingFeature.State?
     }
     
     public enum Action {
@@ -38,6 +40,9 @@ public struct RootFeature {
         
         // Main
         case mainAction(MainFeature.Action)
+        
+        // Onboarding
+        case onboardingAction(OnboardingFeature.Action)
     }
     
     public var body: some ReducerOf<Self> {
@@ -50,6 +55,9 @@ public struct RootFeature {
             }
             .ifLet(\.splashState, action: \.splashAction) {
                 SplashFeature()
+            }
+            .ifLet(\.onBoardingState, action: \.onboardingAction) {
+                OnboardingFeature()
             }
     }
     
@@ -76,16 +84,23 @@ public struct RootFeature {
         case .mainAction(let action):
             return mainCore(&state, action)
         case .changeDestination(let destination):
+            // Feature 초기화
             state.splashState = nil
+            state.mainState = nil
+            state.onBoardingState = nil
+            
             switch destination {
             case .login:
-                state.mainState = nil
                 state.loginState = LoginFeature.State()
             case .main:
-                state.loginState = nil
                 state.mainState = MainFeature.State()
+            case .onBoarding:
+                state.onBoardingState = OnboardingFeature.State()
             }
+            
             return .none
+        case .onboardingAction(let action):
+            return onboardingCore(&state, action)
         }
     }
 }
@@ -148,5 +163,25 @@ private extension RootFeature {
         _ action: (MainFeature.Action)
     ) -> Effect<Action> {
         return .none
+    }
+}
+
+private extension RootFeature {
+    
+    /// Onboarding Action
+    /// - Parameters:
+    ///   - state: 저장소
+    ///   - action: OnBoarding Action
+    /// - Returns: Effect
+    func onboardingCore(
+        _ state: inout State,
+        _ action: (OnboardingFeature.Action)
+    ) -> Effect<Action> {
+        switch action {
+        case .startTapped:
+            return .send(.changeDestination(.login))
+        default:
+            return .none
+        }
     }
 }
