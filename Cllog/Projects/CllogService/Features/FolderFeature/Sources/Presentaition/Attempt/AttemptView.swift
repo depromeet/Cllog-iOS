@@ -15,17 +15,31 @@ import Core
 import ComposableArchitecture
 
 public struct AttemptView: ViewProtocol {
-    private let store: StoreOf<AttemptFeature>
+    @Bindable private var store: StoreOf<AttemptFeature>
     
     // TODO: Feature로 이동
     @State var progressValue: Float = 0.5
     @State var splitXPositions: [CGFloat] = []
-   
     public var body: some View {
         makeBodyView()
             .background(Color.clLogUI.gray800)
-            .onAppear() {
+            .onAppear {
                 store.send(.onAppear)
+            }
+            .sheet(isPresented: $store.showEditAttemptBottomSheet) {
+                makeEditAttemptBottomSheet()
+                    .presentationDetents([.height(store.dynamicSheetHeight)])
+                    .presentationDragIndicator(.visible)
+                    .presentationBackground(Color.clLogUI.gray800)
+            }
+            .presentDialog(
+                $store.scope(state: \.alert, action: \.alert),
+                style: .delete
+            )
+            .onChange(of: store.showEditAttemptBottomSheet) { oldValue, newValue in
+                if oldValue == true && newValue == false {
+                    store.send(.onEditSheetDismissed)
+                }
             }
     }
     
@@ -213,5 +227,102 @@ extension AttemptView {
         }
         .scrollIndicators(.hidden)
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
+    }
+    
+    // MARK: - BottomSheet View
+    private func makeEditAttemptBottomSheet() -> some View {
+        ZStack {
+            if store.selectedAction == nil {
+                VStack(alignment: .leading) {
+                    ForEach(store.editActions, id: \.self) { action in
+                        Button {
+                            store.send(.moreActionTapped(action))
+                        } label: {
+                            HStack(spacing: 10) {
+                                action.leadingIcon
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                                    .foregroundStyle(action.color)
+                                
+                                Text(action.title)
+                                    .font(.h4)
+                                    .foregroundStyle(action.color)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 8)
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+            } else {
+                
+                switch store.selectedAction {
+                case .video:
+                    Text("Video")
+                case .result:
+                    makeEditResultBottomSheet()
+                case .info:
+                    Text("info")
+                case .delete:
+                    Text("delete")
+                case .none:
+                    EmptyView()
+                }
+            }
+        }
+    }
+    
+    private func makeEditActionDetailView(for action: AttemptFeature.AttemptEditAction) -> some View {
+        VStack {
+            switch action {
+            case .video:
+                Text("Video")
+            case .result:
+                makeEditResultBottomSheet()
+            case .info:
+                Text("info")
+            case .delete:
+                Text("delete")
+            }
+        }
+    }
+    
+    private func makeEditResultBottomSheet() -> some View {
+        VStack(alignment: .leading) {
+            Button {
+                store.send(.editBackButtonTapped)
+            } label: {
+                HStack {
+                    ClLogUI.back
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(Color.clLogUI.white)
+                    
+                    Text("완등/실패")
+                        .font(.h3)
+                        .foregroundStyle(Color.clLogUI.white)
+                }
+            }
+            
+            Divider()
+                .frame(height: 1)
+                .frame(maxWidth: .infinity)
+                .foregroundStyle(Color.clLogUI.gray600)
+            
+            ForEach(AttemptResult.allCases, id: \.self) { result in
+                Button {
+                    store.send(.attemptResultActionTapped(attempt: result))
+                } label: {
+                    Text(result.name)
+                        .font(.h4)
+                        .foregroundStyle(Color.clLogUI.white)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+        }
+        .padding(.horizontal, 16)
     }
 }

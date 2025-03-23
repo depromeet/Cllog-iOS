@@ -8,9 +8,16 @@
 
 import Foundation
 
-public enum AttemptResult: String {
+public enum AttemptResult: String, CaseIterable {
     case complete = "SUCCESS"
     case fail = "FAILURE"
+    
+    public var name: String {
+        switch self {
+        case .complete: "완등"
+        case .fail: "실패"
+        }
+    }
     
     func toggleResult() -> AttemptResult {
         switch self {

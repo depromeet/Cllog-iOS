@@ -24,7 +24,7 @@ public struct RootFeature {
     public struct State: Equatable {
         var loginState: LoginFeature.State?
         var mainState: MainFeature.State?
-        var splashState: SplashFeature.State?
+        var splashState: SplashFeature.State? = .init()
         var onBoardingState: OnboardingFeature.State?
     }
     
@@ -72,7 +72,6 @@ public struct RootFeature {
     ) -> Effect<Action> {
         switch action {
         case .onAppear:
-            state.splashState = .init()
             return .none
             
         case .splashAction(let action):

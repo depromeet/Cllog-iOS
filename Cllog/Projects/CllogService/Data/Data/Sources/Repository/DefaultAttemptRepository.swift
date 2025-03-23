@@ -17,11 +17,19 @@ public struct DefaultAttemptRepository: AttemptRepository {
         self.dataSource = dataSource
     }
     
-    public func getFilteredAttempts() async throws -> [FolderDomain.Attempt] {
+    public func getFilteredAttempts() async throws -> [Attempt] {
         try await dataSource.attempts().map { $0.toDomain() }
     }
     
-    public func getAttempt(attemptId: Int) async throws -> FolderDomain.ReadAttempt {
+    public func getAttempt(attemptId: Int) async throws -> ReadAttempt {
         try await dataSource.attempt(attemptId).toDomain()
+    }
+    
+    public func deleteAttempt(attemptId: Int) async throws {
+        try await dataSource.delete(attemptId)
+    }
+    
+    public func patchResult(attempt: ReadAttempt, result: AttemptResult) async throws {
+        try await dataSource.patchResult(id: attempt.problemId, result: result.rawValue)
     }
 }

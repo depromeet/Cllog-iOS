@@ -8,11 +8,11 @@
 
 import SwiftUI
 
-public enum ChallengeResult {
+public enum ChallengeResult: CaseIterable {
     case complete
     case fail
     
-    var name: String {
+    public var name: String {
         switch self {
         case .complete: "완등"
         case .fail: "실패"

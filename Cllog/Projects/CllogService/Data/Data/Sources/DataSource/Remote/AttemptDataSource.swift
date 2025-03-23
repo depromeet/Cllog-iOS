@@ -13,6 +13,8 @@ import Starlink
 public protocol AttemptDataSource {
     func attempts() async throws -> [FolderAttemptResponseDTO]
     func attempt(_ attemptId: Int) async throws -> DetailAttemptResponseDTO
+    func patchResult(id: Int, result: String) async throws
+    func delete(_ attemptId: Int) async throws
 }
 
 public final class DefaultAttemptDataSource: AttemptDataSource {
@@ -44,16 +46,33 @@ public final class DefaultAttemptDataSource: AttemptDataSource {
         
         return attempt
     }
+    
+    public func patchResult(id: Int, result: String) async throws {
+        let requestDTO = AttemptPatchRequestDTO(status: result)
+        let _: EmptyResponseDTO = try await provider.request(
+            AttemptTarget.patch(id: id, requestDTO: requestDTO)
+        )
+    }
+    
+    public func delete(_ attemptId: Int) async throws {
+        let _: EmptyResponseDTO = try await provider.request(AttemptTarget.delete(id: attemptId))
+    }
 }
 
 enum AttemptTarget {
     case attempts
     case detailAttempt(id: Int)
+    case patch(id: Int, requestDTO: AttemptPatchRequestDTO)
+    case delete(id: Int)
 }
 
 extension AttemptTarget: EndpointType {
     var encoding: any StarlinkEncodable {
-        Starlink.StarlinkURLEncoding()
+        switch self {
+        case .patch:
+            Starlink.StarlinkJSONEncoding()
+        default: Starlink.StarlinkURLEncoding()
+        }
     }
     
    
@@ -65,30 +84,37 @@ extension AttemptTarget: EndpointType {
         switch self {
         case .attempts: "/api/v1/attempts"
         case .detailAttempt(let id): "/api/v1/attempts/\(id)"
+        case .patch(let id, _): "/api/v1/attempts/\(id)"
+        case .delete(let id): "/api/v1/attempts/\(id)"
         }
     }
     
     var method: Starlink.Method {
         switch self {
         case .attempts, .detailAttempt: .get
+        case .patch: .patch
+        case .delete: .delete
         }
     }
     
     var encodable: Encodable? {
         switch self {
-        case .attempts, .detailAttempt: nil
+        case .attempts, .detailAttempt, .delete: nil
+        case .patch(_, let requestDTO): nil
         }
     }
     
     var parameters: Networker.ParameterType? {
         switch self {
-        case .attempts, .detailAttempt: nil
+        case .attempts, .detailAttempt, .delete: nil
+        case .patch(_, let requestDTO): .encodable(requestDTO)
         }
     }
     
     var headers: [Starlink.Header]? {
         switch self {
-        case .attempts, .detailAttempt: nil
+        case .attempts, .detailAttempt, .delete: nil
+        case .patch: nil
         }
     }
 }
