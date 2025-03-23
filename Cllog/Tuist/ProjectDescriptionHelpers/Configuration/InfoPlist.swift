@@ -49,6 +49,7 @@ public struct InfoPlist {
         infoPlist["CFBundleIdentifier"] = .string(appConfiguration.bundleIdentifier)
         infoPlist["CFBundleDisplayName"] = .string(appConfiguration.displayName)
         infoPlist["KakaoNativeAppKey"] = .string(appConfiguration.kakaoNativeAppKey)
+        infoPlist["baseURL"] = .string(appConfiguration.baseURL)
         return infoPlist
     }
 }

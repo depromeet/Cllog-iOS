@@ -72,7 +72,7 @@ enum StoriesTarget {
 
 extension StoriesTarget: EndpointType {
     var baseURL: String {
-        return "https://dev-api.climb-log.my/api/v1/stories"
+        return Environment.baseURL + "/api/v1/stories"
     }
     
     var path: String {

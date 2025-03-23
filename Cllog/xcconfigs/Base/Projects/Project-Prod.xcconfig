@@ -10,4 +10,5 @@ PROVISIONING_PROFILE_SPECIFIER = match Development com.supershy.climbinglog.prod
 DEVELOPMENT_TEAM = SUMATJC294
 
 // Kakao
-KAKAO_NATIVE_APP_KEY = TODO_PRODUCTION_NATIVE_APP_KEY
+KAKAO_NATIVE_APP_KEY = f38aed2428e5cacc096f6f2b826404e9
+BASE_URL = https:/$()/dev-api.climb-log.my
