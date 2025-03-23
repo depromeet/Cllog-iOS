@@ -36,8 +36,8 @@ public struct AttemptFeature {
         
         // Bottom sheet
         var showEditAttemptBottomSheet = false
+        var showCragBottomSheet = false
         var showGradeBottomSheet = false
-        var showEditGradeSheet = false
         
         var dynamicSheetHeight: CGFloat {
             switch selectedAction {
@@ -73,8 +73,9 @@ public struct AttemptFeature {
         case onEditSheetDismissed
         case editBackButtonTapped
         case deleteActionTapped
-        case editAttemptResultActionTapped
-        
+        case editCragTapped
+        case cancelEditCragTapped
+        case saveEditCragTapped
         case attemptResultActionTapped(attempt: AttemptResult)
         case patchedResult(_ result: AttemptResult)
         case deletedAttempt
@@ -104,8 +105,12 @@ public struct AttemptFeature {
                 return .none
             case .moreActionTapped(let action):
                 switch action {
-                case .video, .result, .info:
+                case .video, .result:
                     state.selectedAction = action
+                    return .none
+                case .info:
+                    state.showGradeBottomSheet = true
+                    state.showEditAttemptBottomSheet = false
                     return .none
                 case .delete:
                     return .send(.deleteActionTapped)
@@ -150,9 +155,9 @@ public struct AttemptFeature {
                 
             case .deletedAttempt:
                 return .none
-              
-            case .editAttemptResultActionTapped:
-                
+            case .editCragTapped:
+                state.showGradeBottomSheet = false
+                state.showCragBottomSheet = true
                 return .none
             case .attemptResultActionTapped(let newAction):
                 guard let currentAttempt = state.attempt else {

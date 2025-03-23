@@ -26,6 +26,32 @@ public struct AttemptView: ViewProtocol {
             .onAppear {
                 store.send(.onAppear)
             }
+            .showGradeBottomSheet(
+                isPresented: $store.showGradeBottomSheet,
+                cragName: store.attempt?.crag?.name ?? "",
+                grades: [],
+                didTapSaveButton: { newGrade in
+                    print("did tap new grade")
+                },
+                didTapCragTitleButton: {
+                    store.send(.editCragTapped)
+                }
+            )
+        
+            .showCragBottomSheet(
+                isPresented: $store.showCragBottomSheet,
+                didTapSaveButton: { crag in
+                    print(crag.name)
+                }, didTapSkipButton: {
+                    print("did tap skip button")
+                }, didChangeSearchText: { text in
+                    print("text")
+                }, crags: .constant([
+                    DesignCrag(name: "강남점", address: "서울 강남구"),
+                    DesignCrag(name: "홍대점", address: "서울 마포구"),
+                    DesignCrag(name: "신촌점", address: "서울 서대문구")
+                ])
+            )
             .sheet(isPresented: $store.showEditAttemptBottomSheet) {
                 makeEditAttemptBottomSheet()
                     .presentationDetents([.height(store.dynamicSheetHeight)])
