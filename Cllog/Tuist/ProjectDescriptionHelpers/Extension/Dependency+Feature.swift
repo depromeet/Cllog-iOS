@@ -9,6 +9,7 @@ import ProjectDescription
 
 public extension TargetDependency {
     struct Features {
+        public struct Onboarding {}
         public struct Splash {}
         public struct Report {}
         public struct Setting {}
@@ -174,6 +175,20 @@ public extension TargetDependency.Features.Report {
 
 public extension TargetDependency.Features.Splash {
     static let name = "Splash"
+    
+    static let feature = TargetDependency.Features.project(
+        name: "\(name)Feature",
+        service: .cllog
+    )
+    
+    static let interface = TargetDependency.project(
+        target: "\(name)FeatureInterface",
+        path: .relativeToFeature(path: "\(name)Feature", service: .cllog)
+    )
+}
+
+public extension TargetDependency.Features.Onboarding {
+    static let name = "Onboarding"
     
     static let feature = TargetDependency.Features.project(
         name: "\(name)Feature",
