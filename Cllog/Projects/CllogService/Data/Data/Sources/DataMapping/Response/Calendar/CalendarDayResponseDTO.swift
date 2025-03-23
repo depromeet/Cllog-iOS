@@ -11,7 +11,7 @@ import CalendarDomain
 
 public struct CalendarDayResponseDTO: Decodable {
     public let date: String
-    public let thumbnailUrl: String
+    public let thumbnailUrl: String?
     public let stories: [CalendarStoryResponseDTO]
     
     func toDomain() -> CalendarDay {
