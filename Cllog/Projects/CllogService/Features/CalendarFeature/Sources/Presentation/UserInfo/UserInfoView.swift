@@ -20,12 +20,15 @@ enum UserInfoType {
 struct UserInfoView: View {
     @Bindable private var store: StoreOf<UserInfoFeature>
     private let type: UserInfoType
+    @Binding private var isFocused: Bool
     
     public init(
         type: UserInfoType,
+        isFocused: Binding<Bool> = .constant(false),
         store: StoreOf<UserInfoFeature>
     ) {
         self.type = type
+        self._isFocused = isFocused
         self.store = store
     }
     
@@ -60,7 +63,11 @@ extension UserInfoView {
             DividerView(.horizontal)
                 .padding(.horizontal, 20)
             
-            ClLogTextInput(placeHolder: "", text: $store.editMemo)
+            ClLogTextInput(
+                placeHolder: "",
+                text: $store.editMemo,
+                isFocused: $isFocused
+            )
                 .type(.editor)
                 .background(.gray800)
                 .frame(height: 136)

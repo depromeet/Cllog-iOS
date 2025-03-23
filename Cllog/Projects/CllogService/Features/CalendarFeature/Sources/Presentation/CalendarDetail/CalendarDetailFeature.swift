@@ -25,6 +25,7 @@ public struct CalendarDetailFeature {
         var isPresentMoreBottomSheet: Bool = false
         var moreBottomSheetItem: [MoreItem] = MoreItem.allCases
         var isMemoEditMode: Bool = false
+        var isFocused: Bool = false
         
         var storyId: Int
         
@@ -44,7 +45,7 @@ public struct CalendarDetailFeature {
         case moreButtonTapped
         case moreItemTapped(MoreItem)
         case editCompleteTapped
-        case switchingToMemoEditMode(Bool)
+        case screenTapped
         case fetchStorySuccess(Story)
         case fetchSummarySuccess(StorySummary)
         case editMemoSuccess(String)
@@ -89,21 +90,23 @@ extension CalendarDetailFeature {
             switch moreItem {
             case .edit:
                 state.isMemoEditMode = true
+                state.isPresentMoreBottomSheet = false
+                return .send(.userInfoAction(.editMemo(state.isMemoEditMode)))
             case .delete:
+                state.isPresentMoreBottomSheet = false
                 return .none
             }
-            state.isPresentMoreBottomSheet = false
-            return .send(.switchingToMemoEditMode(state.isMemoEditMode))
+            
+        case .screenTapped:
+            state.isFocused = false
+            return .none
             
         case .editCompleteTapped:
             state.isMemoEditMode = false
             return .merge(
-                .send(.switchingToMemoEditMode(state.isMemoEditMode)),
+                .send(.userInfoAction(.editMemo(state.isMemoEditMode))),
                 executeEditMemo(storyId: state.storyId, text: state.userInfoState.editMemo)
             )
-            
-        case .switchingToMemoEditMode(let isEdit):
-            return .send(.userInfoAction(.editMemo(state.isMemoEditMode)))
             
         case .editMemoSuccess(let text):
             return .send(.userInfoAction(.updateMemo(text)))

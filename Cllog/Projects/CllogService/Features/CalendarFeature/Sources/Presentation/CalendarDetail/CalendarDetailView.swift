@@ -13,6 +13,7 @@ import DesignKit
 
 public struct CalendarDetailView: View {
     @Bindable private var store: StoreOf<CalendarDetailFeature>
+    @State private var isFocused: Bool = false
     
     public init(store: StoreOf<CalendarDetailFeature>) {
         self.store = store
@@ -33,6 +34,9 @@ public struct CalendarDetailView: View {
                             }
                         }
                     }
+                }
+                .onTapGesture {
+                    store.send(.screenTapped)
                 }
     }
 }
@@ -103,6 +107,7 @@ extension CalendarDetailView {
     func userInfoView() -> some View {
         UserInfoView(
             type: .detail,
+            isFocused: $store.isFocused,
             store: store.scope(state: \.userInfoState, action: \.userInfoAction)
         )
     }
