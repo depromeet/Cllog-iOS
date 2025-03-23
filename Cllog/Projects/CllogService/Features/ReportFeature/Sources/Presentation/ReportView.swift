@@ -21,6 +21,9 @@ public struct ReportView: View {
     public var body: some View {
         makeBody()
             .background(Color.clLogUI.gray800)
+            .onAppear {
+                store.send(.onAppear)
+            }
 
     }
 }
@@ -39,7 +42,8 @@ extension ReportView {
                     makeCompletionStatsView()
                     makeChallengeView()
                     makeFavoriteCragView()
-                    makeSaveAndSharedButton()
+//                    makeSaveAndSharedButton()
+                    informationText()
                         .padding(.bottom, 40)
                 }
                 .padding(.horizontal, 16)
@@ -69,11 +73,11 @@ extension ReportView {
     private func makeInformation() -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 0) {
-                Text("김클로그님,")
+                Text("\(store.report.userName)님,")
                     .font(.h1)
                     .foregroundStyle(Color.clLogUI.primary)
                 Spacer(minLength: 4)
-                Text("최근 3개월동안 32일 클라이밍했어요")
+                Text("최근 3개월동안 \(store.report.recentAttemptCount)일 클라이밍했어요")
                     .font(.h5)
                     .foregroundStyle(Color.clLogUI.primary)
                 Text("얼마나 열심히 도전했는지 확인해볼까요?")
@@ -90,7 +94,7 @@ extension ReportView {
                 Text("총 운동 시간")
                     .font(.h5)
                     .foregroundStyle(Color.clLogUI.gray400)
-                Text("52:00:00")
+                Text("\(store.report.totalExerciseTime.totalExerciseTimeMs.msToTimeString)")
                     .font(.h1)
                     .foregroundStyle(Color.clLogUI.white)
             }
@@ -98,24 +102,11 @@ extension ReportView {
             
             Spacer()
             
-            ZStack(alignment: .bottom) {
-                Image.clLogUI.clogLogo
-                    .resizable()
-                
-                LinearGradient(
-                    gradient: Gradient(
-                        colors: [
-                            Color.clLogUI.gray700,
-                            Color.clLogUI.gray700.opacity(0.0)
-                        ]
-                    ),
-                    startPoint: .bottom,
-                    endPoint: .top
-                )
-                .frame(height: 73)
-                .allowsHitTesting(false)
-            }
-            .frame(width: 164)
+            
+            Image.clLogUI.reportExercise
+                .resizable()
+                .frame(width: 164)
+            
         }
         .background(Color.clLogUI.gray700)
         .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -124,14 +115,14 @@ extension ReportView {
     private func makeCompletionStatsView() -> some View {
         HStack {
             VStack(alignment: .center) {
-                Image.clLogUI.clogLogo
+                Image.clLogUI.reportProblem
                     .resizable()
                     .frame(width: 64, height: 50)
                 Spacer()
                 Text("푼 문제")
                     .font(.h5)
                     .foregroundStyle(Color.clLogUI.gray400)
-                Text("52")
+                Text("\(store.report.totalAttemptCount.successAttemptCount)")
                     .font(.h1)
                     .foregroundStyle(Color.clLogUI.gray10)
             }
@@ -141,14 +132,14 @@ extension ReportView {
                 .frame(height: 80)
             
             VStack(alignment: .center) {
-                Image.clLogUI.clogLogo
+                Image.clLogUI.reportAttempt
                     .resizable()
                     .frame(width: 64, height: 50)
                 Spacer()
                 Text("시도 횟수")
                     .font(.h5)
                     .foregroundStyle(Color.clLogUI.gray400)
-                Text("52")
+                Text("\(store.report.totalAttemptCount.totalAttemptCount)")
                     .font(.h1)
                     .foregroundStyle(Color.clLogUI.gray10)
             }
@@ -158,14 +149,14 @@ extension ReportView {
                 .frame(height: 80)
             
             VStack(alignment: .center) {
-                Image.clLogUI.clogLogo
+                Image.clLogUI.reportPercent
                     .resizable()
                     .frame(width: 64, height: 50)
                 Spacer()
                 Text("완등률")
                     .font(.h5)
                     .foregroundStyle(Color.clLogUI.gray400)
-                Text("78%")
+                Text("\(store.report.totalAttemptCount.completionRate)%")
                     .font(.h1)
                     .foregroundStyle(Color.clLogUI.gray10)
             }
@@ -190,13 +181,13 @@ extension ReportView {
                     .font(.h3)
                     .foregroundStyle(Color.clLogUI.gray10)
                 HStack(spacing: 0) {
-                    Text("노랑 ")
+                    Text("\(store.report.mostAttemptedProblem.mostAttemptedProblemGrade) ")
                         .font(.h3)
                         .foregroundStyle(Color.clLogUI.primary)
                     Text("문제를 ")
                         .font(.h3)
                         .foregroundStyle(Color.clLogUI.gray10)
-                    Text("10번 ")
+                    Text("\(store.report.mostAttemptedProblem.mostAttemptedProblemAttemptCount)번 ")
                         .font(.h3)
                         .foregroundStyle(Color.clLogUI.primary)
                     Text("도전해 완등했네요!")
@@ -213,12 +204,12 @@ extension ReportView {
             ZStack {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(0..<10, id: \.self) { _ in
+                        ForEach(store.report.mostAttemptedProblem.attemptVideos, id: \.self) { video in
                             ThumbnailView(
-                                imageURLString: "https://dummyimage.com/600x400/000/fff",
+                                imageURLString: video.thumbnailUrl,
                                 thumbnailType: .calendar,
-                                challengeResult: .complete,
-                                time: "00:00:12"
+                                challengeResult: .fail,
+                                time: video.durationMs.msToTimeString
                             )
                             .frame(width: 166, height: 166)
                         }
@@ -254,44 +245,34 @@ extension ReportView {
     
     private func makeFavoriteCragView() -> some View {
         HStack {
-            VStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("16회")
+                    Text("\(store.report.mostVisitedCrag.mostVisitedCragVisitCount)회")
                         .font(.h5)
                         .foregroundStyle(Color.clLogUI.white)
                     Text("방문한 최애 암장")
                         .font(.h5)
                         .foregroundStyle(Color.clLogUI.gray400)
+                    
+                    Spacer()
                 }
-                Text("더클라임 강남")
+                
+                Text("\(store.report.mostVisitedCrag.mostVisitedCragName)")
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
                     .font(.h1)
                     .foregroundStyle(Color.clLogUI.gray10)
+                
                 Spacer()
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 24)
             
             Spacer()
-            
-            ZStack(alignment: .bottom) {
-                Image.clLogUI.clogLogo
-                    .resizable()
-                
-                LinearGradient(
-                    gradient: Gradient(
-                        colors: [
-                            Color.clLogUI.gray700,
-                            Color.clLogUI.gray700.opacity(0.0)
-                        ]
-                    ),
-                    startPoint: .bottom,
-                    endPoint: .top
-                )
-                .frame(height: 62)
-                .allowsHitTesting(false)
-            }
-            .frame(width: 164)
+            Image.clLogUI.reportCrag
+                .resizable()
+                .frame(width: 175)
         }
+        .padding(.leading, 16)
+        .padding(.vertical, 24)
         .background(Color.clLogUI.gray700)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
@@ -308,6 +289,12 @@ extension ReportView {
                 .background(Color.clLogUI.gray900)
                 .cornerRadius(12, corners: .allCorners)
         }
-
+    }
+    
+    public func informationText() -> some View {
+        Text("가장 많이 도전한 문제와 암장의 경우\n다음날에 반영됩니다.")
+            .font(.b2)
+            .foregroundStyle(Color.clLogUI.gray500)
+            .multilineTextAlignment(.center)
     }
 }

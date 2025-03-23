@@ -25,6 +25,4 @@ public struct DefaultStoryRepository: StoryRepository {
     public func fetchStory(_ storyId: Int) async throws -> Story {
         try await dataSource.stories(storyId).toDomain()
     }
-    
-    
 }

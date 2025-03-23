@@ -13,15 +13,20 @@ import DesignKit
 import Combine
 
 public struct VideoEditView: View {
+    private let tooltipManager: EditFeatureTooltipManager
     @Bindable var store: StoreOf<VideoEditFeature>
+    
     @State private var isDraggingPlayhead = false
     @State private var isInitialized = false
+    @State private var isStampTooltipOn = false
+    @State private var isDragEditTooltipOn = false
     @State private var timeObserverCancellable: AnyCancellable?
     
     @Environment(\.presentationMode) var presentationMode
     
     public init(store: StoreOf<VideoEditFeature>) {
         self.store = store
+        self.tooltipManager = EditFeatureTooltipManager()
     }
     
     private var closeButton: some View {
@@ -133,7 +138,11 @@ public struct VideoEditView: View {
                 StampButton {
                     store.send(.didTapStamp)
                 }
-                .tooltip(text: "스탬프 버튼을 눌러\n중요 부분을 기록할 수 있어요!", position: .topTrailing(offset: -21), verticalOffset: 16)
+                .tooltip(text: "스탬프 버튼을 눌러\n중요 부분을 기록할 수 있어요!", position: .topTrailing(offset: -21), verticalOffset: 16, isVisible: isStampTooltipOn) {
+                    isStampTooltipOn = false
+                    isDragEditTooltipOn = true
+                    tooltipManager.setStampTooltipOff()
+                }
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
@@ -200,11 +209,18 @@ public struct VideoEditView: View {
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 32)
-            .tooltip(text: "드래그로 영상을 자를 수 있어요!", position: .topCenter, verticalOffset: 1)
+            .tooltip(text: "드래그로 영상을 자를 수 있어요!", position: .topCenter, verticalOffset: 1, isVisible: isDragEditTooltipOn) {
+                isDragEditTooltipOn = false
+                tooltipManager.setDragEditTooltipOff()
+            }
         }
         .presentDialog($store.scope(state: \.alert, action: \.alert), style: .default)
         .background(Color.clLogUI.gray900)
         .onAppear {
+            tooltipManager.initTooltipState()
+            self.isStampTooltipOn = tooltipManager.isStampTooltipOn
+            self.isDragEditTooltipOn = tooltipManager.isDragEditTooltipOn
+            
             if !isInitialized {
                 store.send(.onAppear)
                 
@@ -237,4 +253,3 @@ public extension VideoEditView {
         return VideoEditView(store: store)
     }
 }
-

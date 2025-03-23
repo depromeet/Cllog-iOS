@@ -11,28 +11,34 @@ import SwiftUI
 public struct ClLogTextInput: View {
     @Binding private var text: String
     private let placeHolder: String
-    @FocusState private var isTextFieldFocused: Bool
+    @FocusState private var focusState: Bool
+    @Binding private var isFocused: Bool
     private var configuration: TextInputConfiguration
     
     public init(
         placeHolder: String,
-        text: Binding<String>
+        text: Binding<String>,
+        isFocused: Binding<Bool>
     ) {
         self.placeHolder = placeHolder
+        self._isFocused = isFocused
         self._text = text
         self.configuration = TextInputConfiguration(
             state: .normal,
-            type: .filed
+            type: .filed,
+            background: .gray900
         )
     }
     
     fileprivate init(
         _ placeHolder: String,
         _ text: Binding<String>,
-        _ configuration: TextInputConfiguration
+        _ configuration: TextInputConfiguration,
+        _ isFocused: Binding<Bool>
     ) {
         self.placeHolder = placeHolder
         self._text = text
+        self._isFocused = isFocused
         self.configuration = configuration
     }
     
@@ -53,18 +59,18 @@ extension ClLogTextInput {
                 TextField("", text: $text)
                     .padding(.horizontal, 16)
                     .tint(configuration.state.foregroundColor)
-                    .focused($isTextFieldFocused)
+                    .focused($focusState)
             case .editor:
                 // TextEditor
                 TextEditor(text: $text)
                     .scrollContentBackground(.hidden)
                     .padding(16)
                     .tint(configuration.state.foregroundColor)
-                    .focused($isTextFieldFocused)
+                    .focused($focusState)
             }
             
             // PlaceHolder
-            if !isTextFieldFocused && text.isEmpty {
+            if !focusState && text.isEmpty {
                 Text(placeHolder)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
@@ -74,7 +80,7 @@ extension ClLogTextInput {
         .font(.b1)
         .foregroundStyle(configuration.state.foregroundColor)
         .frame(height: configuration.type == .editor ? 128 : 48)
-        .background(configuration.state.backgroundColor)
+        .background(configuration.background.color)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay (
             Group {
@@ -88,22 +94,36 @@ extension ClLogTextInput {
             }
         )
         .disabled(configuration.state == .disable)
+        .onChange(of: isFocused) { oldValue, newValue in
+            focusState = newValue
+        }
+        .onChange(of: focusState) { oldValue, newValue in
+            isFocused = newValue
+        }
     }
     
-    func state(_ state: TextInputState) -> ClLogTextInput {
+    public func state(_ state: TextInputState) -> ClLogTextInput {
         var newConfig = self.configuration
         
         newConfig.state = state
         
-        return ClLogTextInput(self.placeHolder ,$text, newConfig)
+        return ClLogTextInput(self.placeHolder ,$text, newConfig, $isFocused)
     }
     
-    func type(_ type: TextInputType) -> ClLogTextInput {
+    public func type(_ type: TextInputType) -> ClLogTextInput {
         var newConfig = self.configuration
         
         newConfig.type = type
         
-        return ClLogTextInput(self.placeHolder ,$text, newConfig)
+        return ClLogTextInput(self.placeHolder ,$text, newConfig, $isFocused)
+    }
+    
+    public func background(_ type: TextInputBackground) -> ClLogTextInput {
+        var newConfig = self.configuration
+        
+        newConfig.background = type
+        
+        return ClLogTextInput(self.placeHolder ,$text, newConfig, $isFocused)
     }
 }
 
@@ -127,7 +147,8 @@ public struct ContainerClLogTextField: View {
         GroupBox(label: Text("Normal")) {
             ClLogTextInput(
                 placeHolder: "암장을 입력해 주세요",
-                text: $textNormal
+                text: $textNormal,
+                isFocused: .constant(true)
             )
             .state(.normal)
         }
@@ -135,7 +156,8 @@ public struct ContainerClLogTextField: View {
         GroupBox(label: Text("Edior Error")) {
             ClLogTextInput(
                 placeHolder: "암장을 입력해 주세요",
-                text: $textDisable
+                text: $textDisable,
+                isFocused: .constant(true)
             )
             .type(.editor)
             .state(.error)
@@ -144,7 +166,8 @@ public struct ContainerClLogTextField: View {
         GroupBox(label: Text("Disable")) {
             ClLogTextInput(
                 placeHolder: "암장을 입력해 주세요",
-                text: $textError
+                text: $textError,
+                isFocused: .constant(true)
             )
             .state(.disable)
         }

@@ -12,6 +12,7 @@ import SwiftUI
 public struct TextInputConfiguration {
     var state: TextInputState
     var type: TextInputType
+    var background: TextInputBackground
 }
 
 public enum TextInputType {
@@ -19,18 +20,24 @@ public enum TextInputType {
     case editor
 }
 
+public enum TextInputBackground {
+    case gray800
+    case gray900
+    
+    var color: Color {
+        switch self {
+        case .gray800:
+            return Color.clLogUI.gray800
+        case .gray900:
+            return Color.clLogUI.gray900
+        }
+    }
+}
+
 public enum TextInputState {
     case normal
     case disable
     case error
-    
-    var backgroundColor: Color {
-        switch self {
-        case .normal, .disable, .error:
-            return .clLogUI.gray900
-
-        }
-    }
     
     var foregroundColor: Color {
         switch self {

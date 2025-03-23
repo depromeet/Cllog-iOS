@@ -13,6 +13,7 @@ import DesignKit
 import LoginFeature
 import AccountDomain
 import SplashFeature
+import OnboardingFeature
 
 import ComposableArchitecture
 
@@ -43,6 +44,9 @@ struct RootView: View {
             
             // 메인
             IfLetStore(store.scope(state: \.mainState, action: \.mainAction), then: MainView.init)
+            
+            // 온보딩
+            IfLetStore(store.scope(state: \.onBoardingState, action: \.onboardingAction), then: OnboardingView.init)
         }
     }
 }
