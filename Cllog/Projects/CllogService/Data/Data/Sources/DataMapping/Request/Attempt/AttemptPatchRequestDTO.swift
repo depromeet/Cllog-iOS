@@ -23,7 +23,7 @@ public struct AttemptPatchRequestDTO: Encodable {
     ) {
         self.cragId = cragId
         self.gradeId = gradeId
-        self.gradeUnregistered = false
+        self.gradeUnregistered = gradeUnregistered
         self.status = status
     }
 }

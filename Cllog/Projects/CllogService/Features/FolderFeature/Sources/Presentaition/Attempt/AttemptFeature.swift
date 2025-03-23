@@ -44,7 +44,7 @@ public struct AttemptFeature {
             case .video:
                 251
             case .result:
-                250
+                230
             case .info:
                 700
             case .delete:

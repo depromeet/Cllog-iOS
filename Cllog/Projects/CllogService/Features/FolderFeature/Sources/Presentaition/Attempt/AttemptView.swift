@@ -254,6 +254,7 @@ extension AttemptView {
                         }
                     }
                 }
+                .padding(.horizontal, 16)
             } else {
                 
                 switch store.selectedAction {
@@ -288,7 +289,7 @@ extension AttemptView {
     }
     
     private func makeEditResultBottomSheet() -> some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading) {
             Button {
                 store.send(.editBackButtonTapped)
             } label: {
