@@ -41,6 +41,12 @@ extension ClLogUI where Base == UIImage {
     public static var setting: UIImage { asset(#function) }
     public static var edit: UIImage { asset(#function) }
     public static var delete: UIImage { asset(#function) }
+    
+    public static var reportAttempt: UIImage { asset(#function) }
+    public static var reportCrag: UIImage { asset(#function) }
+    public static var reportExercise: UIImage { asset(#function) }
+    public static var reportPercent: UIImage { asset(#function) }
+    public static var reportProblem: UIImage { asset(#function) }
 }
 
 extension ClLogUI where Base == Image {
@@ -83,6 +89,12 @@ extension ClLogUI where Base == Image {
     public static var undo: Image { asset(#function) }
     public static var edit: Image { asset(#function) }
     public static var delete: Image { asset(#function) }
+    
+    public static var reportAttempt: Image { asset(#function) }
+    public static var reportCrag: Image { asset(#function) }
+    public static var reportExercise: Image { asset(#function) }
+    public static var reportPercent: Image { asset(#function) }
+    public static var reportProblem: Image { asset(#function) }
 }
 
 extension ClLogUI where Base == UIImage {
