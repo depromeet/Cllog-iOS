@@ -15,11 +15,14 @@ import StoryDomain
 public struct CalendarDetailFeature {
     @Dependency(\.fetchStoryUseCase) var fetchStoryUseCase
     @Dependency(\.editMemoUseCase) var editMemoUseCase
+    @Dependency(\.deleteStoryUseCase) var deleteStoryUseCase
     
     public init() {}
     
     @ObservableState
     public struct State: Equatable {
+        @Presents var alert: AlertState<Action.Dialog>?
+        
         var userInfoState = UserInfoFeature.State()
         var storiesState = StoriesFeature.State()
         var isPresentMoreBottomSheet: Bool = false
@@ -36,6 +39,12 @@ public struct CalendarDetailFeature {
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
+        case alert(PresentationAction<Dialog>)
+        @CasePathable
+        public enum Dialog: Equatable {
+            case delete
+        }
+        
         case userInfoAction(UserInfoFeature.Action)
         case storiesAction(StoriesFeature.Action)
         
@@ -49,6 +58,7 @@ public struct CalendarDetailFeature {
         case fetchStorySuccess(Story)
         case fetchSummarySuccess(StorySummary)
         case editMemoSuccess(String)
+        case deleteStorySuccess
         case fetchFailure(Error)
     }
     
@@ -64,6 +74,7 @@ public struct CalendarDetailFeature {
         BindingReducer()
         
         Reduce(reducerCore)
+            .ifLet(\.$alert, action: \.alert)
     }
 }
 
@@ -93,9 +104,24 @@ extension CalendarDetailFeature {
                 state.isPresentMoreBottomSheet = false
                 return .send(.userInfoAction(.editMemo(state.isMemoEditMode)))
             case .delete:
+                state.alert = AlertState {
+                    TextState("기록 삭제")
+                } actions: {
+                    ButtonState(action: .delete) {
+                        TextState("삭제")
+                    }
+                    ButtonState {
+                        TextState("취소")
+                    }
+                } message: {
+                    TextState("기록을 삭제하면 복구가 어려워요.\n기록을 삭제하시나요?")
+                }
                 state.isPresentMoreBottomSheet = false
                 return .none
             }
+            
+        case .alert(.presented(.delete)):
+            return executeDeleteStory(state.storyId)
             
         case .screenTapped:
             state.isFocused = false
@@ -162,6 +188,17 @@ extension CalendarDetailFeature {
             do {
                 try await editMemoUseCase.execute(storyId: storyId, memo: text)
                 await send(.editMemoSuccess(text))
+            } catch {
+                await send(.fetchFailure(error))
+            }
+        }
+    }
+    
+    func executeDeleteStory(_ storyId: Int) -> Effect<Action> {
+        .run { send in
+            do {
+                try await deleteStoryUseCase.execute(storyId)
+                await send(.deleteStorySuccess)
             } catch {
                 await send(.fetchFailure(error))
             }

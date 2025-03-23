@@ -14,6 +14,7 @@ public protocol StoriesDataSource {
     func stories(_ storyId: Int) async throws -> StoryResponseDTO
     func summary(_ storyId: Int) async throws -> StorySummaryResponseDTO
     func memo(_ request: EditMemoRequestDTO) async throws
+    func delete(_ storyId: Int) async throws
 }
 
 public final class DefaultStoriesDataSource: StoriesDataSource {
@@ -54,12 +55,19 @@ public final class DefaultStoriesDataSource: StoriesDataSource {
             StoriesTarget.memo(request)
         )
     }
+    
+    public func delete(_ storyId: Int) async throws {
+        let _: BaseResponseDTO<EmptyResponseDTO> = try await provider.request(
+            StoriesTarget.delete(storyId)
+        )
+    }
 }
 
 enum StoriesTarget {
     case stories(Int)
     case summary(Int)
     case memo(EditMemoRequestDTO)
+    case delete(Int)
 }
 
 extension StoriesTarget: EndpointType {
@@ -75,6 +83,8 @@ extension StoriesTarget: EndpointType {
             return "/\(storyId)/summary"
         case .memo(let request):
             return "/\(request.storyId)/memo"
+        case .delete(let storyId):
+            return "/\(storyId)"
         }
     }
     
@@ -84,12 +94,14 @@ extension StoriesTarget: EndpointType {
             return .get
         case .memo:
             return .patch
+        case .delete:
+            return .delete
         }
     }
     
     var parameters: ParameterType? {
         switch self {
-        case .stories, .summary:
+        case .stories, .summary, .delete:
             return .none
         case .memo(let request):
             return .encodable(request.body)
@@ -98,7 +110,7 @@ extension StoriesTarget: EndpointType {
     
     var encodable: Encodable? {
         switch self {
-        case .stories, .summary, .memo:
+        case .stories, .summary, .memo, .delete:
             return .none
         }
     }
@@ -109,7 +121,7 @@ extension StoriesTarget: EndpointType {
     
     var encoding: StarlinkEncodable {
         switch self {
-        case .stories, .summary:
+        case .stories, .summary, .delete:
             return Starlink.StarlinkURLEncoding()
         case .memo:
             return Starlink.StarlinkJSONEncoding()
