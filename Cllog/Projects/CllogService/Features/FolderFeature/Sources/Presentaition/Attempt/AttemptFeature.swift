@@ -131,6 +131,8 @@ public struct AttemptFeature {
                 return .none
             case .getAttempt(let attempt):
                 state.attempt = attempt
+                state.selectedEditCrag = state.attempt?.crag
+                // TODO: 기존 암장 기준 변경 가능한 난이도로 초기화
                 return .none
                 
             // MARK: Bottom Sheet
@@ -170,7 +172,7 @@ public struct AttemptFeature {
                 }
                 return patchResult(attempt: currentAttempt, result: newAction)
             case .skipEditCragTapped:
-                state.selectedEditCrag = nil
+                state.selectedEditCrag = state.attempt?.crag
                 state.selectedEditCragGrades = nil
                 state.showCragBottomSheet = false
                 state.showGradeBottomSheet = true
