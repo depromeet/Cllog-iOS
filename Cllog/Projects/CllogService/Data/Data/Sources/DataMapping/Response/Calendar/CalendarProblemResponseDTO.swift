@@ -11,12 +11,12 @@ import CalendarDomain
 
 public struct CalendarProblemResponseDTO: Decodable {
     let count: Int
-    let colorHex: String
+    let colorHex: String?
     
     func toDomain() -> CalendarProblem {
         return CalendarProblem(
             attemptCount: count,
-            colorHex: colorHex
+            colorHex: colorHex ?? ""
         )
     }
 }
