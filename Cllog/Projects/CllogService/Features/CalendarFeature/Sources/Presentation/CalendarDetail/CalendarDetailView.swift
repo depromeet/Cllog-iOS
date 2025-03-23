@@ -25,19 +25,19 @@ public struct CalendarDetailView: View {
             .onAppear {
                 store.send(.onAppear)
             }
-            .bottomSheet(
-                isPresented: $store.isPresentMoreBottomSheet) {
-                    VStack(spacing: 0) {
-                        ForEach(store.moreBottomSheetItem, id: \.self) { item in
-                            MoreItemRow(item: item) { selectedItem in
-                                store.send(.moreItemTapped(selectedItem))
-                            }
+            .bottomSheet(isPresented: $store.isPresentMoreBottomSheet) {
+                VStack(spacing: 0) {
+                    ForEach(store.moreBottomSheetItem, id: \.self) { item in
+                        MoreItemRow(item: item) { selectedItem in
+                            store.send(.moreItemTapped(selectedItem))
                         }
                     }
                 }
-                .onTapGesture {
-                    store.send(.screenTapped)
-                }
+            }
+            .onTapGesture {
+                store.send(.screenTapped)
+            }
+            .presentDialog($store.scope(state: \.alert, action: \.alert), style: .delete)
     }
 }
 

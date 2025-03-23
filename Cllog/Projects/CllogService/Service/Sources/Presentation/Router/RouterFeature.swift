@@ -60,6 +60,9 @@ extension RouterFeature {
             // 캘린더 상세 페이지 pop
             state.path.pop(from: id)
             return .none
+        case .path(.element(id: let id, action: .calendarDetail(.deleteStorySuccess))):
+            state.path.pop(from: id)
+            return .none
         case .path(.element(id: let id, action: .setting(.backButtonTapped))):
             state.path.pop(from: id)
             return .none
