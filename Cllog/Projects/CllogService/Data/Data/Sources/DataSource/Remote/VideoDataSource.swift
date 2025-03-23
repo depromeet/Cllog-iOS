@@ -45,7 +45,7 @@ public enum VideoEndPoint: EndpointType {
     case uploadVideo
     
     public var baseURL: String {
-        return "https://dev-api.climb-log.my"
+        return Environment.baseURL
     }
     public var path: String {
         switch self {
