@@ -28,4 +28,24 @@ public struct ReadAttempt: Hashable, Identifiable {
         self.result = result
         self.attempt = attempt
     }
+    
+    public func copyWith(
+        id: UUID? = nil,
+        storyId: Int? = nil,
+        problemId: Int? = nil,
+        grade: Grade?? = nil,
+        crag: Crag?? = nil,
+        result: AttemptResult?? = nil,
+        attempt: ReadAttemptDetail? = nil
+    ) -> ReadAttempt {
+        return ReadAttempt(
+            id: id ?? self.id,
+            storyId: storyId ?? self.storyId,
+            problemId: problemId ?? self.problemId,
+            grade: grade ?? self.grade,
+            crag: crag ?? self.crag,
+            result: result ?? self.result,
+            attempt: attempt ?? self.attempt
+        )
+    }
 }

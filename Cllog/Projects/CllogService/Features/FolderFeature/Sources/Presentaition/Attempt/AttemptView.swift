@@ -303,16 +303,15 @@ extension AttemptView {
                         .foregroundStyle(Color.clLogUI.white)
                 }
             }
-
             
             Divider()
                 .frame(height: 1)
                 .frame(maxWidth: .infinity)
                 .foregroundStyle(Color.clLogUI.gray600)
             
-            ForEach(ChallengeResult.allCases, id: \.self) { result in
+            ForEach(AttemptResult.allCases, id: \.self) { result in
                 Button {
-                    
+                    store.send(.attemptResultActionTapped(attempt: result))
                 } label: {
                     Text(result.name)
                         .font(.h4)

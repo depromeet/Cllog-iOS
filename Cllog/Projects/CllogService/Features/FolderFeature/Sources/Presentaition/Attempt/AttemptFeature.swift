@@ -74,6 +74,9 @@ public struct AttemptFeature {
         case editBackButtonTapped
         case deleteActionTapped
         case editAttemptResultActionTapped
+        
+        case attemptResultActionTapped(attempt: AttemptResult)
+        case patchedResult(_ result: AttemptResult)
         case deletedAttempt
         
         @CasePathable
@@ -101,7 +104,6 @@ public struct AttemptFeature {
                 return .none
             case .moreActionTapped(let action):
                 switch action {
-                    
                 case .video, .result, .info:
                     state.selectedAction = action
                     return .none
@@ -145,11 +147,24 @@ public struct AttemptFeature {
                     TextState("기록을 삭제하면 복구가 어려워요.\n영상 기록을 삭제하시나요?")
                 }
                 return .none
+                
             case .deletedAttempt:
                 return .none
               
             case .editAttemptResultActionTapped:
                 
+                return .none
+            case .attemptResultActionTapped(let newAction):
+                guard let currentAttempt = state.attempt else {
+                    return .none
+                }
+                return patchResult(attempt: currentAttempt, result: newAction)
+            
+            case .patchedResult(let result):
+                let newAttempt = state.attempt?.copyWith(result: result)
+                state.showEditAttemptBottomSheet = false
+                state.selectedAction = nil
+                state.attempt = newAttempt
                 return .none
                 
             case .alert(.presented(.cancel)):
@@ -183,8 +198,20 @@ extension AttemptFeature {
         return .run { send in
             do {
                 try await attemptUseCase.delete(attemptId: attemptId)
-                await send(.backButtonTapped)
+                await send(.editBackButtonTapped)
             } catch  {
+                // TODO: show error message
+                debugPrint(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func patchResult(attempt: ReadAttempt, result: AttemptResult) -> Effect<Action> {
+        return .run { send in
+            do {
+                try await attemptUseCase.patchResult(attempt: attempt, result: result)
+                await send(.patchedResult(result))
+            } catch {
                 // TODO: show error message
                 debugPrint(error.localizedDescription)
             }

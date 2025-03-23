@@ -28,4 +28,8 @@ public struct DefaultAttemptRepository: AttemptRepository {
     public func deleteAttempt(attemptId: Int) async throws {
         try await dataSource.delete(attemptId)
     }
+    
+    public func patchResult(attempt: ReadAttempt, result: AttemptResult) async throws {
+        try await dataSource.patchResult(id: attempt.problemId, result: result.rawValue)
+    }
 }
