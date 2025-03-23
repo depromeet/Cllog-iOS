@@ -8,79 +8,74 @@
 
 import SwiftUI
 
-
-public struct ProgressSplitItem: Hashable {
-    let id: Int
-    let position: Float
+// FIXME: 임시 스탬프 모델
+public struct TempStamp: Identifiable {
+    public let id: Int
+    public let position: CGFloat
     
-    public init(id: Int, position: Float) {
+    public init(id: Int, position: CGFloat) {
         self.id = id
         self.position = position
     }
 }
 
 public struct PlayerProgressBar: View {
-    @Binding private var value: Float
-    private var splitItems: [ProgressSplitItem]
-    private var onSplitItemTapped: ((Int) -> Void)?
+    private enum Constnats {
+        static let stampHalfWidth: CGFloat = 9
+        static let stampYOffset: CGFloat = -3
+    }
+    
+    private let progress: CGFloat
+    private let stamps: [TempStamp]
+    private let onStampTapped: ((Int) -> Void)?
     
     public init(
-        value: Binding<Float>,
-        splitItems: [ProgressSplitItem] = [],
-        onSplitItemTapped: ((Int) -> Void)? = nil
+        progress: CGFloat,
+        stamps: [TempStamp] = [],
+        onStampTapped: ((Int) -> Void)? = nil
     ) {
-        self._value = value
-        self.splitItems = splitItems
-        self.onSplitItemTapped = onSplitItemTapped
+        self.progress = progress.isNaN ? 0 : progress
+        self.stamps = stamps
+        self.onStampTapped = onStampTapped
+    }
+    
+    private var stampArea: some View {
+        Color.clear
+            .frame(height: 15)
+            .overlay {
+                ForEach(stamps) {
+                    Image.clLogUI.stamp
+                        .foregroundStyle(Color.clLogUI.primary)
+                        .position(x: $0.position + Constnats.stampHalfWidth, y: Constnats.stampYOffset)
+                }
+            }
     }
     
     public var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
+        VStack(spacing: 0) {
+            stampArea
             
-            // 스탬프 레이어
-            ZStack(alignment: .bottomLeading) {
-                ForEach(splitItems, id: \.self) { item in
-                    ClLogUI.stamp
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                        .foregroundStyle(Color.clLogUI.primary)
-                        .offset(x: CGFloat(item.position * 100) - 15)  // 이미지 중앙 정렬을 위한 width/2
-                        .onTapGesture {
-                            onSplitItemTapped?(item.id)
-                        }
-                }
-            }
-            
-            // 프로그레스 바 레이어
             GeometryReader { geometry in
-                ZStack(alignment: .leading) {
-                    // 배경 바
-                    Rectangle()
-                        .frame(
-                            width: geometry.size.width,
-                            height: geometry.size.height
-                        )
-                        .foregroundColor(Color.clLogUI.gray50)
+                HStack(spacing: 0) {
+                    Color.clLogUI.primary
+                        .frame(width: geometry.size.width * min(progress, 1.0))
                     
-                    // 진행 바
-                    Rectangle()
-                        .frame(
-                            width: min(CGFloat(self.value) * geometry.size.width, geometry.size.width),
-                            height: geometry.size.height
-                        )
-                        .foregroundColor(Color.clLogUI.primary)
-                    
-                    // 분할 위치 표시
-                    ForEach(splitItems, id: \.self) { item in
+                    Color.clLogUI.gray50
+                        .frame(maxWidth: .infinity)
+                }
+                .overlay {
+                    ForEach(stamps) { stamp in
                         Rectangle()
-                            .frame(width: 1, height: geometry.size.height)
-                            .foregroundColor(.black)
-                            .offset(x: CGFloat(item.position) * geometry.size.width)
+                            .fill(Color.clLogUI.gray900)
+                            .frame(width: 1)
+                            .position(x: stamp.position + Constnats.stampHalfWidth, y: geometry.size.height / 2)
+                            .onTapGesture {
+                                onStampTapped?(stamp.id)
+                            }
                     }
                 }
-                .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
             }
-            .frame(height: 10)
+            .frame(height: 5)
         }
     }
 }

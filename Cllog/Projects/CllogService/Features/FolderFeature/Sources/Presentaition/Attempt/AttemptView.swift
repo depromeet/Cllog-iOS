@@ -154,13 +154,13 @@ extension AttemptView {
                     print("재생 또는 정지")
                 }
             
-                PlayerProgressBar(
-                    value: $progressValue,
-                    splitItems: attempt.attempt.video.stamps.map { ProgressSplitItem(id: $0.id, position: $0.position) },
-                    onSplitItemTapped: { stampId in
-                        store.send(.stampTapped(id: stampId))
-                    }
-                )
+            PlayerProgressBar(
+                progress: CGFloat(progressValue),
+                stamps: attempt.attempt.video.stamps.map { TempStamp(id: $0.id, position: CGFloat($0.position)) },
+                onStampTapped: { stampId in
+                    store.send(.stampTapped(id: stampId))
+                }
+            )
         }
     }
     
