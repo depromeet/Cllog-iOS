@@ -146,5 +146,17 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
+        
+        container.register(EditMemoUseCase.self) { _ in
+            EditMemo(
+                repository: DefaultEditMemoRepository(
+                    dataSource: DefaultStoriesDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
     }
 }

@@ -20,12 +20,15 @@ enum UserInfoType {
 struct UserInfoView: View {
     @Bindable private var store: StoreOf<UserInfoFeature>
     private let type: UserInfoType
+    @Binding private var isFocused: Bool
     
     public init(
         type: UserInfoType,
+        isFocused: Binding<Bool> = .constant(false),
         store: StoreOf<UserInfoFeature>
     ) {
         self.type = type
+        self._isFocused = isFocused
         self.store = store
     }
     
@@ -44,10 +47,33 @@ extension UserInfoView {
                 .onTapGesture {
                     store.send(.dropdownTapped, animation: .default)
                 }
-            
-            if store.isOpen {
-                makeDropdownView()
+            if store.isEditMemo {
+                makeEditorView()
+            } else {
+                if store.isOpen {
+                    makeDropdownView()
+                }
             }
+        }
+    }
+    
+    // MARK: - Memo Edit View
+    private func makeEditorView() -> some View {
+        VStack {
+            DividerView(.horizontal)
+                .padding(.horizontal, 20)
+            
+            ClLogTextInput(
+                placeHolder: "",
+                text: $store.editMemo,
+                isFocused: $isFocused
+            )
+                .type(.editor)
+                .background(.gray800)
+                .frame(height: 136)
+                .padding(.horizontal, 20)
+                .padding(.top, 14)
+                .padding(.bottom, 20)
         }
     }
     
@@ -88,9 +114,11 @@ extension UserInfoView {
             
             Spacer()
             
-            DropdownButton(isOpen: $store.isOpen) { }
-                .allowsHitTesting(false)
-                .padding(.trailing, 4)
+            if !store.isEditMemo {
+                DropdownButton(isOpen: $store.isOpen) { }
+                    .allowsHitTesting(false)
+                    .padding(.trailing, 4)
+            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 20)

@@ -13,6 +13,7 @@ import Starlink
 public protocol StoriesDataSource {
     func stories(_ storyId: Int) async throws -> StoryResponseDTO
     func summary(_ storyId: Int) async throws -> StorySummaryResponseDTO
+    func memo(_ request: EditMemoRequestDTO) async throws
 }
 
 public final class DefaultStoriesDataSource: StoriesDataSource {
@@ -47,11 +48,18 @@ public final class DefaultStoriesDataSource: StoriesDataSource {
         
         return data
     }
+    
+    public func memo(_ request: EditMemoRequestDTO) async throws {
+        let _: BaseResponseDTO<EmptyResponseDTO> = try await provider.request(
+            StoriesTarget.memo(request)
+        )
+    }
 }
 
 enum StoriesTarget {
     case stories(Int)
     case summary(Int)
+    case memo(EditMemoRequestDTO)
 }
 
 extension StoriesTarget: EndpointType {
@@ -65,6 +73,8 @@ extension StoriesTarget: EndpointType {
             return "/\(storyId)"
         case .summary(let storyId):
             return "/\(storyId)/summary"
+        case .memo(let request):
+            return "/\(request.storyId)/memo"
         }
     }
     
@@ -72,6 +82,8 @@ extension StoriesTarget: EndpointType {
         switch self {
         case .stories, .summary:
             return .get
+        case .memo:
+            return .patch
         }
     }
     
@@ -79,12 +91,14 @@ extension StoriesTarget: EndpointType {
         switch self {
         case .stories, .summary:
             return .none
+        case .memo(let request):
+            return .encodable(request.body)
         }
     }
     
     var encodable: Encodable? {
         switch self {
-        case .stories, .summary:
+        case .stories, .summary, .memo:
             return .none
         }
     }
@@ -94,6 +108,12 @@ extension StoriesTarget: EndpointType {
     }
     
     var encoding: StarlinkEncodable {
-        return Starlink.StarlinkURLEncoding()
+        switch self {
+        case .stories, .summary:
+            return Starlink.StarlinkURLEncoding()
+        case .memo:
+            return Starlink.StarlinkJSONEncoding()
+        }
+        
     }
 }

@@ -14,6 +14,7 @@ import StoryDomain
 @Reducer
 public struct CalendarDetailFeature {
     @Dependency(\.fetchStoryUseCase) var fetchStoryUseCase
+    @Dependency(\.editMemoUseCase) var editMemoUseCase
     
     public init() {}
     
@@ -21,6 +22,10 @@ public struct CalendarDetailFeature {
     public struct State: Equatable {
         var userInfoState = UserInfoFeature.State()
         var storiesState = StoriesFeature.State()
+        var isPresentMoreBottomSheet: Bool = false
+        var moreBottomSheetItem: [MoreItem] = MoreItem.allCases
+        var isMemoEditMode: Bool = false
+        var isFocused: Bool = false
         
         var storyId: Int
         
@@ -29,7 +34,8 @@ public struct CalendarDetailFeature {
         }
     }
     
-    public enum Action {
+    public enum Action: BindableAction {
+        case binding(BindingAction<State>)
         case userInfoAction(UserInfoFeature.Action)
         case storiesAction(StoriesFeature.Action)
         
@@ -37,8 +43,12 @@ public struct CalendarDetailFeature {
         case backButtonTapped
         case shareButtonTapped
         case moreButtonTapped
+        case moreItemTapped(MoreItem)
+        case editCompleteTapped
+        case screenTapped
         case fetchStorySuccess(Story)
         case fetchSummarySuccess(StorySummary)
+        case editMemoSuccess(String)
         case fetchFailure(Error)
     }
     
@@ -50,6 +60,8 @@ public struct CalendarDetailFeature {
         Scope(state: \.storiesState, action: \.storiesAction) {
             StoriesFeature()
         }
+        
+        BindingReducer()
         
         Reduce(reducerCore)
     }
@@ -66,10 +78,38 @@ extension CalendarDetailFeature {
             
         case .backButtonTapped:
             return .none
+            
         case .shareButtonTapped:
             return .none
+            
         case .moreButtonTapped:
+            state.isPresentMoreBottomSheet = true
             return .none
+            
+        case .moreItemTapped(let moreItem):
+            switch moreItem {
+            case .edit:
+                state.isMemoEditMode = true
+                state.isPresentMoreBottomSheet = false
+                return .send(.userInfoAction(.editMemo(state.isMemoEditMode)))
+            case .delete:
+                state.isPresentMoreBottomSheet = false
+                return .none
+            }
+            
+        case .screenTapped:
+            state.isFocused = false
+            return .none
+            
+        case .editCompleteTapped:
+            state.isMemoEditMode = false
+            return .merge(
+                .send(.userInfoAction(.editMemo(state.isMemoEditMode))),
+                executeEditMemo(storyId: state.storyId, text: state.userInfoState.editMemo)
+            )
+            
+        case .editMemoSuccess(let text):
+            return .send(.userInfoAction(.updateMemo(text)))
             
         case .fetchStorySuccess(let story):
             return .send(
@@ -111,6 +151,17 @@ extension CalendarDetailFeature {
             do {
                 let summary = try await fetchStoryUseCase.fetchSummary(storyId)
                 await send(.fetchSummarySuccess(summary))
+            } catch {
+                await send(.fetchFailure(error))
+            }
+        }
+    }
+    
+    func executeEditMemo(storyId: Int, text: String) -> Effect<Action> {
+        .run { send in
+            do {
+                try await editMemoUseCase.execute(storyId: storyId, memo: text)
+                await send(.editMemoSuccess(text))
             } catch {
                 await send(.fetchFailure(error))
             }
