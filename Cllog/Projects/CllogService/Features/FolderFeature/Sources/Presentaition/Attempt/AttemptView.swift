@@ -36,6 +36,11 @@ public struct AttemptView: ViewProtocol {
                 $store.scope(state: \.alert, action: \.alert),
                 style: .delete
             )
+            .onChange(of: store.showEditAttemptBottomSheet) { oldValue, newValue in
+                if oldValue == true && newValue == false {
+                    store.send(.onEditSheetDismissed)
+                }
+            }
     }
     
     public init(store: StoreOf<AttemptFeature>) {
@@ -224,9 +229,10 @@ extension AttemptView {
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
     }
     
+    // MARK: - BottomSheet View
     private func makeEditAttemptBottomSheet() -> some View {
         ZStack {
-            if store.currentNavigationPath == nil {
+            if store.selectedAction == nil {
                 VStack(alignment: .leading) {
                     ForEach(store.editActions, id: \.self) { action in
                         Button {
@@ -242,50 +248,81 @@ extension AttemptView {
                                     .font(.h4)
                                     .foregroundStyle(action.color)
                             }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.vertical, 12)
                             .padding(.horizontal, 8)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
             } else {
-                VStack {
-                    HStack {
-                        Button {
-                            store.send(.navigateToPath(nil))
-                        } label: {
-                            HStack {
-                                ClLogUI.back
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                                
-                                Text("뒤로")
-                            }
-                        }
-                        Spacer()
-                    }
-                    .padding()
-                    
-                    switch store.currentNavigationPath {
-                    case .editDetail(let action):
-                        makeDetailView(for: action)
-                    case .none:
-                        EmptyView()
-                    }
-                    
-                    Spacer()
+                
+                switch store.selectedAction {
+                case .video:
+                    Text("Video")
+                case .result:
+                    makeEditResultBottomSheet()
+                case .info:
+                    Text("info")
+                case .delete:
+                    Text("delete")
+                case .none:
+                    EmptyView()
                 }
             }
         }
     }
     
-    private func makeDetailView(for action: AttemptFeature.AttemptEditAction) -> some View {
+    private func makeEditActionDetailView(for action: AttemptFeature.AttemptEditAction) -> some View {
         VStack {
-            Text("\(action.title) 상세 화면")
-                .font(.h3)
-                .padding()
-            
-            Spacer()
+            switch action {
+            case .video:
+                Text("Video")
+            case .result:
+                makeEditResultBottomSheet()
+            case .info:
+                Text("info")
+            case .delete:
+                Text("delete")
+            }
         }
+    }
+    
+    private func makeEditResultBottomSheet() -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Button {
+                store.send(.editBackButtonTapped)
+            } label: {
+                HStack {
+                    ClLogUI.back
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(Color.clLogUI.white)
+                    
+                    Text("완등/실패")
+                        .font(.h3)
+                        .foregroundStyle(Color.clLogUI.white)
+                }
+            }
+
+            
+            Divider()
+                .frame(height: 1)
+                .frame(maxWidth: .infinity)
+                .foregroundStyle(Color.clLogUI.gray600)
+            
+            ForEach(ChallengeResult.allCases, id: \.self) { result in
+                Button {
+                    
+                } label: {
+                    Text(result.name)
+                        .font(.h4)
+                        .foregroundStyle(Color.clLogUI.white)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+        }
+        .padding(.horizontal, 16)
     }
 }

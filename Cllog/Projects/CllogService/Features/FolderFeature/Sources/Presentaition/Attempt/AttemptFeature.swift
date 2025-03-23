@@ -20,6 +20,11 @@ public struct AttemptFeature {
     
     @ObservableState
     public struct State: Equatable {
+        
+        public init(attemptId: Int) {
+            self.attemptId = attemptId
+        }
+        
         @Presents var alert: AlertState<Action.Dialog>?
         
         let attemptId: Int
@@ -29,15 +34,10 @@ public struct AttemptFeature {
         var selectedAction: AttemptEditAction?
         var stampPositions = [CGFloat]()
         
+        // Bottom sheet
         var showEditAttemptBottomSheet = false
         var showGradeBottomSheet = false
         var showEditGradeSheet = false
-        var test = false
-        var currentNavigationPath: AttemptNavigationPath? = nil
-
-        public init(attemptId: Int) {
-            self.attemptId = attemptId
-        }
         
         var dynamicSheetHeight: CGFloat {
             switch selectedAction {
@@ -49,7 +49,7 @@ public struct AttemptFeature {
                 700
             case .delete:
                 300
-            case nil: 300
+            case nil: 270
             }
         }
     }
@@ -63,16 +63,18 @@ public struct AttemptFeature {
         case shareButtonTapped
         case moreButtonTapped
         case moreActionTapped(_ action: AttemptEditAction)
-        case navigateToPath(_ path: AttemptNavigationPath?)
         case videoTapped
         case stampTapped(id: Int)
         
         case onSplitPositionsCalculated(positions: [CGFloat])
         case getAttempt(attempt: ReadAttempt)
-        case deletedAttempt
         
         // edit actions
+        case onEditSheetDismissed
+        case editBackButtonTapped
         case deleteActionTapped
+        case editAttemptResultActionTapped
+        case deletedAttempt
         
         @CasePathable
         public enum Dialog: Equatable {
@@ -98,11 +100,14 @@ public struct AttemptFeature {
                 state.showEditAttemptBottomSheet = true
                 return .none
             case .moreActionTapped(let action):
-                return handleEditAction(action: action, id: state.attemptId)
-            case .navigateToPath(let path):
-                state.currentNavigationPath = path
-                return .none
-                
+                switch action {
+                    
+                case .video, .result, .info:
+                    state.selectedAction = action
+                    return .none
+                case .delete:
+                    return .send(.deleteActionTapped)
+                }
             case .videoTapped:
                 return .none
             case .stampTapped(let id):
@@ -115,8 +120,16 @@ public struct AttemptFeature {
             case .getAttempt(let attempt):
                 state.attempt = attempt
                 return .none
-            case .deletedAttempt:
+                
+            // MARK: Bottom Sheet
+            case .editBackButtonTapped:
+                state.selectedAction = nil
                 return .none
+                
+            case .onEditSheetDismissed:
+                state.selectedAction = nil
+                return .none
+                
             case .deleteActionTapped:
                 state.showEditAttemptBottomSheet = false
                 state.alert = AlertState {
@@ -132,6 +145,13 @@ public struct AttemptFeature {
                     TextState("기록을 삭제하면 복구가 어려워요.\n영상 기록을 삭제하시나요?")
                 }
                 return .none
+            case .deletedAttempt:
+                return .none
+              
+            case .editAttemptResultActionTapped:
+                
+                return .none
+                
             case .alert(.presented(.cancel)):
                 
                 return .none
@@ -146,20 +166,6 @@ public struct AttemptFeature {
 }
 
 extension AttemptFeature {
-    private func handleEditAction(action: AttemptEditAction, id: Int) -> Effect<Action> {
-        return .run { send in
-            switch action {
-            case .video:
-                return await send(.navigateToPath(.editDetail(action)))
-            case .result:
-                return await send(.navigateToPath(.editDetail(action)))
-            case .info:
-                return await send(.navigateToPath(.editDetail(action)))
-            case .delete:
-                return await send(.deleteActionTapped)
-            }
-        }
-    }
     
     private func fetchAttempt(_ attemptId: Int) -> Effect<Action> {
         return .run { send in
@@ -217,26 +223,6 @@ extension AttemptFeature {
                 Color.clLogUI.white
             case .delete:
                 Color.clLogUI.fail
-            }
-        }
-    }
-    
-    
-    public enum AttemptNavigationPath: Equatable, Hashable {
-        case editDetail(AttemptEditAction)
-        
-        public func hash(into hasher: inout Hasher) {
-            switch self {
-            case .editDetail(let action):
-                hasher.combine(0)
-                hasher.combine(action)
-            }
-        }
-        
-        public static func == (lhs: AttemptNavigationPath, rhs: AttemptNavigationPath) -> Bool {
-            switch (lhs, rhs) {
-            case (.editDetail(let lhsAction), .editDetail(let rhsAction)):
-                return lhsAction == rhsAction
             }
         }
     }
