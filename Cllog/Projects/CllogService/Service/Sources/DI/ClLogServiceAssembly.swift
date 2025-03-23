@@ -18,6 +18,7 @@ import StoryDomain
 import Networker
 import Swinject
 import AccountDomain
+import ReportDomain
 
 public struct ClLogServiceAssembly: Assembly {
     public init() {}
@@ -152,6 +153,18 @@ public struct ClLogServiceAssembly: Assembly {
                 repository: DefaultEditMemoRepository(
                     dataSource: DefaultStoriesDataSource(
                         provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
+        
+        container.register(ReportFetcherUseCase.self) { _ in
+            ReportFetcher(
+                repository: DefaultReportRepository(
+                    dataSource: DefaultReportDataSource(
+                        with: AuthProvider(
                             tokenProvider: DefaultTokenDataSource().loadToken
                         )
                     )
