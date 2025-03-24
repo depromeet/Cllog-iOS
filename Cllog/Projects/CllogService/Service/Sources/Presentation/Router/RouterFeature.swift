@@ -12,6 +12,7 @@ import ComposableArchitecture
 import CalendarFeature
 import SettingFeature
 import FolderFeature
+import EditFeature
 import Core
 
 @Reducer
@@ -29,6 +30,8 @@ public struct RouterFeature {
     @ObservableState
     public struct State {
         var rootState: RootFeature.State = RootFeature.State()
+        var videoEditState: VideoEditFeature.State?
+        var isPresentEdit: Bool = false
         var path = StackState<Path.State>()
         public init() {}
     }
@@ -36,6 +39,7 @@ public struct RouterFeature {
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case rootAction(RootFeature.Action)
+        case videoEditAction(VideoEditFeature.Action)
         case path(StackActionOf<Path>)
     }
     
@@ -48,6 +52,9 @@ public struct RouterFeature {
         
         Reduce(reducerCore)
             .forEach(\.path, action: \.path)
+            .ifLet(\.videoEditState, action: \.videoEditAction) {
+                VideoEditFeature()
+            }
     }
 }
 
@@ -96,6 +103,10 @@ extension RouterFeature {
             return .none
         case let .mainAction(.routerAction(.pushToAttempt(attemptId))):
             state.path.append(.attempt(AttemptFeature.State(attemptId: attemptId)))
+            return .none
+        case let .mainAction(.routerAction(.presentToEdit(url))):
+            state.isPresentEdit = true
+            state.videoEditState = VideoEditFeature.State(videoURL: url)
             return .none
         default:
             return .none

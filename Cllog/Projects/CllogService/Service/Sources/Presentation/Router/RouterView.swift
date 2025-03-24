@@ -12,6 +12,7 @@ import ComposableArchitecture
 import CalendarFeature
 import SettingFeature
 import FolderFeature
+import EditFeature
 import Core
 
 public struct RouterView: View {
@@ -45,6 +46,11 @@ public struct RouterView: View {
                 WebView(store: store)
                     .navigationBarBackButtonHidden(true)
             }
+        }
+        .fullScreenCover(isPresented: $store.isPresentEdit) {
+            IfLetStore(
+                store.scope(state: \.videoEditState, action: \.videoEditAction), then: VideoEditView.init
+            )
         }
     }
 }
