@@ -78,9 +78,7 @@ public struct MockVideoPermission: VideoPermissionUseCase {
 
 public enum VideoPermissionDepdencyKey: DependencyKey {
     public static var liveValue: any VideoPermissionUseCase = VideoPermission()
-    
     public static var testValue: any VideoPermissionUseCase = MockVideoPermission()
-    
     public static var previewValue: any VideoPermissionUseCase = MockVideoPermission()
 }
 

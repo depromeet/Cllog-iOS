@@ -12,8 +12,9 @@ import Starlink
 import Networker
 
 public protocol VideoDataSourceLogic {
-    func uploadThumbnail(name: String, fileName: String, min: String, data: Data) async throws -> VideoUploadResponseDTO
-    func uploadVideo() async throws
+    func uploadThumbnail(name: String, fileName: String, min: String, data: Data) async throws -> VideoThumbnailUploadResponseDTO
+    
+    func videoUpload(_ request: VideoUploadRequestDTO) async throws -> VideoUploadResponseDTO
 }
 
 public struct VideoDataSource: VideoDataSourceLogic {
@@ -31,9 +32,9 @@ public struct VideoDataSource: VideoDataSourceLogic {
         fileName: String,
         min: String,
         data: Data
-    ) async throws -> VideoUploadResponseDTO {
+    ) async throws -> VideoThumbnailUploadResponseDTO {
         
-        let response: BaseResponseDTO<VideoUploadResponseDTO> = try await videoProvider.uploadRequest(VideoEndPoint.uploadThumbnail, .init(
+        let response: BaseResponseDTO<VideoThumbnailUploadResponseDTO> = try await videoProvider.uploadRequest(VideoEndPoint.uploadThumbnail, .init(
             name: name,
             fileName: fileName,
             data: data,
@@ -47,8 +48,17 @@ public struct VideoDataSource: VideoDataSourceLogic {
         return data
     }
     
-    public func uploadVideo() async throws {
-        
+    /// 비디오 업로드 -
+    /// - Parameter request: 요청 파라미터
+    /// - Returns: Response
+    public func videoUpload(
+        _ request: VideoUploadRequestDTO
+    ) async throws -> VideoUploadResponseDTO {
+        let response: BaseResponseDTO<VideoUploadResponseDTO> = try await authProvider.request(VideoEndPoint.uploadVideo(request))
+        guard let data = response.data else {
+            throw StarlinkError.inValidJSONData(nil)
+        }
+        return data
     }
     
     
@@ -56,7 +66,7 @@ public struct VideoDataSource: VideoDataSourceLogic {
 
 public enum VideoEndPoint: EndpointType {
     case uploadThumbnail
-    case uploadVideo
+    case uploadVideo(VideoUploadRequestDTO)
     
     public var baseURL: String {
         return "https://dev-api.climb-log.my"
@@ -77,7 +87,7 @@ public enum VideoEndPoint: EndpointType {
             return .post
             
         case .uploadVideo:
-            return .get
+            return .post
         }
     }
     
@@ -95,8 +105,8 @@ public enum VideoEndPoint: EndpointType {
         case .uploadThumbnail:
             return nil
             
-        case .uploadVideo:
-            return nil
+        case .uploadVideo(let videoUploadRequestDTO):
+            return videoUploadRequestDTO
         }
     }
     public var headers: [Starlink.Header]? { nil }

@@ -23,4 +23,6 @@ public protocol VideoRepository: Sendable {
         min: String,
         value: Data
     ) async throws -> Videothumbnails
+    
+    func uploadVideo() async throws
 }

@@ -23,6 +23,9 @@ public struct VideoRecordRepositry: VideoRepository {
         self.dataSource = dataSource
     }
     
+    
+    /// 비디오 저장 기능 - path
+    /// - Parameter fileURL: 비디오 경로
     public func saveVideo(fileURL: URL) async throws {
         let fileManager = FileManager.default
         // 앱의 Documents 디렉토리 경로를 가져옵니다.
@@ -49,6 +52,9 @@ public struct VideoRecordRepositry: VideoRepository {
         }
     }
     
+    /// 비디오 읽어오는 기능 - 테스트
+    /// - Parameter fileName: 파일명 (path xxxx) - RecordingFeature에서 저장된 fileName
+    /// - Returns: 저장된 path
     public func readSavedVideo(fileName: String) async throws -> URL? {
         let fileManager = FileManager.default
         
@@ -76,6 +82,10 @@ public struct VideoRecordRepositry: VideoRepository {
             print("파일이 존재하지 않습니다: \(fileURL)")
             return nil
         }
+    }
+    
+    public func uploadVideo() async throws {
+        
     }
     
     public func uploadVideo(fileURL: URL) async throws {

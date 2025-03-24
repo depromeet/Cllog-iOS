@@ -33,7 +33,6 @@ public struct VideoUploadUsesCase {
 extension VideoUploadUsesCase: VideoUseCase {
     public func execute(saveFile fileURL: URL) async throws {
         try await videoRepository.saveVideo(fileURL: fileURL)
-//        try await videoRepository.uploadVideo(fileURL: fileURL)
     }
     
     public func execute(loadName: String) async throws -> URL? {
@@ -43,20 +42,14 @@ extension VideoUploadUsesCase: VideoUseCase {
     public func execute(name: String, fileName: String, mimeType: String, value: Data) async throws -> Videothumbnails {
         try await videoRepository.uploadVideoThumbnail(name: name, fileName: fileName, min: mimeType, value: value)
     }
-
-    
-    /// 시도 등록 API
-    /// - Parameters:
-    ///   - status: SUCCESS, FAILURE
-    ///   - problemId: 암장 ID
-    ///   - localPath: 비디오
-    public func execute(
-        status: String,
-        problemId: String,
-        localPath: String
-    ) {
-        
-    }
+//
+//    public func execute(
+//        name: String, fileName: String, mimeType: String, value: Data
+//    ) async throws -> VideoUploadModel {
+//        // 썸네일 업로드
+//        
+//        // 비디오 업로드
+//    }
 }
 
 public enum VideoUploadUsesCaseDepdencyKey: DependencyKey {

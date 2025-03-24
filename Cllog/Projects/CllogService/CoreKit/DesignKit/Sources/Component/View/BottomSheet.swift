@@ -27,12 +27,14 @@ struct BottomSheetModifier<SheetContent: View>: ViewModifier {
     let sheetContent: () -> SheetContent
     
     func body(content: Content) -> some View {
-        content
-            .sheet(isPresented: $isPresented) {
-                BottomSheetView(
-                    content: sheetContent
-                )
-            }
+        ZStack {
+            content
+                .sheet(isPresented: $isPresented) {
+                    BottomSheetView(
+                        content: sheetContent
+                    )
+                }.zIndex(.zero)
+        }
     }
 }
 

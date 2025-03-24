@@ -40,7 +40,7 @@ public struct RecordedView: View {
                 isPresented: .init(get: {
                     store.showSelectCragBottomSheet
                 }, set: { newValue in
-                    store.send(.cragisPresentAction(newValue))
+                    store.send(.cragBottomSheetAction(newValue))
                 }),
                 didTapSaveButton: { designCrag in
                     store.send(.cragSaveButtonTapped(designCrag))
@@ -54,10 +54,10 @@ public struct RecordedView: View {
                 isPresented: $store.showSelectCragDifficultyBottomSheet,
                 cragName: store.selectedDesignCrag?.name ?? "",
                 grades: store.designGrades,
-                didTapSaveButton: { DesignGrade in
-                    
+                didTapSaveButton: { designGrade in
+                    store.send(.gradeSaveButtonTapped(designGrade))
                 }, didTapCragTitleButton: {
-                    
+                    store.send(.gradeTapCragTitleButton)
                 })
     }
     
