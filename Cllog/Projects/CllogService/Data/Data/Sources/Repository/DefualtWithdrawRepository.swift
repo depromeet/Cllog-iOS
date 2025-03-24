@@ -21,9 +21,14 @@ public struct DefaultWithdrawRepository: WithdrawRepository {
         self.tokenDataSource = tokenDataSource
     }
     
-    public func execute() async throws {
+    public func execute(_ authorizationCode: String?) async throws {
         do {
-            try await userDataSource.leave()
+            if let code = authorizationCode {
+                let request = AppleWithdrawCodeRequestDTO(authorizationCode: code)
+                try await userDataSource.leave(request)
+            } else {
+                try await userDataSource.leave(nil)
+            }
             tokenDataSource.clearToken()
         } catch {
             throw error

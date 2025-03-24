@@ -12,6 +12,7 @@ import ComposableArchitecture
 import CalendarFeature
 import SettingFeature
 import FolderFeature
+import Core
 
 @Reducer
 public struct RouterFeature {
@@ -59,6 +60,9 @@ extension RouterFeature {
             // 캘린더 상세 페이지 pop
             state.path.pop(from: id)
             return .none
+        case .path(.element(id: let id, action: .calendarDetail(.deleteStorySuccess))):
+            state.path.pop(from: id)
+            return .none
         case .path(.element(id: let id, action: .setting(.backButtonTapped))):
             state.path.pop(from: id)
             return .none
@@ -69,6 +73,12 @@ extension RouterFeature {
             state.path.pop(from: id)
             state.rootState.mainState = nil
             state.rootState.loginState = .init()
+            return .none
+        case let .path(.element(id: _, action: .setting(.pushWebView(url)))):
+            state.path.append(.webView(WebViewFeature.State(urlString: url)))
+            return .none
+        case let .path(.element(id: id, action: .webView(.backButtonTapped))):
+            state.path.pop(from: id)
             return .none
         default:
             return .none

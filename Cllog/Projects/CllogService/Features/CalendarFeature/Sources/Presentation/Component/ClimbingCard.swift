@@ -40,13 +40,25 @@ extension ClimbingCard {
     private func makeBody() -> some View {
         HStack(spacing: 12) {
             
-            AsyncImage(url: URL(string: "")) { phase in
-                if let image = phase.image {
+            AsyncImage(url: URL(string: "n")) { phase in
+                switch phase {
+                case .success(let image):
                     image
                         .resizable()
                         .frame(width: 50, height: 50)
                         .clipShape(RoundedRectangle(cornerRadius: 6))
-                } else {
+                case .failure(let error):
+                    ZStack {
+                        Color.clLogUI.gray600
+                        
+                        Image.clLogUI.alert
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(Color.clLogUI.gray500)
+                    }
+                    .frame(width: 50, height: 50)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                default:
                     Color.clLogUI.gray900
                         .frame(width: 50, height: 50)
                         .clipShape(RoundedRectangle(cornerRadius: 6))

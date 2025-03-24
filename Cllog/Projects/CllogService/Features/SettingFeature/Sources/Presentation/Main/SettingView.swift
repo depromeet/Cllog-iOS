@@ -30,7 +30,9 @@ extension SettingView {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
                 makeAppBar()
-                makeProfile()
+                // TODO: MVP 제외 추후 개발 예정
+                // makeProfile()
+                Spacer(minLength: 37)
                 VStack(spacing: 17) {
                     makeServiceTerms()
                     makeOther()

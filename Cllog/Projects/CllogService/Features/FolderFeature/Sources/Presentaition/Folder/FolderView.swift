@@ -222,7 +222,8 @@ extension FolderView {
             
             ClLogTextInput(
                 placeHolder: "암장을 입력해주세요",
-                text: $store.searchCragName
+                text: $store.searchCragName,
+                isFocused: .constant(true)
             )
             
             ForEach(store.filterableAttemptInfo?.crags ?? [].filter { crag in

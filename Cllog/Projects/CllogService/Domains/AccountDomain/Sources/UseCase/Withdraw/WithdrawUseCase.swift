@@ -13,7 +13,7 @@ import Dependencies
 import Shared
 
 public protocol WithdrawUseCase {
-    func execute() async throws
+    func execute(_ authorizationCode: String?) async throws
 }
 
 public struct Withdraw: WithdrawUseCase {
@@ -23,13 +23,13 @@ public struct Withdraw: WithdrawUseCase {
     
     private let repository: WithdrawRepository
     
-    public func execute() async throws {
-        try await repository.execute()
+    public func execute(_ authorizationCode: String?) async throws {
+        try await repository.execute(authorizationCode)
     }
 }
 
 public struct MockWithdrawUseCase: WithdrawUseCase {
-    public func execute() async throws {
+    public func execute(_ authorizationCode: String?) async throws {
         
     }
 }

@@ -8,54 +8,74 @@
 
 import SwiftUI
 
+// FIXME: 임시 스탬프 모델
+public struct TempStamp: Identifiable {
+    public let id: Int
+    public let position: CGFloat
+    
+    public init(id: Int, position: CGFloat) {
+        self.id = id
+        self.position = position
+    }
+}
+
 public struct PlayerProgressBar: View {
-    @Binding private var value: Float
-    private var splitPositions: [Float]
-    private var onSplitPositionsCalculated: (([CGFloat]) -> Void)?
+    private enum Constnats {
+        static let stampHalfWidth: CGFloat = 9
+        static let stampYOffset: CGFloat = -3
+    }
+    
+    private let progress: CGFloat
+    private let stamps: [TempStamp]
+    private let onStampTapped: ((Int) -> Void)?
     
     public init(
-        value: Binding<Float>,
-        splitPositions: [Float] = [],
-        onSplitPositionsCalculated: (([CGFloat]) -> Void)? = nil
+        progress: CGFloat,
+        stamps: [TempStamp] = [],
+        onStampTapped: ((Int) -> Void)? = nil
     ) {
-        self._value = value
-        self.splitPositions = splitPositions
-        self.onSplitPositionsCalculated = onSplitPositionsCalculated
+        self.progress = progress.isNaN ? 0 : progress
+        self.stamps = stamps
+        self.onStampTapped = onStampTapped
+    }
+    
+    private var stampArea: some View {
+        Color.clear
+            .frame(height: 15)
+            .overlay {
+                ForEach(stamps) {
+                    Image.clLogUI.stamp
+                        .foregroundStyle(Color.clLogUI.primary)
+                        .position(x: $0.position + Constnats.stampHalfWidth, y: Constnats.stampYOffset)
+                }
+            }
     }
     
     public var body: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                Rectangle()
-                    .frame(
-                        width: geometry.size.width,
-                        height: geometry.size.height
-                    )
-                    .foregroundColor(Color.clLogUI.gray50)
-                
-                Rectangle()
-                    .frame(
-                        width: min(CGFloat(self.value) * geometry.size.width, geometry.size.width),
-                        height: geometry.size.height
-                    )
-                    .foregroundColor(Color.clLogUI.primary)
-                
-                ForEach(splitPositions, id: \.self) { position in
-                    Rectangle()
-                        .frame(width: 1, height: geometry.size.height)
-                        .foregroundColor(.black)
-                        .offset(x: CGFloat(position) * geometry.size.width)
+        VStack(spacing: 0) {
+            stampArea
+            
+            GeometryReader { geometry in
+                HStack(spacing: 0) {
+                    Color.clLogUI.primary
+                        .frame(width: geometry.size.width * min(progress, 1.0))
+                    
+                    Color.clLogUI.gray50
+                        .frame(maxWidth: .infinity)
+                }
+                .overlay {
+                    ForEach(stamps) { stamp in
+                        Rectangle()
+                            .fill(Color.clLogUI.gray900)
+                            .frame(width: 1)
+                            .position(x: stamp.position + Constnats.stampHalfWidth, y: geometry.size.height / 2)
+                            .onTapGesture {
+                                onStampTapped?(stamp.id)
+                            }
+                    }
                 }
             }
-            .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
-            .onAppear {
-                let actualPositions = splitPositions.map { CGFloat($0) * geometry.size.width }
-                onSplitPositionsCalculated?(actualPositions)
-            }
-            .onChange(of: geometry.size) { _, newSize in
-                let actualPositions = splitPositions.map { CGFloat($0) * newSize.width }
-                onSplitPositionsCalculated?(actualPositions)
-            }
+            .frame(height: 5)
         }
     }
 }

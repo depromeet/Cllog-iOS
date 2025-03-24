@@ -11,10 +11,14 @@ import Shared
 
 public protocol AttemptRepository {
     func getFilteredAttempts() async throws -> [Attempt]
+    func getAttempt(attemptId: Int) async throws -> ReadAttempt
+    func patchResult(attempt: ReadAttempt, result: AttemptResult) async throws
+    func deleteAttempt(attemptId: Int) async throws
 }
 
 // TODO: Remove
 public struct MockAttemptRepository: AttemptRepository {
+    
     public init() {}
     
     public func getFilteredAttempts() async throws -> [Attempt] {
@@ -61,5 +65,17 @@ public struct MockAttemptRepository: AttemptRepository {
                 crag: Crag(name: "Daegu Rock Gym", address: "Daegu, South Korea")
             )
         ]
+    }
+    
+    public func getAttempt(attemptId: Int) async throws -> ReadAttempt {
+        throw NSError(domain: "attempt error", code: 0)
+    }
+    
+    public func patchResult(attempt: ReadAttempt, result: AttemptResult) async throws {
+        throw NSError(domain: "attempt", code: 0)
+    }
+    
+    public func deleteAttempt(attemptId: Int) async throws {
+        throw NSError(domain: "attempt", code: 0)
     }
 }

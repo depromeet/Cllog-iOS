@@ -1,12 +1,13 @@
 import SwiftUI
+import ReportFeature
 
 @main
-struct App: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
+struct ReportApp: App {
     var body: some Scene {
         WindowGroup {
-            
+            ReportView(store: .init(initialState: ReportFeature.State(), reducer: {
+                ReportFeature()
+            }))
         }
     }
 }

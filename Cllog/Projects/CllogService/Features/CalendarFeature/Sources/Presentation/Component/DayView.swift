@@ -34,15 +34,25 @@ struct DayView: View {
                         Color.clLogUI.gray700 : .clear
                     )
                 
-                AsyncImage(url: URL(string: day.thumbnail ?? "")) { phase in
-                    if let image = phase.image {
+                AsyncImage(url: URL(string: day.thumbnail)) { phase in
+                    switch phase {
+                    case .success(let image):
                         image
                             .resizable()
                             .aspectRatio(43/53, contentMode: .fill)
                             .overlay {
                                 Color.black.opacity(0.3)
                             }
-                    } else {
+                    case .failure(let error):
+                        ZStack {
+                            Color.clLogUI.gray600
+                            
+                            Image.clLogUI.alert
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(Color.clLogUI.gray500)
+                        }
+                    default:
                         Color.clear
                     }
                 }

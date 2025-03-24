@@ -14,6 +14,7 @@ import AccountDomain
 public enum Destination {
     case login
     case main
+    case onBoarding
 }
 
 @Reducer
@@ -57,6 +58,11 @@ extension SplashFeature {
             return .send(.checkCompletion)
         case .checkCompletion:
             guard state.isAnimationFinished && state.isValidUserFinished else { return .none }
+            
+            if !SplashDataManager.hasCompleted {
+                SplashDataManager.hasCompleted = true
+                return .send(.finish(.onBoarding))
+            }
             
             if state.isValidUserSession {
                 return .send(.finish(.main))

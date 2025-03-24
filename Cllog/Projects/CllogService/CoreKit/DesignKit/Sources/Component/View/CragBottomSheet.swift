@@ -87,7 +87,8 @@ struct SelectCragView: View {
             
             ClLogTextInput(
                 placeHolder: "암장을 입력해주세요",
-                text: $searchText
+                text: $searchText,
+                isFocused: .constant(true)
             )
             .focused($isFocused)
         }

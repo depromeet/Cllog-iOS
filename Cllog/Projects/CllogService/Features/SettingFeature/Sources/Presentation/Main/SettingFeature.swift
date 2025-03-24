@@ -38,6 +38,7 @@ public struct SettingFeature {
         case onAppear
         case backButtonTapped
         case settingItemTapped(SettingItemType)
+        case pushWebView(String)
         case exitToStart
         
         case logoutTapped
@@ -76,6 +77,10 @@ extension SettingFeature {
                 return .send(.logoutTapped)
             case .deleteAccount:
                 return .send(.withdrawTapped)
+            case .privacyPolicy:
+                return .send(.pushWebView("https://crimson-reason-2f1.notion.site/1abbb5f5bdf780cd8e5fe4ccb702fe23?pvs=4"))
+            case .termsOfService:
+                return .send(.pushWebView("https://crimson-reason-2f1.notion.site/1abbb5f5bdf780a1b2d9f2cda245bf48?pvs=4"))
             default:
                 return .none
             }
@@ -135,14 +140,15 @@ extension SettingFeature {
             
             switch type {
             case .kakao:
-                try await withdrawUseCase.execute()
+                try await withdrawUseCase.execute(nil)
                 await send(.exitToStart)
             case .apple:
                 let handler = await AppleAuthenticationHandler()
                 do {
                     let authCode = try await handler.revokeAppleAccount()
                     print("authCode: \(authCode)")
-//                    try await withdrawUseCase.execute()
+                    try await withdrawUseCase.execute(authCode)
+                    
                     await send(.exitToStart)
                 } catch {
                     print("Apple 회원탈퇴 실패: \(error.localizedDescription)")
@@ -152,6 +158,7 @@ extension SettingFeature {
     }
 }
 
+// MARK: - 애플 로그인 인증
 class AppleAuthenticationHandler: NSObject, ASAuthorizationControllerDelegate {
     private var completion: ((Result<String, Error>) -> Void)?
     
