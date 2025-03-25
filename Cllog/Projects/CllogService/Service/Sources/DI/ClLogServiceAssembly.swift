@@ -165,6 +165,7 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
+        
         container.register(ReportFetcherUseCase.self) { _ in
             ReportFetcher(
                 repository: DefaultReportRepository(
@@ -173,6 +174,10 @@ public struct ClLogServiceAssembly: Assembly {
                             tokenProvider: DefaultTokenDataSource().loadToken
                         )
                     )
+                )
+            )
+        }
+                    
         container.register(VideoRepository.self) { resolver in
             VideoRecordRepositry(
                 dataSource: VideoDataSource(
