@@ -86,7 +86,7 @@ public struct RecordedFeature {
         
         // savebuttonCore
         case successTapped
-        case failtureTapped
+        case failureTapped
         
         // alertCore
         case alert(PresentationAction<Dialog>)
@@ -154,7 +154,7 @@ extension RecordedFeature {
         case .closeButtonTapped, .editButtonTapped, .moveEditRecord, .close:
             return navigationCore(&state, action)
             
-        case .successTapped, .failtureTapped:
+        case .successTapped, .failureTapped:
             return saveButtonCore(&state, action)
             
         case .alert, .cragAlert:
@@ -261,7 +261,7 @@ extension RecordedFeature {
                 await send(.pause)
             }
             
-        case .failtureTapped:
+        case .failureTapped:
             // 실패하기로 저장 버튼 클릭
             state.climbingResult = .success
             state.showSelectCragBottomSheet = true
