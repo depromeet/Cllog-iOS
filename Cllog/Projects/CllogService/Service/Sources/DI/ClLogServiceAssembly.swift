@@ -186,5 +186,17 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
+        
+        container.register(SaveStoryUseCase.self) { _ in
+            SaveStory(
+                repository: DefaultSaveStoryRepository(
+                    dataSource: DefaultStoriesDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
     }
 }

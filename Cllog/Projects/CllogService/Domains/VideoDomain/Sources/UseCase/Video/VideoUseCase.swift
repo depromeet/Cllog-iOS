@@ -57,7 +57,7 @@ public enum VideoUploadUsesCaseDepdencyKey: DependencyKey {
 }
 
 public extension DependencyValues {
-    var videoUsecase: any VideoUseCase {
+    var videoUseCase: any VideoUseCase {
         get { self[VideoUploadUsesCaseDepdencyKey.self] }
         set { self[VideoUploadUsesCaseDepdencyKey.self] = newValue }
     }

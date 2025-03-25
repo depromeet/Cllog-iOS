@@ -10,6 +10,7 @@ import Foundation
 import AVFoundation
 
 import DesignKit
+import VideoDomain
 
 import ComposableArchitecture
 import UIKit
@@ -17,7 +18,8 @@ import UIKit
 @Reducer
 public struct RecordedFeature {
     
-    @Dependency(\.videoUsecase) var videoUsecase
+    @Dependency(\.videoUseCase) var videoUseCase
+    @Dependency(\.saveStoryUseCase) var saveStoryUseCase
     
     @ObservableState
     public struct State: Equatable {
@@ -86,7 +88,7 @@ public struct RecordedFeature {
         
         // savebuttonCore
         case successTapped
-        case failtureTapped
+        case failureTapped
         
         // alertCore
         case alert(PresentationAction<Dialog>)
@@ -154,7 +156,7 @@ extension RecordedFeature {
         case .closeButtonTapped, .editButtonTapped, .moveEditRecord, .close:
             return navigationCore(&state, action)
             
-        case .successTapped, .failtureTapped:
+        case .successTapped, .failureTapped:
             return saveButtonCore(&state, action)
             
         case .alert, .cragAlert:
@@ -261,7 +263,7 @@ extension RecordedFeature {
                 await send(.pause)
             }
             
-        case .failtureTapped:
+        case .failureTapped:
             // 실패하기로 저장 버튼 클릭
             state.climbingResult = .success
             state.showSelectCragBottomSheet = true
@@ -361,8 +363,28 @@ extension RecordedFeature {
             
         case .gradeSaveButtonTapped(let designGrade):
             // 암장 등급 바텀시트에서 등급을 저장하기 버튼을 누르면 오는 이벤트
-            return .run { send in
-//                let model = videoUsecase.execute(saveFile: <#T##URL#>)
+            // TODO: 최종 저장 버튼
+            return .run { [state] send in
+                let request = StoryRequest(
+                    cragId: nil, // 암장 ID
+                    problem: ProblemRequest(gradeId: 0), // 난이도 ID
+                    attempt: AttemptRequest(
+                        status: "SUCCESS",
+                        problemId: nil,
+                        video: VideoRequest(
+                            localPath: state.path.absoluteString,
+                            thumbnailUrl: "",
+                            durationMs: (Int(state.duration) ?? 0) * 1000,
+                            stamps: [
+                                StampRequest(timeMs: 0) // 타임 스탬프
+                            ]
+                        )
+                    ),
+                    memo: nil
+                )
+                
+                let response = try await saveStoryUseCase.execute(request)
+                try await videoUseCase.execute(saveFile: state.path)
             }
             
         default: return .none
