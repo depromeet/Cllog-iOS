@@ -35,12 +35,6 @@ public struct ClLogServiceAssembly: Assembly {
             )
         }
         
-        container.register(VideoRepository.self) { resolver in
-            VideoRecordRepositry(provider: AuthProvider(
-                tokenProvider: DefaultTokenDataSource().loadToken
-            ))
-        }
-        
         container.register(FutureMonthCheckerUseCase.self) { _ in
             FutureMonthChecker()
         }
@@ -179,6 +173,11 @@ public struct ClLogServiceAssembly: Assembly {
                             tokenProvider: DefaultTokenDataSource().loadToken
                         )
                     )
+        container.register(VideoRepository.self) { resolver in
+            VideoRecordRepositry(
+                dataSource: VideoDataSource(
+                    videoProvider: UploadProvider(tokenProvider: DefaultTokenDataSource().loadToken),
+                    authProvider: AuthProvider(tokenProvider: DefaultTokenDataSource().loadToken)
                 )
             )
         }

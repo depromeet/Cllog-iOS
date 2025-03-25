@@ -14,6 +14,8 @@ public protocol StarlinkTracking: Sendable {
 
 public struct StarlinkLogTraking: StarlinkTracking {
     
+    public init() {}
+    
     /// 로그 요청
     /// - Parameter request: 요청 정보
     public func didRequest(_ request: Starlink.Request, urlRequest: URLRequest) {

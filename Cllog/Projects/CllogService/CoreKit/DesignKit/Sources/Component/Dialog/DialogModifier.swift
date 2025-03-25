@@ -23,6 +23,7 @@ struct DialogModifier: ViewModifier {
             
             DialogView(isPresented: $isPresented, model: model)
                 .zIndex(2)
+
         }
     }
 }
