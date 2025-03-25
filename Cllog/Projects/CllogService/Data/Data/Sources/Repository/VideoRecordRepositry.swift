@@ -13,7 +13,7 @@ import Networker
 import Starlink
 import Swinject
 
-public struct VideoRecordRepositry: VideoRepository {
+public struct VideoRecordRepository: VideoRepository {
 
     private let dataSource: VideoDataSource
     
