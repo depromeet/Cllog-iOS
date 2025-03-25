@@ -40,17 +40,17 @@ public struct RecordedFeature {
         var selectedDesignCrag: DesignCrag?
         
         var designGrades: [DesignGrade] = [
-            .init(name: "블루", color: .init(hex: "#0000ff")),
-            .init(name: "블루", color: .init(hex: "#0000ff")),
-            .init(name: "블루", color: .init(hex: "#0000ff"))
+            .init(id: 0, name: "블루", color: .init(hex: "#0000ff")),
+            .init(id: 0, name: "블루", color: .init(hex: "#0000ff")),
+            .init(id: 0, name: "블루", color: .init(hex: "#0000ff"))
         ]
         
         // bottomSheet
         var showSelectCragBottomSheet = false
         var designCrag: [DesignCrag] = [
-            DesignCrag(name: "강남점", address: "서울 강남구"),
-            DesignCrag(name: "홍대점", address: "서울 마포구"),
-            DesignCrag(name: "신촌점", address: "서울 서대문구")
+            DesignCrag(id: 0, name: "강남점", address: "서울 강남구"),
+            DesignCrag(id: 0, name: "홍대점", address: "서울 마포구"),
+            DesignCrag(id: 0, name: "신촌점", address: "서울 서대문구")
         ]
         
         var showSelectCragDifficultyBottomSheet = false

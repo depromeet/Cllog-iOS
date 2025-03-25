@@ -35,6 +35,7 @@ public struct AttemptFeature {
         
         let attemptId: Int
         var attempt: ReadAttempt?
+        var videoURL: URL?
         let editActions = AttemptEditAction.allCases
         
         var selectedAction: AttemptEditAction?
@@ -172,6 +173,7 @@ public struct AttemptFeature {
                 return .none
             case .getAttempt(let attempt):
                 state.attempt = attempt
+                state.videoURL = URL(fileURLWithPath: attempt.attempt.video.localPath)
                 state.selectedEditCrag = state.attempt?.crag
                 state.selectedEditGrade = attempt.grade
                 return .none

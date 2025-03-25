@@ -11,6 +11,7 @@ import FolderDomain
 import DesignKit
 import Shared
 import Core
+import _AVKit_SwiftUI
 
 import ComposableArchitecture
 
@@ -199,9 +200,21 @@ extension AttemptView {
         ZStack(alignment: .bottom) {
             RoundedRectangle(cornerRadius: 6)
                 .foregroundStyle(Color.clLogUI.dim)
-                .onTapGesture {
-                    print("재생 또는 정지")
-                }
+            
+            if let videoPath = store.videoURL {
+                VideoPlayer(player: AVPlayer(url: videoPath))
+                    .clipShape(
+                        RoundedRectangle(cornerRadius: 6)
+                    )
+                    .onTapGesture {
+                        
+                        print("재생 또는 정지")
+                    }
+            }
+
+//                .onTapGesture {
+//                    print("재생 또는 정지")
+//                }
             
             PlayerProgressBar(
                 progress: CGFloat(progressValue),
