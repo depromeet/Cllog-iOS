@@ -12,14 +12,14 @@ import CalendarDomain
 public struct CalendarStoryResponseDTO: Decodable {
     let id: Int
     let totalDurationMs: Int
-    let cragName: String
+    let cragName: String?
     let problems: [CalendarProblemResponseDTO]
     
     func toDomain() -> CalendarStory {
         return CalendarStory(
             id: id,
             totalDurationMs: totalDurationMs,
-            cragName: cragName,
+            cragName: cragName ?? "",
             problems: problems.map { $0.toDomain() }
         )
     }

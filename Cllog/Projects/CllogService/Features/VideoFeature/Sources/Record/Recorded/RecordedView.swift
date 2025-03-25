@@ -135,7 +135,7 @@ public struct RecordedView: View {
             Group {
                 HStack(spacing: 7) {
                     Button(action: {
-                        store.send(.failtureTapped)
+                        store.send(.failureTapped)
                     }) {
                         Text("실패로 저장")
                             .frame(maxWidth: .infinity)
