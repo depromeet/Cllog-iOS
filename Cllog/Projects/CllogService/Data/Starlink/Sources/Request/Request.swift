@@ -13,6 +13,7 @@ public protocol StarlinkRequest {
     func reponsePublisher<T: Decodable>() -> AnyPublisher<T, any Error>
     func reponseAsync<T: Decodable>() async throws -> T
     func response<T: Decodable>(_ complete: @escaping @Sendable (Result<T, any Error>) -> Void)
+    func uploadResponse<T: Decodable>() async throws -> T
 }
 
 extension Starlink {
@@ -41,6 +42,7 @@ extension Starlink {
             session: Sessionable,
             path: URLConversion,
             params: SafeDictionary<String, Any>? = nil,
+            uploadForm: UploadDataForm? = nil,
             method: Method,
             headers: [Starlink.Header] = [],
             requestTime: Date = Date(),
@@ -51,6 +53,7 @@ extension Starlink {
             self.session = session
             self.path = path
             self.params = params
+            self.uploadForm = uploadForm
             self.method = method
             self.headers = headers
             self.requestTime = requestTime

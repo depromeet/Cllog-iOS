@@ -19,9 +19,8 @@ import ComposableArchitecture
 public struct RecordedView: View {
     
     private weak var on: UIViewController?
-    
-    @Bindable
-    private var store: StoreOf<RecordedFeature>
+
+    @Bindable private var store: StoreOf<RecordedFeature>
     
     public init(
         on: UIViewController?,
@@ -37,6 +36,29 @@ public struct RecordedView: View {
                 store.send(.onAppear)
             }
             .presentDialog($store.scope(state: \.alert, action: \.alert), style: .default)
+            .showCragBottomSheet(
+                isPresented: .init(get: {
+                    store.showSelectCragBottomSheet
+                }, set: { newValue in
+                    store.send(.cragBottomSheetAction(newValue))
+                }),
+                didTapSaveButton: { designCrag in
+                    store.send(.cragSaveButtonTapped(designCrag))
+                }, didTapSkipButton: {
+                    store.send(.cragNameSkipButtonTapped)
+                }, didChangeSearchText: { keyword in
+                    store.send(.cragName(keyWord: keyword))
+                }, crags: $store.designCrag)
+            .presentDialog($store.scope(state: \.cragAlert, action: \.cragAlert))
+            .showGradeBottomSheet(
+                isPresented: $store.showSelectCragDifficultyBottomSheet,
+                cragName: store.selectedDesignCrag?.name ?? "",
+                grades: store.designGrades,
+                didTapSaveButton: { designGrade in
+                    store.send(.gradeSaveButtonTapped(designGrade))
+                }, didTapCragTitleButton: {
+                    store.send(.gradeTapCragTitleButton)
+                })
     }
     
     @ViewBuilder
@@ -113,7 +135,7 @@ public struct RecordedView: View {
             Group {
                 HStack(spacing: 7) {
                     Button(action: {
-                        store.send(.failtureTapped)
+                        store.send(.failureTapped)
                     }) {
                         Text("실패로 저장")
                             .frame(maxWidth: .infinity)

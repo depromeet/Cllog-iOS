@@ -35,12 +35,6 @@ public struct ClLogServiceAssembly: Assembly {
             )
         }
         
-        container.register(VideoRepository.self) { resolver in
-            VideoRecordRepositry(provider: AuthProvider(
-                tokenProvider: DefaultTokenDataSource().loadToken
-            ))
-        }
-        
         container.register(FutureMonthCheckerUseCase.self) { _ in
             FutureMonthChecker()
         }
@@ -171,6 +165,7 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
+        
         container.register(ReportFetcherUseCase.self) { _ in
             ReportFetcher(
                 repository: DefaultReportRepository(
@@ -199,6 +194,26 @@ public struct ClLogServiceAssembly: Assembly {
             DefaultGradeUseCase(
                 gradeRepository: DefaultGradeRepository(
                     dataSource: DefaultGradeDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
+        container.register(VideoRepository.self) { resolver in
+            VideoRecordRepository(
+                dataSource: VideoDataSource(
+                    videoProvider: UploadProvider(tokenProvider: DefaultTokenDataSource().loadToken),
+                    authProvider: AuthProvider(tokenProvider: DefaultTokenDataSource().loadToken)
+                )
+            )
+        }
+        
+        container.register(SaveStoryUseCase.self) { _ in
+            SaveStory(
+                repository: DefaultSaveStoryRepository(
+                    dataSource: DefaultStoriesDataSource(
                         provider: AuthProvider(
                             tokenProvider: DefaultTokenDataSource().loadToken
                         )

@@ -57,7 +57,7 @@ extension CragTarget: EndpointType {
     }
     
     var baseURL: String {
-        "https://dev-api.climb-log.my"
+        Environment.baseURL
     }
     
     var path: String {

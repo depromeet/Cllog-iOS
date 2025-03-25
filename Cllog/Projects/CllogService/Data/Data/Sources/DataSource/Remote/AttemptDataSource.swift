@@ -90,7 +90,7 @@ extension AttemptTarget: EndpointType {
     
    
     var baseURL: String {
-        return "https://dev-api.climb-log.my"
+        return Environment.baseURL
     }
     
     var path: String {

@@ -12,16 +12,19 @@ import Starlink
 import Networker
 
 public protocol VideoDataSourceLogic {
-    func uploadThumbnail(name: String, fileName: String, min: String, data: Data) async throws
-    func uploadVideo() async throws
+    func uploadThumbnail(name: String, fileName: String, min: String, data: Data) async throws -> VideoThumbnailUploadResponseDTO
+    
+    func videoUpload(_ request: VideoUploadRequestDTO) async throws -> VideoUploadResponseDTO
 }
 
 public struct VideoDataSource: VideoDataSourceLogic {
     
-    private let provider: Provider
+    private let videoProvider: UploadProvider
+    private let authProvider: AuthProvider
     
-    public init(with provider: Provider) {
-        self.provider = provider
+    public init(videoProvider: UploadProvider, authProvider: AuthProvider) {
+        self.videoProvider = videoProvider
+        self.authProvider = authProvider
     }
     
     public func uploadThumbnail(
@@ -29,12 +32,33 @@ public struct VideoDataSource: VideoDataSourceLogic {
         fileName: String,
         min: String,
         data: Data
-    ) async throws {
+    ) async throws -> VideoThumbnailUploadResponseDTO {
+        
+        let response: BaseResponseDTO<VideoThumbnailUploadResponseDTO> = try await videoProvider.uploadRequest(VideoEndPoint.uploadThumbnail, .init(
+            name: name,
+            fileName: fileName,
+            data: data,
+            mimeType: min
+        ))
 
+        guard let data = response.data else {
+            throw StarlinkError.inValidJSONData(nil)
+        }
+        
+        return data
     }
     
-    public func uploadVideo() async throws {
-        
+    /// 비디오 업로드 -
+    /// - Parameter request: 요청 파라미터
+    /// - Returns: Response
+    public func videoUpload(
+        _ request: VideoUploadRequestDTO
+    ) async throws -> VideoUploadResponseDTO {
+        let response: BaseResponseDTO<VideoUploadResponseDTO> = try await authProvider.request(VideoEndPoint.uploadVideo(request))
+        guard let data = response.data else {
+            throw StarlinkError.inValidJSONData(nil)
+        }
+        return data
     }
     
     
@@ -42,10 +66,10 @@ public struct VideoDataSource: VideoDataSourceLogic {
 
 public enum VideoEndPoint: EndpointType {
     case uploadThumbnail
-    case uploadVideo
+    case uploadVideo(VideoUploadRequestDTO)
     
     public var baseURL: String {
-        return "https://dev-api.climb-log.my"
+        return Environment.baseURL
     }
     public var path: String {
         switch self {
@@ -53,7 +77,7 @@ public enum VideoEndPoint: EndpointType {
             return ""
             
         case .uploadThumbnail:
-            return ""
+            return "/api/v1/thumbnails/upload"
         }
     }
     
@@ -63,12 +87,28 @@ public enum VideoEndPoint: EndpointType {
             return .post
             
         case .uploadVideo:
-            return .get
+            return .post
         }
     }
     
-    public var parameters: ParameterType? { nil }
-    public var encodable: (any Encodable)? { nil }
+    public var parameters: ParameterType? {
+        switch self {
+        case .uploadThumbnail:
+            return .encodable(EmptyModel())
+            
+        case .uploadVideo:
+            return nil
+        }
+    }
+    public var encodable: (any Encodable)? {
+        switch self {
+        case .uploadThumbnail:
+            return nil
+            
+        case .uploadVideo(let videoUploadRequestDTO):
+            return videoUploadRequestDTO
+        }
+    }
     public var headers: [Starlink.Header]? { nil }
     
     public var encoding: StarlinkEncodable {
@@ -81,3 +121,5 @@ public enum VideoEndPoint: EndpointType {
         }
     }
 }
+
+struct EmptyModel: Encodable {}

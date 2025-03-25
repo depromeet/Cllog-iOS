@@ -85,6 +85,7 @@ public struct MainFeature {
             case pushToCalendarDetail(Int)
             case pushToSetting
             case pushToAttempt(Int)
+            case presentToEdit(URL)
         }
     }
     
@@ -191,8 +192,7 @@ private extension MainFeature {
             }
             
         case .moveEditRecord(let path):
-//            coordinator?.pushToRecordEdit(path: path)
-            return .none
+            return .send(.routerAction(.presentToEdit(path)))
         default:
             return .none
         }

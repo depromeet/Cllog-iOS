@@ -8,6 +8,7 @@
 
 import Starlink
 import Networker
+import Foundation
 
 public protocol AuthDataSource {
     func kakaoLogin(idToken: String) async throws -> AuthTokenDTO
@@ -60,7 +61,7 @@ enum LoginTarget {
 extension LoginTarget: EndpointType {
     
     var baseURL: String {
-        return "https://dev-api.climb-log.my"
+        return Environment.baseURL
     }
     
     var path: String {

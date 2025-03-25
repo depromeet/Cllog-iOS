@@ -5,7 +5,7 @@
 //  Created by Junyoung on 1/8/25.
 //
 
-import ProjectDescription
+@preconcurrency import ProjectDescription
 
 let workspace = Workspace(
     name: "Cllog",

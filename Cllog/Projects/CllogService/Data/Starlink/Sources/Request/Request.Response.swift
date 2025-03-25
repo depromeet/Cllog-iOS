@@ -8,6 +8,8 @@
 import Foundation
 import Combine
 
+import Alamofire
+
 extension Starlink.Request {
     
     private func perform() async throws -> (Data, URLResponse) {
@@ -112,7 +114,7 @@ extension Starlink.Request: StarlinkRequest {
         }
     }
     
-    public func upload<T: Decodable>() async throws -> T {
+    public func uploadResponse<T>() async throws -> T where T : Decodable {
         guard let uploadForm = self.uploadForm else {
             throw StarlinkError.inValidParams(.init(code: "-999", error: nil, message: .init(message: "Upload form is missing")))
         }
@@ -122,56 +124,79 @@ extension Starlink.Request: StarlinkRequest {
         }
         
         var urlRequest = URLRequest(url: urlConversion)
-        urlRequest.httpMethod = "\(method)"
+        urlRequest.httpMethod = "POST"
+        
+        if let parameters = params?.toDictionary() {
+            try urlRequest = encoding.encode(&urlRequest, with: parameters)
+        }
         
         let boundary = UUID().uuidString
         urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         
-        var httpBody = Data()
-        
-        if let parameters = params?.toDictionary() {
-            for (key, value) in parameters {
-                httpBody.appendFormat("--\(boundary)\r\n".data(using: .utf8))
-                httpBody.appendFormat("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8))
-                httpBody.appendFormat("\(value)\r\n".data(using: .utf8))
-            }
-        }
-        
-        httpBody.appendFormat("--\(boundary)\r\n".data(using: .utf8))
-        httpBody.appendFormat("Content-Disposition: form-data; name=\"\(uploadForm.name)\"; filename=\"\(uploadForm.fileName)\"\r\n".data(using: .utf8))
-        httpBody.appendFormat("Content-Type: \(uploadForm.mimeType)\r\n\r\n".data(using: .utf8))
-        httpBody.append(uploadForm.data)
-        httpBody.appendFormat("\r\n".data(using: .utf8))
-        httpBody.appendFormat("--\(boundary)--".data(using: .utf8))
-        
-        urlRequest.httpBody = httpBody as Data
-        
-        for interceptor in self.interceptors {
-            urlRequest = try await interceptor.adapt(&urlRequest)
-        }
-        
-        urlRequest.setHeaders(headers)
-        
-        self.trakers.allTrackers().forEach { $0.didRequest(self, urlRequest: urlRequest) }
-
         do {
-            let (data, urlResponse) = try await session.data(for: urlRequest, delegate: nil)
-            let response = Starlink.Response(response: urlResponse, data: data, error: nil)
-
-            self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
-
-            let model: T = try self.validResponse(response)
+            let (data, response) = try await self.upload(urlRequest: urlRequest, uploadForm: uploadForm)
+            let model: T = try self.alamofileValidReponse(response, data: data)
             return model
         } catch {
             let response = Starlink.Response(response: nil, data: nil, error: error)
             self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
-
             throw StarlinkError(error: error)
+        }
+    }
+    
+    private func upload(urlRequest: URLRequest, uploadForm: UploadDataForm) async throws -> (Data?, HTTPURLResponse?) {
+        return try await withCheckedThrowingContinuation { continuation in
+            AF.upload(multipartFormData: { multipartFormData in
+                multipartFormData.append(uploadForm.data,
+                                         withName: uploadForm.name,
+                                         fileName: uploadForm.fileName,
+                                         mimeType: uploadForm.mimeType)
+                
+                if let parameters = self.params?.toDictionary() {
+                    for (key, value) in parameters {
+                        if let valueString = value as? String, let valueData = valueString.data(using: .utf8) {
+                            multipartFormData.append(valueData, withName: key)
+                        }
+                    }
+                }
+            },
+                      to: urlRequest.url!,
+                      method: .post,
+                      headers: .init(headers.map { HTTPHeader(name: $0.name, value: $0.value) }))
+            .validate()
+            .response { response in
+                switch response.result {
+                case .success(let data):
+                    continuation.resume(with: .success((data, response.response)))
+                    
+                case .failure(let error):
+                    continuation.resume(with: .failure(error as Error))
+                }
+            }
         }
     }
 }
 
 extension StarlinkRequest {
+    
+    func alamofileValidReponse<T: Decodable>(_ response: HTTPURLResponse?, data: Data?) throws -> T {
+        // 200 응답 체크
+        guard let response = response, (200 ..< 300).contains(response.statusCode) else {
+            throw StarlinkError.inValidStatusCode(.init(code: "", error: nil, message: .init(message: "message")))
+        }
+        
+        guard let data = data else {
+            throw StarlinkError.nullPointData(.init(code: "", error: nil, message: .init(message: "message")))
+        }
+        
+        do {
+            let model = try JSONDecoder().decode(T.self, from: data)
+            return model
+            
+        } catch {
+            throw StarlinkError.inValidJSONData(.init(code: "", error: nil, message: .init(message: "message")))
+        }
+    }
     
     /// 유효성 체크 함수
     /// - Parameter response: 응답 response

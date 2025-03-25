@@ -61,12 +61,14 @@ public final class Starlink: @unchecked Sendable {
         params: SafeDictionary<String, Any>?,
         method: Starlink.Method,
         headers: [Starlink.Header] = [],
-        encoding: (any StarlinkEncodable) = StarlinkURLEncoding()
+        encoding: (any StarlinkEncodable) = StarlinkURLEncoding(),
+        uploadForm: UploadDataForm? = nil
     ) -> StarlinkRequest {
         let request = Starlink.Request(
             session: session,
             path: urlConversion,
             params: params,
+            uploadForm: uploadForm,
             method: method,
             headers: headers,
             trakers: trackers,
@@ -88,7 +90,8 @@ public final class Starlink: @unchecked Sendable {
         encodable: Encodable?,
         method: Starlink.Method,
         headers: [Starlink.Header] = [],
-        encoding: (any StarlinkEncodable) = StarlinkURLEncoding()
+        encoding: (any StarlinkEncodable) = StarlinkURLEncoding(),
+        uploadForm: UploadDataForm? = nil
     ) -> StarlinkRequest {
         var safeParams: SafeDictionary<String, Any>? = nil
         if let params = encodable {
@@ -98,6 +101,7 @@ public final class Starlink: @unchecked Sendable {
             session: session,
             path: urlConversion,
             params: safeParams,
+            uploadForm: uploadForm,
             method: method,
             headers: headers,
             trakers: trackers,
@@ -106,38 +110,13 @@ public final class Starlink: @unchecked Sendable {
         )
         return request
     }
-    
-    public func uploadResponse<T: Decodable>(
-        _ urlConversion: URLConversion,
-        encodable: Encodable?,
-        method: Starlink.Method,
-        headers: [Starlink.Header] = [],
-        uploadForm: UploadDataForm
-    ) async throws -> T {
-        var safeParams: SafeDictionary<String, Any>? = nil
-        if let params = encodable {
-            safeParams = SafeDictionary(encodable: params)
-        }
-        let request = Starlink.Request(
-            session: session,
-            path: urlConversion,
-            params: safeParams,
-            method: method,
-            headers: headers,
-            trakers: trackers,
-            interceptors: interceptors,
-            encoding: Starlink.StarlinkFormEncoding()
-        )
-        
-        return try await request.upload()
-    }
 }
 
 public struct UploadDataForm {
     let name: String
     let fileName: String
-    let data: Data
     let mimeType: String
+    let data: Data
     
     public init(name: String, fileName: String, data: Data, mimeType: String) {
         self.name = name

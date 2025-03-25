@@ -15,6 +15,7 @@ public protocol StoriesDataSource {
     func summary(_ storyId: Int) async throws -> StorySummaryResponseDTO
     func memo(_ request: EditMemoRequestDTO) async throws
     func delete(_ storyId: Int) async throws
+    func save(_ request: StoryRequestDTO) async throws -> SaveStoryResponseDTO
 }
 
 public final class DefaultStoriesDataSource: StoriesDataSource {
@@ -61,6 +62,19 @@ public final class DefaultStoriesDataSource: StoriesDataSource {
             StoriesTarget.delete(storyId)
         )
     }
+    
+    public func save(_ request: StoryRequestDTO) async throws -> SaveStoryResponseDTO {
+        let response: BaseResponseDTO<SaveStoryResponseDTO> = try await provider.request(
+            StoriesTarget.save(request)
+        )
+        
+        guard let data = response.data else {
+            throw StarlinkError.inValidJSONData(nil)
+            
+        }
+        
+        return data
+    }
 }
 
 enum StoriesTarget {
@@ -68,11 +82,12 @@ enum StoriesTarget {
     case summary(Int)
     case memo(EditMemoRequestDTO)
     case delete(Int)
+    case save(StoryRequestDTO)
 }
 
 extension StoriesTarget: EndpointType {
     var baseURL: String {
-        return "https://dev-api.climb-log.my/api/v1/stories"
+        return Environment.baseURL + "/api/v1/stories"
     }
     
     var path: String {
@@ -85,6 +100,8 @@ extension StoriesTarget: EndpointType {
             return "/\(request.storyId)/memo"
         case .delete(let storyId):
             return "/\(storyId)"
+        case .save:
+            return ""
         }
     }
     
@@ -96,6 +113,8 @@ extension StoriesTarget: EndpointType {
             return .patch
         case .delete:
             return .delete
+        case .save:
+            return .post
         }
     }
     
@@ -105,12 +124,14 @@ extension StoriesTarget: EndpointType {
             return .none
         case .memo(let request):
             return .encodable(request.body)
+        case .save(let request):
+            return .encodable(request)
         }
     }
     
     var encodable: Encodable? {
         switch self {
-        case .stories, .summary, .memo, .delete:
+        case .stories, .summary, .memo, .delete, .save:
             return .none
         }
     }
@@ -123,7 +144,7 @@ extension StoriesTarget: EndpointType {
         switch self {
         case .stories, .summary, .delete:
             return Starlink.StarlinkURLEncoding()
-        case .memo:
+        case .memo, .save:
             return Starlink.StarlinkJSONEncoding()
         }
         

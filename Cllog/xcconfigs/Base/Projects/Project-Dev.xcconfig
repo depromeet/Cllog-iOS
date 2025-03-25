@@ -11,3 +11,4 @@ DEVELOPMENT_TEAM = SUMATJC294
 
 // Kakao Login
 KAKAO_NATIVE_APP_KEY = ec9724801f5d359302acb5f9ef75d51c
+BASE_URL = https:/$()/dev-api.climb-log.my
