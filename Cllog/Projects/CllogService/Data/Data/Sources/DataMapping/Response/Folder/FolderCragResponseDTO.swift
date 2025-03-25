@@ -16,7 +16,7 @@ public struct FolderCragResponseDTO: Decodable {
     
     func toDomain() -> Crag {
         Crag(
-            id: String(id),
+            id: id,
             name: name,
             address: roadAddress
         )

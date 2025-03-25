@@ -28,14 +28,14 @@ public extension View {
 }
 
 public struct DesignGrade: Hashable, Identifiable {
-    public var id: UUID
     
-    public init(name: String, color: Color) {
-        self.id = UUID()
+    public init(id: String = UUID().uuidString, name: String, color: Color) {
+        self.id = id
         self.name = name
         self.color = color
     }
     
+    public let id: String
     public let name: String
     public let color: Color
 }

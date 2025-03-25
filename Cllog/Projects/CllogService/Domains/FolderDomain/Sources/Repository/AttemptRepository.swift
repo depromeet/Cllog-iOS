@@ -29,7 +29,7 @@ public struct MockAttemptRepository: AttemptRepository {
                 grade: Grade(id: UUID().uuidString, name: "V5", hexCode: "0xFF5733"),
                 result: .complete,
                 recordedTime: "00:45",
-                crag: Crag(name: "Seoul Bouldering", address: "Seoul, South Korea")
+                crag: Crag(id: 0, name: "Seoul Bouldering", address: "Seoul, South Korea")
             ),
             Attempt(
                 id: 1,
@@ -38,7 +38,7 @@ public struct MockAttemptRepository: AttemptRepository {
                 result: .fail,
                 
                 recordedTime: "01:30",
-                crag: Crag(name: "Incheon Rock Gym", address: "Incheon, South Korea")
+                crag: Crag(id: 1, name: "Incheon Rock Gym", address: "Incheon, South Korea")
             ),
             Attempt(
                 id: 2,
@@ -46,7 +46,7 @@ public struct MockAttemptRepository: AttemptRepository {
                 grade: Grade(id: UUID().uuidString, name: "V4", hexCode: "0x3357FF"),
                 result: .complete,
                 recordedTime: "00:50",
-                crag: Crag(name: "Busan Climbing", address: "Busan, South Korea")
+                crag: Crag(id: 2, name: "Busan Climbing", address: "Busan, South Korea")
             ),
             Attempt(
                 id: 3,
@@ -62,7 +62,7 @@ public struct MockAttemptRepository: AttemptRepository {
                 grade: nil,
                 result: .complete,
                 recordedTime: "00:40",
-                crag: Crag(name: "Daegu Rock Gym", address: "Daegu, South Korea")
+                crag: Crag(id: 3, name: "Daegu Rock Gym", address: "Daegu, South Korea")
             )
         ]
     }

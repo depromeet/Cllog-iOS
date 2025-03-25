@@ -31,13 +31,13 @@ public extension View {
 
 public struct DesignCrag: Hashable, Identifiable {
     
-    public init(id: String? = nil, name: String, address: String) {
-        self.id = id ?? UUID().uuidString
+    public init(id: Int, name: String, address: String) {
+        self.id = id
         self.name = name
         self.address = address
     }
     
-    public let id: String
+    public let id: Int
     public let name: String
     public let address: String
 }
@@ -163,9 +163,9 @@ struct SelectCragView_Previews: PreviewProvider {
                 print("검색어 변경됨: \(text)")
             },
             crags: .constant([
-                DesignCrag(name: "강남점", address: "서울 강남구"),
-                DesignCrag(name: "홍대점", address: "서울 마포구"),
-                DesignCrag(name: "신촌점", address: "서울 서대문구")
+                DesignCrag(id: 0, name: "강남점", address: "서울 강남구"),
+                DesignCrag(id: 1, name: "홍대점", address: "서울 마포구"),
+                DesignCrag(id: 2, name: "신촌점", address: "서울 서대문구")
             ])
         )
     }

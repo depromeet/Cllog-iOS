@@ -29,7 +29,13 @@ public struct AttemptView: ViewProtocol {
             .showGradeBottomSheet(
                 isPresented: $store.showGradeBottomSheet,
                 cragName: store.selectedEditCrag?.name ?? "",
-                grades: [],
+                grades: store.selectedCragGrades.map {
+                    DesignGrade(
+                        id: $0.id,
+                        name: $0.name,
+                        color: Color(hex: $0.hexCode)
+                    )
+                },
                 didTapSaveButton: { newGrade in
                     print("did tap new grade")
                 },

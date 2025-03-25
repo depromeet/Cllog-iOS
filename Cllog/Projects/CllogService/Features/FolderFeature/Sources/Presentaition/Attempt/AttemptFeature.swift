@@ -19,6 +19,7 @@ import ComposableArchitecture
 public struct AttemptFeature {
     @Dependency(\.attemptUseCase) private var attemptUseCase
     @Dependency(\.cragUseCase) private var cragUseCase
+    @Dependency(\.gradeUseCase) private var gradeUseCase
 //    @Dependency(\.locationClient) var locationClient
     
     public init() {}
@@ -40,6 +41,7 @@ public struct AttemptFeature {
         var stampPositions = [CGFloat]()
         
         var nearByCrags = [DesignCrag]()
+        var selectedCragGrades = [Grade]()
         
         // 난이도 & 암장 수정 -> 연결되는 State
         var selectedEditCrag: Crag?
@@ -83,8 +85,7 @@ public struct AttemptFeature {
         case onSplitPositionsCalculated(positions: [CGFloat])
         case getAttempt(attempt: ReadAttempt)
         case getNearByCrags(_ crags: [Crag])
-        
-        // core location
+        case getCragGrades(_ grades: [Grade])
 //        case locationPermissionResponse(CLAuthorizationStatus)
         case updateLocation(latitude: Double, longitude: Double)
         
@@ -150,9 +151,10 @@ public struct AttemptFeature {
                     state.selectedAction = action
                     return .none
                 case .info:
-                    state.showGradeBottomSheet = true
-                    state.showEditAttemptBottomSheet = false
-                    return .none
+                    if let currentCragId = state.attempt?.crag?.id {
+                        return fetchGrades(cragId: currentCragId)
+                    }
+                    return fetchNearByCrags()
                 case .delete:
                     return .send(.deleteActionTapped)
                 }
@@ -214,9 +216,8 @@ public struct AttemptFeature {
                 return .none
             case .saveEditCragTapped(let crag):
                 state.selectedEditCrag = crag
-                state.showCragBottomSheet = false
-                state.showGradeBottomSheet = true
-                return .none
+                return fetchGrades(cragId: crag.id)
+               
             case .patchedResult(let result):
                 let newAttempt = state.attempt?.copyWith(result: result)
                 state.showEditAttemptBottomSheet = false
@@ -231,8 +232,13 @@ public struct AttemptFeature {
                 }
                 state.showCragBottomSheet = true
                 return .none
-            case .alert(.presented(.cancel)):
+            case .getCragGrades(let grades):
+                state.showGradeBottomSheet = true
+                state.showCragBottomSheet = false
+                state.selectedCragGrades = grades
+                return .none
                 
+            case .alert(.presented(.cancel)):
                 return .none
             case .alert(.presented(.delete)):
                 return deleteAttempt(state.attemptId)
@@ -287,6 +293,17 @@ extension AttemptFeature {
             do {
                 let crags = try await cragUseCase.getCrags()
                 await send(.getNearByCrags(crags))
+            } catch {
+                debugPrint(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func fetchGrades(cragId: Int) -> Effect<Action> {
+        return .run { send in
+            do {
+                let grades = try await gradeUseCase.getCragGrades(cragId: cragId)
+                await send(.getCragGrades(grades))
             } catch {
                 debugPrint(error.localizedDescription)
             }

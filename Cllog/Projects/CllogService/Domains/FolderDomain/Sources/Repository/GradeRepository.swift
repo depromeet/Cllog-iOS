@@ -11,11 +11,16 @@ import Shared
 
 public protocol GradeRepository {
     func getGrades() async throws -> [Grade]
+    func getCragGrades(cragId: Int) async throws -> [Grade]
 }
 
 // TODO: remove
 public struct MockGradeRepository: GradeRepository {
     public init() {}
+    
+    public func getCragGrades(cragId: Int) async throws -> [Grade] {
+        []
+    }
     public func getGrades() async throws -> [Grade] {
         return [
             Grade(name: "핑크", hexCode: "0xFF66B2"),

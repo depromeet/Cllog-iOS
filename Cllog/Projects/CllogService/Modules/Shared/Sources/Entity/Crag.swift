@@ -9,12 +9,12 @@
 import Foundation
 
 public struct Crag: Hashable, Identifiable {
-    public var id: String
+    public var id: Int
     
     public let name: String
     public let address: String
     
-    public init(id: String = UUID().uuidString, name: String, address: String) {
+    public init(id: Int, name: String, address: String) {
         self.id = id
         self.name = name
         self.address = address

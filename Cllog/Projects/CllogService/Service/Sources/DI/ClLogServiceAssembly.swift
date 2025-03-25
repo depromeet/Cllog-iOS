@@ -194,5 +194,17 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
+        
+        container.register(GradeUseCase.self) { _ in
+            DefaultGradeUseCase(
+                gradeRepository: DefaultGradeRepository(
+                    dataSource: DefaultGradeDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
     }
 }
