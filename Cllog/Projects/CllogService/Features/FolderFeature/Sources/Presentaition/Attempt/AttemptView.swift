@@ -37,7 +37,7 @@ public struct AttemptView: ViewProtocol {
                     )
                 },
                 didTapSaveButton: { newGrade in
-                    print("did tap new grade")
+                    store.send(.didTapSaveGradeTapped(id: newGrade?.id))
                 },
                 didTapCragTitleButton: {
                     store.send(.editCragTapped)

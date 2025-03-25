@@ -29,13 +29,13 @@ public extension View {
 
 public struct DesignGrade: Hashable, Identifiable {
     
-    public init(id: String = UUID().uuidString, name: String, color: Color) {
+    public init(id: Int, name: String, color: Color) {
         self.id = id
         self.name = name
         self.color = color
     }
     
-    public let id: String
+    public let id: Int
     public let name: String
     public let color: Color
 }
@@ -161,9 +161,9 @@ struct SelectGradeView_Previews: PreviewProvider {
         SelectGradeView(
             cragName: "한남 암장",
             grades: [
-                DesignGrade(name: "V1", color: .blue),
-                DesignGrade(name: "V2", color: .green),
-                DesignGrade(name: "V3", color: .red),
+                DesignGrade(id: 0, name: "V1", color: .blue),
+                DesignGrade(id: 0, name: "V2", color: .green),
+                DesignGrade(id: 0, name: "V3", color: .red),
             ],
             didTapSaveButton: { _ in
                 

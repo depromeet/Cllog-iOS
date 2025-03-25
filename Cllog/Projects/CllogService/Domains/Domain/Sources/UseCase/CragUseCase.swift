@@ -1,7 +1,7 @@
 //
 //  CragUseCase.swift
 //  Domain
-//
+// 
 //  Created by soi on 3/25/25.
 //  Copyright © 2025 Supershy. All rights reserved.
 //

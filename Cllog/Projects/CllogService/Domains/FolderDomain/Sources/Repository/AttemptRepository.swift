@@ -13,6 +13,7 @@ public protocol AttemptRepository {
     func getFilteredAttempts() async throws -> [Attempt]
     func getAttempt(attemptId: Int) async throws -> ReadAttempt
     func patchResult(attempt: ReadAttempt, result: AttemptResult) async throws
+    func patchInfo(attempt: ReadAttempt, grade: Grade?, crag: Crag?) async throws
     func deleteAttempt(attemptId: Int) async throws
 }
 
@@ -26,44 +27,11 @@ public struct MockAttemptRepository: AttemptRepository {
             Attempt(
                 id: 0,
                 date: "2024-03-13",
-                grade: Grade(id: UUID().uuidString, name: "V5", hexCode: "0xFF5733"),
+                grade: Grade(id: 0, name: "V5", hexCode: "0xFF5733"),
                 result: .complete,
                 recordedTime: "00:45",
                 crag: Crag(id: 0, name: "Seoul Bouldering", address: "Seoul, South Korea")
             ),
-            Attempt(
-                id: 1,
-                date: "2024-03-12",
-                grade: Grade(id: UUID().uuidString, name: "V7", hexCode: "0x33FF57"),
-                result: .fail,
-                
-                recordedTime: "01:30",
-                crag: Crag(id: 1, name: "Incheon Rock Gym", address: "Incheon, South Korea")
-            ),
-            Attempt(
-                id: 2,
-                date: "2024-03-11",
-                grade: Grade(id: UUID().uuidString, name: "V4", hexCode: "0x3357FF"),
-                result: .complete,
-                recordedTime: "00:50",
-                crag: Crag(id: 2, name: "Busan Climbing", address: "Busan, South Korea")
-            ),
-            Attempt(
-                id: 3,
-                date: "2024-03-10",
-                grade: Grade(id: UUID().uuidString, name: "V6", hexCode: "0xF1C40F"),
-                result: .fail,
-                recordedTime: "01:10",
-                crag: nil
-            ),
-            Attempt(
-                id: 4,
-                date: "2024-03-09",
-                grade: nil,
-                result: .complete,
-                recordedTime: "00:40",
-                crag: Crag(id: 3, name: "Daegu Rock Gym", address: "Daegu, South Korea")
-            )
         ]
     }
     
@@ -76,6 +44,10 @@ public struct MockAttemptRepository: AttemptRepository {
     }
     
     public func deleteAttempt(attemptId: Int) async throws {
+        throw NSError(domain: "attempt", code: 0)
+    }
+    
+    public func patchInfo(attempt: ReadAttempt, grade: Grade?, crag: Crag?) async throws {
         throw NSError(domain: "attempt", code: 0)
     }
 }

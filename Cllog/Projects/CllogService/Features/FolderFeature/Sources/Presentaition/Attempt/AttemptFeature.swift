@@ -45,6 +45,7 @@ public struct AttemptFeature {
         
         // 난이도 & 암장 수정 -> 연결되는 State
         var selectedEditCrag: Crag?
+        var selectedEditGrade: Grade?
         var selectedEditCragGrades: [Grade]?
         
         var currentLatitude = 37.56440029816974
@@ -94,10 +95,12 @@ public struct AttemptFeature {
         case editBackButtonTapped
         case deleteActionTapped
         case editCragTapped
+        case didTapSaveGradeTapped(id: Int?)
         case cancelEditCragTapped
         case saveEditCragTapped(crag: Crag)
         case attemptResultActionTapped(attempt: AttemptResult)
         case patchedResult(_ result: AttemptResult)
+        case patchedInfo(_ grade: Grade?, crag: Crag?)
         case skipEditCragTapped
         case deletedAttempt
         
@@ -170,7 +173,7 @@ public struct AttemptFeature {
             case .getAttempt(let attempt):
                 state.attempt = attempt
                 state.selectedEditCrag = state.attempt?.crag
-                // TODO: 기존 암장 기준 변경 가능한 난이도로 초기화
+                state.selectedEditGrade = attempt.grade
                 return .none
                 
             // MARK: Bottom Sheet
@@ -200,6 +203,16 @@ public struct AttemptFeature {
                 
             case .deletedAttempt:
                 return .none
+            case .didTapSaveGradeTapped(let id):
+                let grade = state.selectedCragGrades.first(where: { $0.id == id })
+                guard let currentAttempt = state.attempt else {
+                    return .none
+                }
+                return patchInfo(
+                    attempt: currentAttempt,
+                    grade: grade,
+                    crag: state.selectedEditCrag
+                )
             case .editCragTapped:
                 state.showGradeBottomSheet = false
                 return fetchNearByCrags()
@@ -226,6 +239,14 @@ public struct AttemptFeature {
                 state.selectedEditCrag = state.attempt?.crag
                 state.selectedEditCragGrades = nil
                 return .none
+            case .patchedInfo(let grade, let crag):
+                state.selectedEditGrade = grade
+                state.selectedEditCrag = crag
+                state.showEditAttemptBottomSheet = false
+                state.showCragBottomSheet = false
+                state.showGradeBottomSheet = false
+                return .none
+                
             case .getNearByCrags(let crags):
                 state.nearByCrags = crags.map {
                     DesignCrag(id: $0.id, name: $0.name, address: $0.address)
@@ -306,6 +327,15 @@ extension AttemptFeature {
                 await send(.getCragGrades(grades))
             } catch {
                 debugPrint(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func patchInfo(attempt: ReadAttempt, grade: Grade?, crag: Crag?) -> Effect<Action> {
+        return .run { send in
+            do {
+                try await attemptUseCase.patchInfo(attempt: attempt, grade: grade, crag: crag)
+                await send(.patchedInfo(grade, crag: crag))
             }
         }
     }
