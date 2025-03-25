@@ -53,11 +53,7 @@ public struct AttemptView: ViewProtocol {
                 didChangeSearchText: { text in
                     print("text")
                 },
-                crags: .constant([
-                    DesignCrag(name: "강남점", address: "서울 강남구"),
-                    DesignCrag(name: "홍대점", address: "서울 마포구"),
-                    DesignCrag(name: "신촌점", address: "서울 서대문구")
-                ])
+                crags: $store.nearByCrags
             )
             .sheet(isPresented: $store.showEditAttemptBottomSheet) {
                 makeEditAttemptBottomSheet()

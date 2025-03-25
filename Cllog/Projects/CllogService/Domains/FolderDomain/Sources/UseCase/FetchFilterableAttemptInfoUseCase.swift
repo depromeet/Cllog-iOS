@@ -37,7 +37,7 @@ public struct DefaultFetchFilterableAttemptInfoUseCase: FetchFilterableAttemptIn
     
     public func execute() async throws -> FilterableAttemptInfo {
         async let requestGrades = gradeRepository.getGrades()
-        async let requestCrags = cragRepository.getCrags()
+        async let requestCrags = cragRepository.getMyCrags()
         
         do {
             let (crags, grades) = try await (requestCrags, requestGrades)

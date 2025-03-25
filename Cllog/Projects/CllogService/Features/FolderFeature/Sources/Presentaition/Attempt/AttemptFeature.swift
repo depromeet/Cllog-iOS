@@ -7,14 +7,19 @@
 //
 
 import SwiftUI
+import Domain
 import FolderDomain
+import DesignKit
 import Shared
+import Core
 
 import ComposableArchitecture
 
 @Reducer
 public struct AttemptFeature {
     @Dependency(\.attemptUseCase) private var attemptUseCase
+    @Dependency(\.cragUseCase) private var cragUseCase
+//    @Dependency(\.locationClient) var locationClient
     
     public init() {}
     
@@ -34,9 +39,14 @@ public struct AttemptFeature {
         var selectedAction: AttemptEditAction?
         var stampPositions = [CGFloat]()
         
+        var nearByCrags = [DesignCrag]()
+        
         // 난이도 & 암장 수정 -> 연결되는 State
         var selectedEditCrag: Crag?
         var selectedEditCragGrades: [Grade]?
+        
+        var currentLatitude = 37.56440029816974
+        var currentLongitude = 126.9774418506923
         
         // Bottom sheet
         var showEditAttemptBottomSheet = false
@@ -72,6 +82,11 @@ public struct AttemptFeature {
         
         case onSplitPositionsCalculated(positions: [CGFloat])
         case getAttempt(attempt: ReadAttempt)
+        case getNearByCrags(_ crags: [Crag])
+        
+        // core location
+//        case locationPermissionResponse(CLAuthorizationStatus)
+        case updateLocation(latitude: Double, longitude: Double)
         
         // edit actions
         case onEditSheetDismissed
@@ -100,6 +115,27 @@ public struct AttemptFeature {
                 return .none
                 
             case .onAppear:
+//                Task {
+//                    let authStatus = await locationClient.requestLocationPermission()
+//                    
+//                    switch authStatus {
+//                    case .authorizedWhenInUse, .authorizedAlways:
+//                        if let location = await locationClient.getCurrentLocation() {
+////                            state.currentLatitude = location.latitude
+////                            state.currentLongitude = location.longitude
+//                            print("현재 위치: 위도 \(location.latitude), 경도 \(location.longitude)")
+//                        } else {
+//                            print("위치 정보를 가져오지 못했습니다.")
+//                        }
+//                        
+//                    case .denied, .restricted:
+//                        print("위치 권한이 거부되었습니다.")
+//                    case .notDetermined:
+//                        print("위치 권한이 아직 결정되지 않았습니다.")
+//                    @unknown default:
+//                        print("알 수 없는 권한 상태입니다.")
+//                    }
+//                }
                 return fetchAttempt(state.attemptId)
             case .backButtonTapped:
                 return .none
@@ -164,8 +200,7 @@ public struct AttemptFeature {
                 return .none
             case .editCragTapped:
                 state.showGradeBottomSheet = false
-                state.showCragBottomSheet = true
-                return .none
+                return fetchNearByCrags()
             case .attemptResultActionTapped(let newAction):
                 guard let currentAttempt = state.attempt else {
                     return .none
@@ -190,7 +225,12 @@ public struct AttemptFeature {
                 state.selectedEditCrag = state.attempt?.crag
                 state.selectedEditCragGrades = nil
                 return .none
-                
+            case .getNearByCrags(let crags):
+                state.nearByCrags = crags.map {
+                    DesignCrag(id: $0.id, name: $0.name, address: $0.address)
+                }
+                state.showCragBottomSheet = true
+                return .none
             case .alert(.presented(.cancel)):
                 
                 return .none
@@ -237,6 +277,17 @@ extension AttemptFeature {
                 await send(.patchedResult(result))
             } catch {
                 // TODO: show error message
+                debugPrint(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func fetchNearByCrags() -> Effect<Action> {
+        return .run { send in
+            do {
+                let crags = try await cragUseCase.getCrags()
+                await send(.getNearByCrags(crags))
+            } catch {
                 debugPrint(error.localizedDescription)
             }
         }
