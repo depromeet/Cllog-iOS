@@ -118,6 +118,7 @@ struct SelectGradeView: View {
                     gradeGradeChip(for: grade)
                 }
             }
+            .padding(.horizontal, 8)
             .padding(.vertical, 16)
             .background(Color.clLogUI.gray900)
             .cornerRadius(12)

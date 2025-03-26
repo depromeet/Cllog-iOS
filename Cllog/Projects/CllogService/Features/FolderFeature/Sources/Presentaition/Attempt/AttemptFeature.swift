@@ -123,6 +123,9 @@ public struct AttemptFeature {
             case .shareButtonTapped:
                 return .none
             case .moreButtonTapped:
+                state.selectedEditCrag = state.attempt?.crag
+                state.selectedEditGrade = state.attempt?.grade
+                state.selectedEditCragGrades = nil
                 state.showEditAttemptBottomSheet = true
                 return .none
             case .moreActionTapped(let action):
