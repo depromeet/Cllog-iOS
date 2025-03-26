@@ -53,6 +53,11 @@ extension ClLogUI where Base == UIImage {
     public static var onBoarding1: UIImage { asset(#function) }
     public static var onBoarding2: UIImage { asset(#function) }
     public static var onBoarding3: UIImage { asset(#function) }
+    
+    // Folder
+    public static var x: UIImage { asset(#function) }
+    public static var dropdownDown: UIImage { asset(#function) }
+    public static var dropdownUp: UIImage { asset(#function) }
 }
 
 extension ClLogUI where Base == Image {
@@ -106,6 +111,11 @@ extension ClLogUI where Base == Image {
     public static var onBoarding1: Image { asset(#function) }
     public static var onBoarding2: Image { asset(#function) }
     public static var onBoarding3: Image { asset(#function) }
+    
+    // Folder
+    public static var x: Image { asset(#function) }
+    public static var dropdownDown: Image { asset(#function) }
+    public static var dropdownUp: Image { asset(#function) }
 }
 
 extension ClLogUI where Base == UIImage {

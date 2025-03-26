@@ -51,7 +51,7 @@ public struct ReportVideoImageView: View {
             Button {
                 deleteButtonHandler()
             } label: {
-                Image("x", bundle: .module)
+                Image.clLogUI.x
                     .offset(x: 4, y: -4)
             }
         }

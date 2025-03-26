@@ -11,12 +11,14 @@ import SwiftUI
 public extension View {
     func bottomSheet<SheetContent: View>(
         isPresented: Binding<Bool>,
+        height: CGFloat = 0,
         @ViewBuilder content: @escaping () -> SheetContent
     ) -> some View {
         modifier(
             BottomSheetModifier(
                 isPresented: isPresented,
-                sheetContent: content
+                sheetContent: content,
+                height: height
             )
         )
     }
@@ -25,12 +27,14 @@ public extension View {
 struct BottomSheetModifier<SheetContent: View>: ViewModifier {
     @Binding var isPresented: Bool
     let sheetContent: () -> SheetContent
+    let height: CGFloat
     
     func body(content: Content) -> some View {
         ZStack {
             content
                 .sheet(isPresented: $isPresented) {
                     BottomSheetView(
+                        height: height,
                         content: sheetContent
                     )
                 }.zIndex(.zero)
@@ -39,14 +43,16 @@ struct BottomSheetModifier<SheetContent: View>: ViewModifier {
 }
 
 struct BottomSheetView<SheetContent: View>: View {
-    @State var dynamicHeight: CGFloat
+    @State var dynamicHeight: CGFloat = 0
     let content: () -> SheetContent
+    let height: CGFloat
     
     init(
-        dynamicHeight: CGFloat = 0,
+        height: CGFloat,
         content: @escaping () -> SheetContent
     ) {
-        self.dynamicHeight = dynamicHeight
+        self.height = height
+        self.dynamicHeight = 0
         self.content = content
     }
     
@@ -55,7 +61,8 @@ struct BottomSheetView<SheetContent: View>: View {
             Capsule()
                 .fill(Color.clLogUI.gray500)
                 .frame(width: 36, height: 6)
-                .padding(.vertical, 5)
+                .padding(.top, 20)
+                .padding(.bottom, 10)
             
             ScrollView {
                 content()
@@ -63,29 +70,31 @@ struct BottomSheetView<SheetContent: View>: View {
                         GeometryReader { geometry in
                             Color.clear
                                 .onAppear {
-                                    DispatchQueue.main.async {
-                                        dynamicHeight += geometry.size.height
+                                    if height == 0 {
+                                        DispatchQueue.main.async {
+                                            dynamicHeight += geometry.size.height
+                                        }
                                     }
                                 }
                         }
                     )
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 20)
         .frame(maxWidth: .infinity)
         .presentationBackground(Color.clLogUI.gray800)
         .background(
             GeometryReader { geometry in
                 Color.clear
                     .onAppear {
-                        DispatchQueue.main.async {
-                            dynamicHeight += geometry.size.height
+                        if height == 0 {
+                            DispatchQueue.main.async {
+                                dynamicHeight += geometry.size.height
+                            }
                         }
                     }
             }
         )
-        .presentationDetents([.height(dynamicHeight)])
+        .presentationDetents([.height(height == 0 ? dynamicHeight : height)])
     }
 }
 
