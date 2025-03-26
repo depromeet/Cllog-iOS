@@ -35,6 +35,7 @@ public struct AttemptFeature {
         
         let attemptId: Int
         var attempt: ReadAttempt?
+        var showLoadingView = false
         var videoURL: URL?
         let editActions = AttemptEditAction.allCases
         
@@ -48,9 +49,6 @@ public struct AttemptFeature {
         var selectedEditCrag: Crag?
         var selectedEditGrade: Grade?
         var selectedEditCragGrades: [Grade]?
-        
-        var currentLatitude = 37.56440029816974
-        var currentLongitude = 126.9774418506923
         
         // Bottom sheet
         var showEditAttemptBottomSheet = false
@@ -88,7 +86,6 @@ public struct AttemptFeature {
         case getAttempt(attempt: ReadAttempt)
         case getNearByCrags(_ crags: [Crag])
         case getCragGrades(_ grades: [Grade])
-//        case locationPermissionResponse(CLAuthorizationStatus)
         case updateLocation(latitude: Double, longitude: Double)
         
         // edit actions
@@ -120,27 +117,6 @@ public struct AttemptFeature {
                 return .none
                 
             case .onAppear:
-//                Task {
-//                    let authStatus = await locationClient.requestLocationPermission()
-//                    
-//                    switch authStatus {
-//                    case .authorizedWhenInUse, .authorizedAlways:
-//                        if let location = await locationClient.getCurrentLocation() {
-////                            state.currentLatitude = location.latitude
-////                            state.currentLongitude = location.longitude
-//                            print("현재 위치: 위도 \(location.latitude), 경도 \(location.longitude)")
-//                        } else {
-//                            print("위치 정보를 가져오지 못했습니다.")
-//                        }
-//                        
-//                    case .denied, .restricted:
-//                        print("위치 권한이 거부되었습니다.")
-//                    case .notDetermined:
-//                        print("위치 권한이 아직 결정되지 않았습니다.")
-//                    @unknown default:
-//                        print("알 수 없는 권한 상태입니다.")
-//                    }
-//                }
                 return fetchAttempt(state.attemptId)
             case .backButtonTapped:
                 return .none
@@ -156,6 +132,7 @@ public struct AttemptFeature {
                     return .none
                 case .info:
                     if let currentCragId = state.attempt?.crag?.id {
+//                        state.showLoadingView = true
                         return fetchGrades(cragId: currentCragId)
                     }
                     return fetchNearByCrags()
@@ -205,6 +182,7 @@ public struct AttemptFeature {
                 
             case .deletedAttempt:
                 return .none
+                
             case .didTapSaveGradeTapped(let id):
                 let grade = state.selectedCragGrades.first(where: { $0.id == id })
                 guard let currentAttempt = state.attempt else {
@@ -215,20 +193,25 @@ public struct AttemptFeature {
                     grade: grade,
                     crag: state.selectedEditCrag
                 )
+                
             case .editCragTapped:
                 state.showGradeBottomSheet = false
                 return fetchNearByCrags()
+                
             case .attemptResultActionTapped(let newAction):
                 guard let currentAttempt = state.attempt else {
                     return .none
                 }
                 return patchResult(attempt: currentAttempt, result: newAction)
+                
             case .skipEditCragTapped:
                 state.selectedEditCrag = state.attempt?.crag
                 state.selectedEditCragGrades = nil
+                state.showEditAttemptBottomSheet = false
                 state.showCragBottomSheet = false
                 state.showGradeBottomSheet = true
                 return .none
+                
             case .saveEditCragTapped(let crag):
                 state.selectedEditCrag = crag
                 return fetchGrades(cragId: crag.id)
@@ -241,9 +224,12 @@ public struct AttemptFeature {
                 state.selectedEditCrag = state.attempt?.crag
                 state.selectedEditCragGrades = nil
                 return .none
+                
             case .patchedInfo(let grade, let crag):
-                state.selectedEditGrade = grade
-                state.selectedEditCrag = crag
+                let newAttempt = state.attempt?.copyWith(grade: grade, crag: crag)
+                state.attempt = newAttempt
+                state.selectedEditGrade = nil
+                state.selectedEditCrag = nil
                 state.showEditAttemptBottomSheet = false
                 state.showCragBottomSheet = false
                 state.showGradeBottomSheet = false
@@ -253,9 +239,12 @@ public struct AttemptFeature {
                 state.nearByCrags = crags.map {
                     DesignCrag(id: $0.id, name: $0.name, address: $0.address)
                 }
+                state.showEditAttemptBottomSheet = false
                 state.showCragBottomSheet = true
                 return .none
             case .getCragGrades(let grades):
+                state.showEditAttemptBottomSheet = false
+                state.showLoadingView = false
                 state.showGradeBottomSheet = true
                 state.showCragBottomSheet = false
                 state.selectedCragGrades = grades
