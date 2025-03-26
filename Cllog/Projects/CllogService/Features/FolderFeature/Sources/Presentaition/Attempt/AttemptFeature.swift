@@ -132,7 +132,7 @@ public struct AttemptFeature {
                     return .none
                 case .info:
                     if let currentCragId = state.attempt?.crag?.id {
-//                        state.showLoadingView = true
+                        state.showLoadingView = true
                         return fetchGrades(cragId: currentCragId)
                     }
                     return fetchNearByCrags()
@@ -189,6 +189,7 @@ public struct AttemptFeature {
                     return .none
                 }
                 return patchInfo(
+                    attemptId: state.attemptId,
                     attempt: currentAttempt,
                     grade: grade,
                     crag: state.selectedEditCrag
@@ -202,7 +203,7 @@ public struct AttemptFeature {
                 guard let currentAttempt = state.attempt else {
                     return .none
                 }
-                return patchResult(attempt: currentAttempt, result: newAction)
+                return patchResult(attemptId: state.attemptId, attempt: currentAttempt, result: newAction)
                 
             case .skipEditCragTapped:
                 state.selectedEditCrag = state.attempt?.crag
@@ -288,10 +289,10 @@ extension AttemptFeature {
         }
     }
     
-    private func patchResult(attempt: ReadAttempt, result: AttemptResult) -> Effect<Action> {
+    private func patchResult(attemptId: Int, attempt: ReadAttempt, result: AttemptResult) -> Effect<Action> {
         return .run { send in
             do {
-                try await attemptUseCase.patchResult(attempt: attempt, result: result)
+                try await attemptUseCase.patchResult(attemptId: attemptId, attempt: attempt, result: result)
                 await send(.patchedResult(result))
             } catch {
                 // TODO: show error message
@@ -322,10 +323,10 @@ extension AttemptFeature {
         }
     }
     
-    private func patchInfo(attempt: ReadAttempt, grade: Grade?, crag: Crag?) -> Effect<Action> {
+    private func patchInfo(attemptId: Int, attempt: ReadAttempt, grade: Grade?, crag: Crag?) -> Effect<Action> {
         return .run { send in
             do {
-                try await attemptUseCase.patchInfo(attempt: attempt, grade: grade, crag: crag)
+                try await attemptUseCase.patchInfo(attemptId: attemptId, attempt: attempt, grade: grade, crag: crag)
                 await send(.patchedInfo(grade, crag: crag))
             }
         }

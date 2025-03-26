@@ -29,13 +29,13 @@ public struct DefaultAttemptRepository: AttemptRepository {
         try await dataSource.delete(attemptId)
     }
     
-    public func patchResult(attempt: ReadAttempt, result: AttemptResult) async throws {
-        try await dataSource.patch(id: attempt.problemId, cragId: nil, gradeId: nil, unregisterGrade: nil, result: result.rawValue)
+    public func patchResult(attemptId: Int, attempt: ReadAttempt, result: AttemptResult) async throws {
+        try await dataSource.patch(id: attemptId, cragId: nil, gradeId: nil, unregisterGrade: nil, result: result.rawValue)
     }
     
-    public func patchInfo(attempt: ReadAttempt, grade: Grade? = nil, crag: Crag? = nil) async throws {
+    public func patchInfo(attemptId: Int, attempt: ReadAttempt, grade: Grade? = nil, crag: Crag? = nil) async throws {
         try await dataSource.patch(
-            id: attempt.problemId,
+            id: attemptId,
             cragId: crag?.id,
             gradeId: grade?.id,
             unregisterGrade: grade == nil,
