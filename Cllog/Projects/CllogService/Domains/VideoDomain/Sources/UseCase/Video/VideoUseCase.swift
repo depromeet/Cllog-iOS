@@ -12,9 +12,24 @@ import Shared
 
 import Dependencies
 
+public enum VideoError: Error {
+    // 공통 에러
+    case unknown
+    case saveFailed
+    
+    // 파일 매니저 에러
+    case notFoundDirectory
+    case notFoundFile
+    case readFailed
+    
+    // 사진앱 저장 실패 에러
+    case savePhotoDenied
+    case notFoundAsset
+}
+
 public protocol VideoUseCase: Sendable {
     func execute(saveFile fileURL: URL) async throws
-    func execute(loadName: String) async throws -> URL?
+    func execute(loadName: String) async throws -> URL
     
     func execute(name: String, fileName: String, mimeType: String, value: Data) async throws -> Videothumbnails
 }
@@ -35,7 +50,7 @@ extension VideoUploadUsesCase: VideoUseCase {
         try await videoRepository.saveVideo(fileURL: fileURL)
     }
     
-    public func execute(loadName: String) async throws -> URL? {
+    public func execute(loadName: String) async throws -> URL {
         try await videoRepository.readSavedVideo(fileName: loadName)
     }
     

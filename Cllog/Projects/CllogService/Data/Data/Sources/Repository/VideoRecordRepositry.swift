@@ -12,6 +12,7 @@ import VideoDomain
 import Networker
 import Starlink
 import Swinject
+import Photos
 
 public struct VideoRecordRepository: VideoRepository {
 
@@ -31,7 +32,7 @@ public struct VideoRecordRepository: VideoRepository {
         // 앱의 Documents 디렉토리 경로를 가져옵니다.
         guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             print("Documents 디렉토리를 찾을 수 없습니다.")
-            return
+            throw VideoError.notFoundDirectory
         }
         
         // 목적지 URL 생성 (같은 파일명 사용)
@@ -45,23 +46,25 @@ public struct VideoRecordRepository: VideoRepository {
             
             // 파일을 복사합니다.
             try fileManager.copyItem(at: fileURL, to: destinationURL)
+            // TODO: 사진첩 AssetId 저장
+//            let videoAssetId = try await saveVideoToPhotoLibrary(from: fileURL)
             print("파일이 성공적으로 저장되었습니다: \(destinationURL)")
         } catch {
             print("파일 저장 중 에러 발생: \(error.localizedDescription)")
-            throw error
+            throw VideoError.saveFailed
         }
     }
     
     /// 비디오 읽어오는 기능 - 테스트
     /// - Parameter fileName: 파일명 (path xxxx) - RecordingFeature에서 저장된 fileName
     /// - Returns: 저장된 path
-    public func readSavedVideo(fileName: String) async throws -> URL? {
+    public func readSavedVideo(fileName: String) async throws -> URL {
         let fileManager = FileManager.default
         
         // 앱의 Documents 디렉토리 경로 가져오기
         guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             print("Documents 디렉토리를 찾을 수 없습니다.")
-            return nil
+            throw VideoError.notFoundDirectory
         }
         
         // 파일 경로 생성
@@ -76,11 +79,11 @@ public struct VideoRecordRepository: VideoRepository {
                 return fileURL
             } catch {
                 print("파일 읽기 중 에러 발생: \(error.localizedDescription)")
-                return nil
+                throw VideoError.readFailed
             }
         } else {
             print("파일이 존재하지 않습니다: \(fileURL)")
-            return nil
+            throw VideoError.notFoundFile
         }
     }
     
@@ -101,4 +104,36 @@ public struct VideoRecordRepository: VideoRepository {
         return try await dataSource.uploadThumbnail(name: name, fileName: fileName, min: min, data: value).toDomain()
     }
     
+    private func saveVideoToPhotoLibrary(from fileURL: URL) async throws -> String {
+        let status = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+        
+        guard status == .authorized || status == .limited else {
+            print("📛 사진첩 접근 권한 없음")
+            throw VideoError.savePhotoDenied
+        }
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            var assetId: String?
+            PHPhotoLibrary.shared().performChanges({
+                let options = PHAssetResourceCreationOptions()
+                let creationRequest = PHAssetCreationRequest.forAsset()
+                creationRequest.addResource(with: .video, fileURL: fileURL, options: options)
+                assetId = creationRequest.placeholderForCreatedAsset?.localIdentifier
+                
+            }, completionHandler: { success, error in
+                if success {
+                    print("✅ 동영상 사진첩에 저장 완료!")
+                    if let assetId {
+                        print("assetId: \(assetId)") // 사진첩 assetID
+                        continuation.resume(returning: assetId)
+                    } else {
+                        continuation.resume(throwing: VideoError.notFoundAsset)
+                    }
+                } else {
+                    print("❌ 저장 실패:", error?.localizedDescription ?? "알 수 없는 오류")
+                    continuation.resume(throwing: VideoError.saveFailed)
+                }
+            })
+        }
+    }
 }
