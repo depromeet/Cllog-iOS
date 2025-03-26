@@ -11,6 +11,8 @@ import AVFoundation
 
 import DesignKit
 import VideoDomain
+import Domain
+import Shared
 
 import ComposableArchitecture
 import UIKit
@@ -20,6 +22,7 @@ public struct RecordedFeature {
     
     @Dependency(\.videoUseCase) var videoUseCase
     @Dependency(\.saveStoryUseCase) var saveStoryUseCase
+    @Dependency(\.cragUseCase) private var cragUseCase
     
     @ObservableState
     public struct State: Equatable {
@@ -48,11 +51,7 @@ public struct RecordedFeature {
         
         // bottomSheet
         var showSelectCragBottomSheet = false
-        var designCrag: [DesignCrag] = [
-            DesignCrag(id: 0, name: "강남점", address: "서울 강남구"),
-            DesignCrag(id: 0, name: "홍대점", address: "서울 마포구"),
-            DesignCrag(id: 0, name: "신촌점", address: "서울 서대문구")
-        ]
+        var designCrags: [DesignCrag] = []
         
         var showSelectCragDifficultyBottomSheet = false
         
@@ -97,6 +96,8 @@ public struct RecordedFeature {
         case binding(BindingAction<State>)
         
         // cragBottomSheetCore
+        case fetchCrags
+        case fetchedCrags(_ crags: [Crag])
         case cragBottomSheetAction(Bool)
         case cragNameSkipButtonTapped
         case cragName(keyWord: String)
@@ -144,7 +145,9 @@ extension RecordedFeature {
                 // 타이머 시작
                 .send(.startListeningPlayTime),
                 // 영상 end 이벤트
-                .send(.startListeningEndPlay)
+                .send(.startListeningEndPlay),
+                // 근처 암장 정보 조회
+                .send(.fetchCrags)
             )
         
         case .binding(let action):
@@ -167,6 +170,16 @@ extension RecordedFeature {
             
         case .cragBottomSheetAction, .cragSaveButtonTapped, .cragNameSkipButtonTapped, .cragName, .gradeBottomSheetShow, .gradeSaveButtonTapped, .gradeTapCragTitleButton:
             return cragBottomSheetCore(&state, action)
+        
+        // 암장정보 조회 및 저장
+        case .fetchCrags:
+            return fetchNearByCrags()
+            
+        case .fetchedCrags(let crags):
+            state.designCrags = crags.map {
+                DesignCrag(id: $0.id, name: $0.name, address: $0.address)
+            }
+            return .none
         
         default:
             return .none
@@ -411,6 +424,17 @@ extension RecordedFeature {
         _ action: Action
     ) -> Effect<Action> {
         return .none
+    }
+    
+    private func fetchNearByCrags() -> Effect<Action> {
+        .run { send in
+            do {
+                let crags = try await cragUseCase.getCrags()
+                await send(.fetchedCrags(crags))
+            } catch {
+                debugPrint(error.localizedDescription)
+            }
+        }
     }
 }
 
