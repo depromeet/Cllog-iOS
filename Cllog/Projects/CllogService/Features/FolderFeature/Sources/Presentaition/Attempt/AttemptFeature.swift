@@ -151,8 +151,8 @@ public struct AttemptFeature {
             case .getAttempt(let attempt):
                 state.attempt = attempt
                 state.videoURL = URL(fileURLWithPath: attempt.attempt.video.localPath)
-                state.selectedEditCrag = state.attempt?.crag
                 state.selectedEditGrade = attempt.grade
+                state.selectedEditCrag = attempt.crag
                 return .none
                 
             // MARK: Bottom Sheet
@@ -192,7 +192,7 @@ public struct AttemptFeature {
                     attemptId: state.attemptId,
                     attempt: currentAttempt,
                     grade: grade,
-                    crag: state.selectedEditCrag
+                    crag: state.selectedEditCrag ?? state.attempt?.crag
                 )
                 
             case .editCragTapped:
@@ -203,7 +203,11 @@ public struct AttemptFeature {
                 guard let currentAttempt = state.attempt else {
                     return .none
                 }
-                return patchResult(attemptId: state.attemptId, attempt: currentAttempt, result: newAction)
+                return patchResult(
+                    attemptId: state.attemptId,
+                    attempt: currentAttempt,
+                    result: newAction
+                )
                 
             case .skipEditCragTapped:
                 state.selectedEditCrag = state.attempt?.crag
@@ -222,8 +226,6 @@ public struct AttemptFeature {
                 state.showEditAttemptBottomSheet = false
                 state.selectedAction = nil
                 state.attempt = newAttempt
-                state.selectedEditCrag = state.attempt?.crag
-                state.selectedEditCragGrades = nil
                 return .none
                 
             case .patchedInfo(let grade, let crag):
