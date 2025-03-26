@@ -30,6 +30,7 @@ public struct FolderButton: View {
                     .frame(width: 20, height: 20)
                     .foregroundStyle(Color.clLogUI.white)
                     .padding(16)
+                    .frame(width: 60, height: 60)
                     .background(Color.clLogUI.gray600)
                     .clipShape(RoundedRectangle(cornerRadius: 99))
                     .padding(.top, 4)
@@ -38,7 +39,7 @@ public struct FolderButton: View {
                 if count > 0 {
                     Text("\(count)")
                         .font(.c1)
-                        .foregroundStyle(Color.clLogUI.white)
+                        .foregroundStyle(Color.clLogUI.gray900)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
                         .background(Color.clLogUI.primary)

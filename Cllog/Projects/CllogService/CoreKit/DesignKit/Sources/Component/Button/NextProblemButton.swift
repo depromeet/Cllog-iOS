@@ -29,6 +29,7 @@ public struct NextProblemButton: View {
                 .background(
                     Circle()
                         .fill(Color.clLogUI.gray600)
+                        .frame(width: 60, height: 60)
                 )
         }
     }

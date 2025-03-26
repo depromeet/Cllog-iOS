@@ -49,7 +49,12 @@ public struct RecordingView: View {
 #endif
         
         VStack(spacing: .zero) {
-            HStack {
+            ZStack {
+                HStack {
+                    LevelChip(name: "파랑", color: .blue)
+                    Spacer()
+                }
+                
                 Text(store.elapsedTime.formatTimeInterval())
                     .font(.h5)
                     .foregroundColor(.clLogUI.white)
@@ -59,6 +64,7 @@ public struct RecordingView: View {
                     .clipShape(Capsule())
             }
             .frame(height: 64)
+            .padding(.horizontal, 16)
             
             HStack(spacing: .zero) {
                 VStack {
@@ -98,6 +104,7 @@ public struct RecordingView: View {
                 }
                 .padding(.top, 42)
                 .padding(.leading, 16)
+                .hidden()
                 
                 Spacer()
             }
