@@ -11,7 +11,7 @@ import Foundation
 public struct CalendarDay: Hashable, Identifiable {
     public var id: UUID { UUID() }
     public let date: Date
-    public let thumbnail: String
+    public let thumbnail: String?
     public let stories: [CalendarStory]
     
     public var displayDate: String {
@@ -32,7 +32,7 @@ public struct CalendarDay: Hashable, Identifiable {
     
     public init(
         date: Date,
-        thumbnail: String,
+        thumbnail: String?,
         stories: [CalendarStory],
         isCurrentMonth: Bool = true
     ) {

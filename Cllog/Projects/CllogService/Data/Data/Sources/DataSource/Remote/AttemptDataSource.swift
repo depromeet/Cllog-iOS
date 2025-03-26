@@ -13,7 +13,8 @@ import Starlink
 public protocol AttemptDataSource {
     func attempts() async throws -> [FolderAttemptResponseDTO]
     func attempt(_ attemptId: Int) async throws -> DetailAttemptResponseDTO
-    func patchResult(id: Int, result: String) async throws
+    func patch(id: Int, cragId: Int?, gradeId: Int?, unregisterGrade: Bool?, result: String?) async throws
+    
     func delete(_ attemptId: Int) async throws
 }
 
@@ -47,8 +48,20 @@ public final class DefaultAttemptDataSource: AttemptDataSource {
         return attempt
     }
     
-    public func patchResult(id: Int, result: String) async throws {
-        let requestDTO = AttemptPatchRequestDTO(status: result)
+    public func patch(
+        id: Int,
+        cragId: Int? = nil,
+        gradeId: Int? = nil,
+        unregisterGrade: Bool? = nil,
+        result: String? = nil
+    ) async throws {
+        let requestDTO = AttemptPatchRequestDTO(
+            cragId: cragId,
+            gradeId: gradeId,
+            gradeUnregistered: unregisterGrade,
+            status: result
+        )
+        
         let _: EmptyResponseDTO = try await provider.request(
             AttemptTarget.patch(id: id, requestDTO: requestDTO)
         )

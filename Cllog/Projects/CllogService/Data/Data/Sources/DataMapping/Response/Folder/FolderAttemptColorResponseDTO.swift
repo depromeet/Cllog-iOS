@@ -16,7 +16,7 @@ struct FolderAttemptColorResponseDTO: Decodable {
     
     func toDomain() -> Grade {
         Grade(
-            id: String(id),
+            id: id,
             name: name,
             hexCode: hex
         )

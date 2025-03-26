@@ -21,4 +21,7 @@ public struct DefaultGradeRepository: GradeRepository {
         try await dataSource.myGrades().map { $0.toDomain() }
     }
     
+    public func getCragGrades(cragId: Int) async throws -> [Grade] {
+        try await dataSource.cragGrades(cragId: cragId).map { $0.toDomain() }
+    }
 }

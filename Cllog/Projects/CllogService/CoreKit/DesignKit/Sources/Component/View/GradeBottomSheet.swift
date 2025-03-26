@@ -28,14 +28,14 @@ public extension View {
 }
 
 public struct DesignGrade: Hashable, Identifiable {
-    public var id: UUID
     
-    public init(name: String, color: Color) {
-        self.id = UUID()
+    public init(id: Int, name: String, color: Color) {
+        self.id = id
         self.name = name
         self.color = color
     }
     
+    public let id: Int
     public let name: String
     public let color: Color
 }
@@ -84,7 +84,8 @@ struct SelectGradeView: View {
     
     // MARK: - UI Components
     private var cragTitleSection: some View {
-        VStack(alignment: .leading) {
+        let isExistCragName = !cragName.isEmpty
+        return VStack(alignment: .leading) {
             Text("암장명")
                 .font(.h3)
                 .foregroundStyle(Color.clLogUI.white)
@@ -92,9 +93,9 @@ struct SelectGradeView: View {
             Button {
                 didTapCragTitleButton()
             } label: {
-                Text(cragName)
+                Text(isExistCragName ? cragName : "암장을 선택해주세요")
                     .font(.b1)
-                    .foregroundStyle(Color.clLogUI.gray50)
+                    .foregroundStyle(isExistCragName ? Color.clLogUI.gray50 : Color.clLogUI.gray400)
                     .padding(.vertical, 12)
                     .padding(.horizontal, 16)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -160,9 +161,9 @@ struct SelectGradeView_Previews: PreviewProvider {
         SelectGradeView(
             cragName: "한남 암장",
             grades: [
-                DesignGrade(name: "V1", color: .blue),
-                DesignGrade(name: "V2", color: .green),
-                DesignGrade(name: "V3", color: .red),
+                DesignGrade(id: 0, name: "V1", color: .blue),
+                DesignGrade(id: 0, name: "V2", color: .green),
+                DesignGrade(id: 0, name: "V3", color: .red),
             ],
             didTapSaveButton: { _ in
                 

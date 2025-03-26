@@ -12,6 +12,7 @@ import Networker
 
 public protocol GradeDataSource {
     func myGrades() async throws -> [FolderGradeResponseDTO]
+    func cragGrades(cragId: Int) async throws -> [GradeResponseDTO]
 }
 
 public final class DefaultGradeDataSource: GradeDataSource {
@@ -32,10 +33,23 @@ public final class DefaultGradeDataSource: GradeDataSource {
         
         return myGrades
     }
+    
+    public func cragGrades(cragId: Int) async throws -> [GradeResponseDTO] {
+        let response: BaseResponseDTO<GradesResponseDTO> = try await provider.request(
+            GradeTarget.cragGrades(id: cragId)
+        )
+        
+        guard let grades = response.data?.grades else {
+            throw StarlinkError.inValidJSONData(nil)
+        }
+        
+        return grades
+    }
 }
 
 enum GradeTarget {
     case myGrades
+    case cragGrades(id: Int)
 }
 
 extension GradeTarget: EndpointType {
@@ -50,30 +64,31 @@ extension GradeTarget: EndpointType {
     var path: String {
         switch self {
         case .myGrades: "/api/v1/grades/me"
+        case .cragGrades(let cragId): "/api/v1/\(cragId)/grades"
         }
     }
     
     var method: Starlink.Method {
         switch self {
-        case .myGrades: .get
+        case .myGrades, .cragGrades: .get
         }
     }
     
     var parameters: Networker.ParameterType? {
         switch self {
-        case .myGrades: nil
+        case .myGrades, .cragGrades: nil
         }
     }
     
     var encodable: (any Encodable)? {
         switch self {
-        case .myGrades: nil
+        case .myGrades, .cragGrades: nil
         }
     }
     
     var headers: [Starlink.Header]? {
         switch self {
-        case .myGrades: nil
+        case .myGrades, .cragGrades: nil
         }
     }
     

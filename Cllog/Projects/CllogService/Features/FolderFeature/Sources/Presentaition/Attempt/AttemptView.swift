@@ -11,6 +11,7 @@ import FolderDomain
 import DesignKit
 import Shared
 import Core
+import _AVKit_SwiftUI
 
 import ComposableArchitecture
 
@@ -26,6 +27,41 @@ public struct AttemptView: ViewProtocol {
             .onAppear {
                 store.send(.onAppear)
             }
+            .showGradeBottomSheet(
+                isPresented: $store.showGradeBottomSheet,
+                cragName: store.selectedEditCrag?.name ?? "",
+                grades: store.selectedCragGrades.map {
+                    DesignGrade(
+                        id: $0.id,
+                        name: $0.name,
+                        color: Color(hex: $0.hexCode)
+                    )
+                },
+                didTapSaveButton: { newGrade in
+                    store.send(.didTapSaveGradeTapped(id: newGrade?.id))
+                },
+                didTapCragTitleButton: {
+                    store.send(.editCragTapped)
+                }
+            )
+            .showCragBottomSheet(
+                isPresented: $store.showCragBottomSheet,
+                didTapSaveButton: { crag in
+                    let selectedCrag = Crag(
+                        id: crag.id,
+                        name: crag.name,
+                        address: crag.address
+                    )
+                    store.send(.saveEditCragTapped(crag: selectedCrag))
+                },
+                didTapSkipButton: {
+                    store.send(.skipEditCragTapped)
+                },
+                didChangeSearchText: { text in
+                    print("text")
+                },
+                crags: $store.nearByCrags
+            )
             .sheet(isPresented: $store.showEditAttemptBottomSheet) {
                 makeEditAttemptBottomSheet()
                     .presentationDetents([.height(store.dynamicSheetHeight)])
@@ -164,9 +200,21 @@ extension AttemptView {
         ZStack(alignment: .bottom) {
             RoundedRectangle(cornerRadius: 6)
                 .foregroundStyle(Color.clLogUI.dim)
-                .onTapGesture {
-                    print("재생 또는 정지")
-                }
+            
+            if let videoPath = store.videoURL {
+                VideoPlayer(player: AVPlayer(url: videoPath))
+                    .clipShape(
+                        RoundedRectangle(cornerRadius: 6)
+                    )
+                    .onTapGesture {
+                        
+                        print("재생 또는 정지")
+                    }
+            }
+
+//                .onTapGesture {
+//                    print("재생 또는 정지")
+//                }
             
             PlayerProgressBar(
                 progress: CGFloat(progressValue),

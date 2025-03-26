@@ -9,11 +9,11 @@
 import Foundation
 
 public struct Grade: Hashable, Identifiable {
-    public let id: String
+    public let id: Int
     public let name: String
     public let hexCode: String
     
-    public init(id: String = UUID().uuidString, name: String, hexCode: String) {
+    public init(id: Int, name: String, hexCode: String) {
         self.id = id
         self.name = name
         self.hexCode = hexCode

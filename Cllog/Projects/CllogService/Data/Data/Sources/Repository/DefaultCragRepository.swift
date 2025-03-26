@@ -17,7 +17,11 @@ public struct DefaultCragRepository: CragRepository {
         self.dataSource = dataSource
     }
     
-    public func getCrags() async throws -> [Crag] {
-        try await dataSource.crags().map { $0.toDomain()  }
+    public func getNearByCrags(longitude: Double, latitude: Double) async throws -> [Crag] {
+        try await dataSource.nearByCrags(longitude: longitude, latitude: latitude).map { $0.toDomain() }
+    }
+    
+    public func getMyCrags() async throws -> [Crag] {
+        try await dataSource.myCrags().map { $0.toDomain()  }
     }
 }
