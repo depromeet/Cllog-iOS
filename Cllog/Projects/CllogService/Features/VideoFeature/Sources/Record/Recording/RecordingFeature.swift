@@ -21,6 +21,8 @@ public struct RecordingFeature {
         var elapsedTime: TimeInterval = 0
         var fileName: String = ""
         let viewModel: RecordingPlayViewModel = .init()
+        // 저장된 스토리가 있는지 확인
+        var count: Int = 0
     }
     
     public enum Action: Equatable {
@@ -62,6 +64,7 @@ extension RecordingFeature {
     ) -> Effect<Action> {
         switch action {
         case .onAppear:
+            state.count = VideoDataManager.attemptCount
             return .run { send in
                 await send(.onStartSession)
                 await send(.onStartRecording)
@@ -127,8 +130,8 @@ extension RecordingFeature {
                 // 성공/실패 화면으로 전환
                 await send(.presentRecorded(
                     fileName: fileName,
-                    path: path)
-                )
+                    path: path
+                ))
             }
             
         case .presentRecorded:

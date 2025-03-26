@@ -30,6 +30,7 @@ public struct RecordedFeature {
         let fileName: String
         let path: URL
         var duration: String = ""
+        var totalDuration: Int = 0
         let viewModel: RecordedPlayViewModel
         var progress: CGFloat = .zero
         
@@ -105,6 +106,8 @@ public struct RecordedFeature {
         case gradeSaveButtonTapped(DesignGrade?)
         case gradeTapCragTitleButton
         
+        case saveFinished
+        
         @CasePathable
         public enum Dialog: Equatable {
             case confirm
@@ -164,6 +167,9 @@ extension RecordedFeature {
             
         case .cragBottomSheetAction, .cragSaveButtonTapped, .cragNameSkipButtonTapped, .cragName, .gradeBottomSheetShow, .gradeSaveButtonTapped, .gradeTapCragTitleButton:
             return cragBottomSheetCore(&state, action)
+        
+        default:
+            return .none
         }
     }
     
@@ -204,6 +210,10 @@ extension RecordedFeature {
             let currentTime = CGFloat(CMTimeGetSeconds(playTime))
             state.duration = playTime.formatTimeInterval()
             state.progress = currentTime/totalTime
+            if state.totalDuration == 0, !totalTime.isNaN {
+                state.totalDuration = Int(totalTime * 1000)
+                print("영상 총 길이 MS: \(state.totalDuration)")
+            }
             return .none
             
         default:
@@ -363,6 +373,7 @@ extension RecordedFeature {
             
         case .gradeSaveButtonTapped(let designGrade):
             // 암장 등급 바텀시트에서 등급을 저장하기 버튼을 누르면 오는 이벤트
+            print("최종 저장 시간 : \(state.totalDuration)")
             // TODO: 최종 저장 버튼
             return .run { [state] send in
                 let request = StoryRequest(
@@ -374,7 +385,7 @@ extension RecordedFeature {
                         video: VideoRequest(
                             localPath: state.path.absoluteString,
                             thumbnailUrl: "",
-                            durationMs: (Int(state.duration) ?? 0) * 1000,
+                            durationMs: state.totalDuration,
                             stamps: [
                                 StampRequest(timeMs: 0) // 타임 스탬프
                             ]
@@ -384,7 +395,11 @@ extension RecordedFeature {
                 )
                 
                 let response = try await saveStoryUseCase.execute(request)
+                VideoDataManager.save(story: response)
+                VideoDataManager.attemptCount += 1
                 try await videoUseCase.execute(saveFile: state.path)
+                await send(.saveFinished)
+                
             }
             
         default: return .none

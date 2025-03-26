@@ -6,7 +6,7 @@
 //  Copyright © 2025 Supershy. All rights reserved.
 //
 
-public struct SavedStory {
+public struct SavedStory: Equatable {
     public let storyId: Int
     public let problemId: Int
     

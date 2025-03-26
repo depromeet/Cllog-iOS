@@ -17,7 +17,7 @@ import DesignKit
 import ComposableArchitecture
 
 public struct VideoView: View {
-    private let store: StoreOf<VideoFeature>
+    @Bindable private var store: StoreOf<VideoFeature>
     
     public init(
         store: StoreOf<VideoFeature>
@@ -39,10 +39,10 @@ private extension VideoView {
     var bodyView: some View {
         switch store.viewState {
         case .normal:
-            Text("normal")
+            Text("")
             
         case .noneVideoPermission:
-            Text("noneVideoPermission")
+            Text("카메라 권한을 허용해주세요")
             
         case .video:
             camerView
@@ -58,7 +58,7 @@ private extension VideoView {
     var camerView: some View {
         ZStack {
             #if !targetEnvironment(simulator)
-            VideoPreview(camera: store.camerModel)
+            VideoPreview(camera: store.cameraModel)
                 .ignoresSafeArea()
             #else
             Color.clLogUI.gray100
@@ -67,10 +67,33 @@ private extension VideoView {
             
             VStack(spacing: .zero) {
                 
+                if store.count > 0 {
+                    HStack(alignment: .center) {
+                        LevelChip(name: "파랑", color: .blue)
+                        
+                        Spacer()
+                        
+                        Button {
+                            store.send(.endedStoryTapped)
+                        } label: {
+                            Text("종료")
+                                .font(.h5)
+                                .foregroundColor(.clLogUI.white)
+                                .frame(width: 40, height: 40)
+                                .background(Color.clLogUI.gray500.opacity(0.5))
+                                .clipShape(Circle())
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                }
+                
                 Color.clear
                     .frame(height: 64)
                 
                 HStack(spacing: .zero) {
+                    
+                    // TODO: 카메라 기능 옵션
                     VStack {
                         Button {
                             
@@ -108,18 +131,38 @@ private extension VideoView {
                     }
                     .padding(.top, 42)
                     .padding(.leading, 16)
+                    .hidden()
                     
                     Spacer()
                 }
+                .hidden()
                 
                 Spacer()
                 
-                RecodingButton(isRecoding: .init(
-                    get: { false },
-                    set: { newValue in }
-                ), onTapped: {
-                    store.send(.onStartRecord)
-                })
+                HStack(alignment: .center) {
+                    if store.count > 0 {
+                        FolderButton(count: $store.count) {
+                            store.send(.folderTapped)
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    RecodingButton(isRecoding: .init(
+                        get: { false },
+                        set: { newValue in }
+                    ), onTapped: {
+                        store.send(.onStartRecord)
+                    })
+                    
+                    Spacer()
+                    if store.count > 0 {
+                        NextProblemButton {
+                            store.send(.nextProblemTapped)
+                        }
+                    }
+                }
+                .padding(.horizontal, 42)
                 .padding(.bottom, 40)
             }
         }

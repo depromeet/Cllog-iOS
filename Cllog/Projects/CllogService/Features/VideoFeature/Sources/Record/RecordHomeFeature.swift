@@ -117,6 +117,10 @@ private extension RecordHomeFeature {
             return .run { send in
                 await send(.moveEditRecord(path))
             }
+            
+        case .saveFinished:
+            return .send(.recordEnd)
+            
         case .close:
             state.recordingState = nil
             state.recordedState = nil
