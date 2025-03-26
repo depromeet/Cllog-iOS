@@ -47,7 +47,6 @@ public struct RecordHomeView: View {
             }
         }
     }
-    
 }
 
 #Preview {

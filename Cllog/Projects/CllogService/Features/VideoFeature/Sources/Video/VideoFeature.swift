@@ -9,6 +9,7 @@
 import Shared
 
 import ComposableArchitecture
+import VideoDomain
 
 @Reducer
 public struct VideoFeature {
@@ -22,13 +23,15 @@ public struct VideoFeature {
         var viewState: ViewState = .normal
         
         // 카메라를 컨드롤하는 Model
-        var camerModel: VideoPreviewViewModel = .init()
+        var cameraModel: VideoPreviewViewModel = .init()
         
+        // 저장된 스토리가 있는지 확인
+        var count: Int = 0
         public init() {}
     }
     
-    public enum Action: Equatable {
-        
+    public enum Action: Equatable, BindableAction {
+        case binding(BindingAction<State>)
         case onAppear
         
         case updateViewState(ViewState)
@@ -42,6 +45,15 @@ public struct VideoFeature {
         
         // Video 화면에서 촬영 버튼을 클릭시 전달
         case onStartRecord
+        
+        // 스토리 종료
+        case endedStoryTapped
+        
+        // 폴더 버튼
+        case folderTapped
+        
+        // 다음 문제
+        case nextProblemTapped
     }
     
     public enum ViewState {
@@ -56,6 +68,8 @@ public struct VideoFeature {
     public init() {}
     
     public var body: some ReducerOf<Self> {
+        BindingReducer()
+        
         Reduce(videoCore)
     }
 }
@@ -67,7 +81,11 @@ private extension VideoFeature {
         _ action: Action
     ) -> Effect<Action> {
         switch action {
+        case .binding(_):
+            return .none
         case .onAppear:
+            state.count = VideoDataManager.attemptCount
+            
             return .run { [permissionUseCase] send in
                 do {
                     try await permissionUseCase.execute()
@@ -82,11 +100,12 @@ private extension VideoFeature {
             return .none
             
         case .onStartSession:
-            state.camerModel.startSession()
+            state.count = VideoDataManager.attemptCount
+            state.cameraModel.startSession()
             return .none
             
         case .onStopSession:
-            state.camerModel.stopSession()
+            state.cameraModel.stopSession()
             return .none
             
         case .onStartRecord:
@@ -96,10 +115,20 @@ private extension VideoFeature {
             
         case .selectedTab(let index):
             guard state.viewState == .video else {
-                state.camerModel.stopSession()
+                state.cameraModel.stopSession()
                 return .none
             }
-            index == 1 ? state.camerModel.startSession() : state.camerModel.stopSession()
+            index == 1 ? state.cameraModel.startSession() : state.cameraModel.stopSession()
+            return .none
+            
+        case .endedStoryTapped:
+            VideoDataManager.clear()
+            return .none
+            
+        case .folderTapped:
+            return .none
+            
+        case .nextProblemTapped:
             return .none
         }
     }

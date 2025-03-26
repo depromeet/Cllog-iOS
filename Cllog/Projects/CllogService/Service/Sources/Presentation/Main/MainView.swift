@@ -43,7 +43,6 @@ public struct MainView: View {
 }
 
 private extension MainView {
-    
     var bodyView: some View {
         ZStack {
             
