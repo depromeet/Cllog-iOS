@@ -11,7 +11,7 @@ import Networker
 import Starlink
 
 public protocol AttemptDataSource {
-    func attempts() async throws -> [FolderAttemptResponseDTO]
+    func attempts(_ request: AttemptFilterRequestDTO) async throws -> [FolderAttemptResponseDTO]
     func attempt(_ attemptId: Int) async throws -> DetailAttemptResponseDTO
     func patch(id: Int, cragId: Int?, gradeId: Int?, unregisterGrade: Bool?, result: String?) async throws
     
@@ -25,9 +25,9 @@ public final class DefaultAttemptDataSource: AttemptDataSource {
         self.provider = provider
     }
     
-    public func attempts() async throws -> [FolderAttemptResponseDTO] {
+    public func attempts(_ request: AttemptFilterRequestDTO) async throws -> [FolderAttemptResponseDTO] {
         let response: BaseResponseDTO<FolderResponseDTO> = try await provider.request(
-            AttemptTarget.attempts
+            AttemptTarget.attempts(request: request)
         )
         
         guard let attempts = response.data?.attempts else {
@@ -73,7 +73,7 @@ public final class DefaultAttemptDataSource: AttemptDataSource {
 }
 
 enum AttemptTarget {
-    case attempts
+    case attempts(request: AttemptFilterRequestDTO)
     case detailAttempt(id: Int)
     case patch(id: Int, requestDTO: AttemptPatchRequestDTO)
     case delete(id: Int)
@@ -119,7 +119,8 @@ extension AttemptTarget: EndpointType {
     
     var parameters: Networker.ParameterType? {
         switch self {
-        case .attempts, .detailAttempt, .delete: nil
+        case .attempts(let request): .encodable(request)
+        case .detailAttempt, .delete: nil
         case .patch(_, let requestDTO): .encodable(requestDTO)
         }
     }

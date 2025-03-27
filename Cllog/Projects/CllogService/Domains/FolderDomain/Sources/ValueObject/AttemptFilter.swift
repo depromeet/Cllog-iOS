@@ -43,15 +43,15 @@ public struct AttemptFilter: Equatable {
     }
     
     public func updateCrag(_ crag: Crag?) -> AttemptFilter {
-        return AttemptFilter(
+        AttemptFilter(
             attemptResult: attemptResult,
             crag: crag,
-             grade: grade ?? grade
+            grade: grade
         )
     }
     
     public func updateGrade(_ grade: Grade?) -> AttemptFilter {
-        return AttemptFilter(
+        AttemptFilter(
             attemptResult: attemptResult,
             crag: crag,
             grade: grade

@@ -10,7 +10,7 @@ import Foundation
 import Shared
 
 public protocol AttemptRepository {
-    func getFilteredAttempts() async throws -> [Attempt]
+    func getFilteredAttempts(_ filter: AttemptFilter?) async throws -> [Attempt]
     func getAttempt(attemptId: Int) async throws -> ReadAttempt
     func patchResult(attemptId: Int, attempt: ReadAttempt, result: AttemptResult) async throws
     func patchInfo(attemptId: Int, attempt: ReadAttempt, grade: Grade?, crag: Crag?) async throws
@@ -22,7 +22,7 @@ public struct MockAttemptRepository: AttemptRepository {
     
     public init() {}
     
-    public func getFilteredAttempts() async throws -> [Attempt] {
+    public func getFilteredAttempts(_ filter: AttemptFilter?) async throws -> [Attempt] {
         [
             Attempt(
                 id: 0,

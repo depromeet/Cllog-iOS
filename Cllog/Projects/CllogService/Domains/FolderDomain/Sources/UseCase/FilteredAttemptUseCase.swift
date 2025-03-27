@@ -12,7 +12,7 @@ import Shared
 import Dependencies
 
 public protocol FilteredAttemptsUseCase {
-    func execute(_ filter: FilterableAttemptInfo?) async throws -> [Attempt]
+    func execute(_ filter: AttemptFilter?) async throws -> [Attempt]
 }
 
 public struct DefaultFilteredAttemptsUseCase: FilteredAttemptsUseCase {
@@ -22,8 +22,8 @@ public struct DefaultFilteredAttemptsUseCase: FilteredAttemptsUseCase {
         self.attemptRepository = attemptRepository
     }
     
-    public func execute(_ filter: FilterableAttemptInfo?) async throws -> [Attempt] {
-        try await attemptRepository.getFilteredAttempts()
+    public func execute(_ filter: AttemptFilter?) async throws -> [Attempt] {
+        try await attemptRepository.getFilteredAttempts(filter)
     }
 }
 

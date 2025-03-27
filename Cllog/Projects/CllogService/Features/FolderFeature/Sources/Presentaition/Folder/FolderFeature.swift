@@ -21,7 +21,6 @@ public struct FolderFeature {
         var attempts = [Attempt]()
         let chips = SelectedChip.allCases
         var attemptFilter = AttemptFilter()
-        var selectedChips: Set<SelectedChip> = []
         var viewState = ViewState.loading
         var showSelectGradeBottomSheet = false
         var showSelectCragBottomSheet = false
@@ -59,38 +58,50 @@ public struct FolderFeature {
                 return fetchInitialData()
                 
             case .completeChipTapped:
-                state.attemptFilter = state.attemptFilter.toggleResult(.complete)
-                return .none
+                let filter = state.attemptFilter.toggleResult(.complete)
+                state.attemptFilter = filter
+                return fetchFilteredAttempts(filter)
+                
             case .failChipTapped:
-                state.attemptFilter = state.attemptFilter.toggleResult(.fail)
-                return .none
+                let filter = state.attemptFilter.toggleResult(.fail)
+                state.attemptFilter = filter
+                return fetchFilteredAttempts(filter)
+                
             case .gradeChipTapped:
                 guard state.attemptFilter.grade == nil else {
-                    state.attemptFilter = state.attemptFilter.updateGrade(nil)
-                    return .none
+                    let filter = state.attemptFilter.updateGrade(nil)
+                    state.attemptFilter = filter
+                    return fetchFilteredAttempts(filter)
                 }
                 state.showSelectGradeBottomSheet = true
 
                 return .none
             case .cragChipTapped:
                 guard state.attemptFilter.crag == nil else {
-                    state.attemptFilter = state.attemptFilter.updateCrag(nil)
-                    return .none
+                    let filter = state.attemptFilter.updateCrag(nil)
+                    state.attemptFilter = filter
+                    return fetchFilteredAttempts(filter)
                 }
                 state.searchCragName = ""
                 state.showSelectCragBottomSheet = true
                 return .none
+                
             case .getFilterableInfo(let info):
                 state.filterableAttemptInfo = info
                 return .none
+                
             case .didSelectCrag(let crag):
-                state.attemptFilter = state.attemptFilter.updateCrag(crag)
+                let filter = state.attemptFilter.updateCrag(crag)
+                state.attemptFilter = filter
                 state.showSelectCragBottomSheet = false
-                return .none
+                return fetchFilteredAttempts(filter)
+                
             case .didSelectGrade(let grade):
-                state.attemptFilter = state.attemptFilter.updateGrade(grade)
+                let filter = state.attemptFilter.updateGrade(grade)
+                state.attemptFilter = filter
                 state.showSelectGradeBottomSheet = false
-                return .none
+                return fetchFilteredAttempts(filter)
+                
             case .setViewState(let viewState):
                 state.viewState = viewState
                 return .none
@@ -101,6 +112,7 @@ public struct FolderFeature {
                 return .none
             case .fail:
                 return .none
+                
             }
         }
     }
@@ -121,16 +133,17 @@ public struct FolderFeature {
         }
     }
     
-    private func getAttempts() -> Effect<Action> {
+    private func fetchFilteredAttempts(_ filter: AttemptFilter) -> Effect<Action> {
         return .run { send in
             do {
-                let attempts = try await filteredAttemptsUseCase.execute(nil)
+                let attempts = try await filteredAttemptsUseCase.execute(filter)
                 await send(.getFilteredAttempts(attempts))
-                
+                await send(.setViewState(attempts.isEmpty ? .empty : .content))
+            } catch {
+                await send(.setViewState(.empty))
             }
         }
     }
-    
 }
 
 extension FolderFeature {
