@@ -29,6 +29,7 @@ public struct MockAttemptRepository: AttemptRepository {
                 date: "2024-03-13",
                 grade: Grade(id: 0, name: "V5", hexCode: "0xFF5733"),
                 result: .complete,
+                thumbnailUrl: "https://www.dictionary.com/e/wp-content/uploads/2018/05/lhtm.jpg",
                 recordedTime: "00:45",
                 crag: Crag(id: 0, name: "Seoul Bouldering", address: "Seoul, South Korea")
             ),

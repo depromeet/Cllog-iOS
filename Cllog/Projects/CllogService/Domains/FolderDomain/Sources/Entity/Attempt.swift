@@ -14,6 +14,7 @@ public struct Attempt: Hashable, Identifiable {
     public let date: String
     public let grade: Grade?
     public let result: AttemptResult
+    public let thumbnailUrl: String
     public let recordedTime: String
     public let crag: Crag?
     
@@ -30,6 +31,7 @@ public struct Attempt: Hashable, Identifiable {
         date: String,
         grade: Grade?,
         result: AttemptResult,
+        thumbnailUrl: String,
         recordedTime: String,
         crag: Crag?
     ) {
@@ -37,6 +39,7 @@ public struct Attempt: Hashable, Identifiable {
         self.date = date
         self.grade = grade
         self.result = result
+        self.thumbnailUrl = thumbnailUrl
         self.recordedTime = recordedTime
         self.crag = crag
     }

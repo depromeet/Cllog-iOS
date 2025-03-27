@@ -24,6 +24,7 @@ public struct FolderAttemptResponseDTO: Decodable {
             date: date,
             grade: color?.toDomain(),
             result: AttemptResult(rawValue: status) ?? .complete,
+            thumbnailUrl: video.thumbnailUrl,
             recordedTime: video.durationMs.msToTimeString,
             crag: crag?.toDomain()
         )
