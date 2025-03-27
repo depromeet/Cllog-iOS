@@ -55,7 +55,7 @@ public struct FolderFeature {
             case .binding:
                 return .none
             case .onAppear:
-                return fetchInitialData()
+                return fetchInitialData(state.attemptFilter)
                 
             case .completeChipTapped:
                 let filter = state.attemptFilter.toggleResult(.complete)
@@ -117,10 +117,10 @@ public struct FolderFeature {
         }
     }
     
-    private func fetchInitialData() -> Effect<Action> {
+    private func fetchInitialData(_ filter: AttemptFilter) -> Effect<Action> {
         return .run { send in
             async let requestFilterableInfo = fetchFilterableAttemptInfoUseCase.execute()
-            async let allAttempts = filteredAttemptsUseCase.execute(nil)
+            async let allAttempts = filteredAttemptsUseCase.execute(filter)
             
             do {
                 let (filterableInfo, attemptsResult) = try await (requestFilterableInfo, allAttempts)
@@ -138,9 +138,8 @@ public struct FolderFeature {
             do {
                 let attempts = try await filteredAttemptsUseCase.execute(filter)
                 await send(.getFilteredAttempts(attempts))
-                await send(.setViewState(attempts.isEmpty ? .empty : .content))
             } catch {
-                await send(.setViewState(.empty))
+                debugPrint(error.localizedDescription)
             }
         }
     }
