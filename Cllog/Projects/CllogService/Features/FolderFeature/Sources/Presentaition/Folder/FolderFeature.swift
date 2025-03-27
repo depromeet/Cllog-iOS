@@ -37,16 +37,16 @@ public struct FolderFeature {
         case failChipTapped
         case gradeChipTapped
         case cragChipTapped
+        
         case getFilterableInfo(_ data: FilterableAttemptInfo)
         case didSelectCrag(_ crag: Crag)
         case didSelectGrade(_ grade: Grade)
-        case getFilteredAttempts(_ attempt: [Attempt])
+        case getFilteredAttempts(_ attempts: [Attempt])
+        
         case setViewState(_ state: ViewState)
         case moveToAttempt(_ attemptId: Int)
         case fail
     }
-    
-    public init() {}
     
     public var body: some Reducer<State, Action> {
         BindingReducer()
@@ -54,76 +54,58 @@ public struct FolderFeature {
             switch action {
             case .binding:
                 return .none
+                
             case .onAppear:
                 return fetchInitialData(state.attemptFilter)
                 
             case .completeChipTapped:
-                let filter = state.attemptFilter.toggleResult(.complete)
-                state.attemptFilter = filter
-                return fetchFilteredAttempts(filter)
+                return handleChipToggle(state: &state, result: .complete)
                 
             case .failChipTapped:
-                let filter = state.attemptFilter.toggleResult(.fail)
-                state.attemptFilter = filter
-                return fetchFilteredAttempts(filter)
+                return handleChipToggle(state: &state, result: .fail)
                 
             case .gradeChipTapped:
-                guard state.attemptFilter.grade == nil else {
-                    let filter = state.attemptFilter.updateGrade(nil)
-                    state.attemptFilter = filter
-                    return fetchFilteredAttempts(filter)
-                }
-                state.showSelectGradeBottomSheet = true
-
-                return .none
+                return handleGradeChipTap(state: &state)
+                
             case .cragChipTapped:
-                guard state.attemptFilter.crag == nil else {
-                    let filter = state.attemptFilter.updateCrag(nil)
-                    state.attemptFilter = filter
-                    return fetchFilteredAttempts(filter)
-                }
-                state.searchCragName = ""
-                state.showSelectCragBottomSheet = true
-                return .none
+                return handleCragChipTap(state: &state)
                 
             case .getFilterableInfo(let info):
                 state.filterableAttemptInfo = info
                 return .none
                 
             case .didSelectCrag(let crag):
-                let filter = state.attemptFilter.updateCrag(crag)
-                state.attemptFilter = filter
-                state.showSelectCragBottomSheet = false
-                return fetchFilteredAttempts(filter)
+                return handleCragSelection(state: &state, crag: crag)
                 
             case .didSelectGrade(let grade):
-                let filter = state.attemptFilter.updateGrade(grade)
-                state.attemptFilter = filter
-                state.showSelectGradeBottomSheet = false
-                return fetchFilteredAttempts(filter)
+                return handleGradeSelection(state: &state, grade: grade)
                 
             case .setViewState(let viewState):
                 state.viewState = viewState
                 return .none
+                
             case .getFilteredAttempts(let attempts):
                 state.attempts = attempts
                 return .none
-            case .moveToAttempt:
-                return .none
-            case .fail:
-                return .none
                 
+            case .moveToAttempt, .fail:
+                return .none
             }
         }
     }
+    public init() {}
+}
+
+private extension FolderFeature {
     
     private func fetchInitialData(_ filter: AttemptFilter) -> Effect<Action> {
         return .run { send in
-            async let requestFilterableInfo = fetchFilterableAttemptInfoUseCase.execute()
-            async let allAttempts = filteredAttemptsUseCase.execute(filter)
-            
             do {
+                async let requestFilterableInfo = fetchFilterableAttemptInfoUseCase.execute()
+                async let allAttempts = filteredAttemptsUseCase.execute(filter)
+                
                 let (filterableInfo, attemptsResult) = try await (requestFilterableInfo, allAttempts)
+                
                 await send(.getFilterableInfo(filterableInfo))
                 await send(.getFilteredAttempts(attemptsResult))
                 await send(.setViewState(attemptsResult.isEmpty ? .empty : .content))
@@ -145,6 +127,52 @@ public struct FolderFeature {
     }
 }
 
+private extension FolderFeature {
+    private func handleChipToggle(state: inout State, result: AttemptResult?) -> Effect<Action> {
+        let filter = state.attemptFilter.toggleResult(result)
+        state.attemptFilter = filter
+        return fetchFilteredAttempts(filter)
+    }
+    
+    private func handleGradeChipTap(state: inout State) -> Effect<Action> {
+        guard state.attemptFilter.grade != nil else {
+            state.showSelectGradeBottomSheet = true
+            return .none
+        }
+        
+        let filter = state.attemptFilter.updateGrade(nil)
+        state.attemptFilter = filter
+        return fetchFilteredAttempts(filter)
+    }
+    
+    private func handleCragChipTap(state: inout State) -> Effect<Action> {
+        guard state.attemptFilter.crag != nil else {
+            state.searchCragName = ""
+            state.showSelectCragBottomSheet = true
+            return .none
+        }
+        
+        let filter = state.attemptFilter.updateCrag(nil)
+        state.attemptFilter = filter
+        return fetchFilteredAttempts(filter)
+    }
+    
+    private func handleCragSelection(state: inout State, crag: Crag) -> Effect<Action> {
+        let filter = state.attemptFilter.updateCrag(crag)
+        state.attemptFilter = filter
+        state.showSelectCragBottomSheet = false
+        return fetchFilteredAttempts(filter)
+    }
+    
+    private func handleGradeSelection(state: inout State, grade: Grade) -> Effect<Action> {
+        let filter = state.attemptFilter.updateGrade(grade)
+        state.attemptFilter = filter
+        state.showSelectGradeBottomSheet = false
+        return fetchFilteredAttempts(filter)
+    }
+}
+
+// MARK: - Supporting Enums
 extension FolderFeature {
     public enum ViewState: Equatable {
         case loading
