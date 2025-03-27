@@ -11,6 +11,8 @@ import AVFoundation
 
 import DesignKit
 import VideoDomain
+import Domain
+import Shared
 
 import ComposableArchitecture
 import UIKit
@@ -20,6 +22,8 @@ public struct RecordedFeature {
     
     @Dependency(\.videoUseCase) var videoUseCase
     @Dependency(\.saveStoryUseCase) var saveStoryUseCase
+    @Dependency(\.cragUseCase) private var cragUseCase
+    @Dependency(\.gradeUseCase) private var gradeUseCase
     
     @ObservableState
     public struct State: Equatable {
@@ -48,11 +52,7 @@ public struct RecordedFeature {
         
         // bottomSheet
         var showSelectCragBottomSheet = false
-        var designCrag: [DesignCrag] = [
-            DesignCrag(id: 0, name: "강남점", address: "서울 강남구"),
-            DesignCrag(id: 0, name: "홍대점", address: "서울 마포구"),
-            DesignCrag(id: 0, name: "신촌점", address: "서울 서대문구")
-        ]
+        var designCrags: [DesignCrag] = []
         
         var showSelectCragDifficultyBottomSheet = false
         
@@ -97,12 +97,16 @@ public struct RecordedFeature {
         case binding(BindingAction<State>)
         
         // cragBottomSheetCore
+        case fetchCrags
+        case fetchedCrags(_ crags: [Crag])
+        case fetchGrades(cragId: Int)
+        
         case cragBottomSheetAction(Bool)
         case cragNameSkipButtonTapped
         case cragName(keyWord: String)
         case cragSaveButtonTapped(DesignCrag)
         
-        case gradeBottomSheetShow(DesignCrag)
+        case gradeBottomSheetShow(_ grades: [Grade])
         case gradeSaveButtonTapped(DesignGrade?)
         case gradeTapCragTitleButton
         
@@ -144,7 +148,9 @@ extension RecordedFeature {
                 // 타이머 시작
                 .send(.startListeningPlayTime),
                 // 영상 end 이벤트
-                .send(.startListeningEndPlay)
+                .send(.startListeningEndPlay),
+                // 근처 암장 정보 조회
+                .send(.fetchCrags)
             )
         
         case .binding(let action):
@@ -168,6 +174,20 @@ extension RecordedFeature {
         case .cragBottomSheetAction, .cragSaveButtonTapped, .cragNameSkipButtonTapped, .cragName, .gradeBottomSheetShow, .gradeSaveButtonTapped, .gradeTapCragTitleButton:
             return cragBottomSheetCore(&state, action)
         
+        // 암장정보 조회 및 저장
+        case .fetchCrags:
+            return fetchNearByCrags()
+            
+        case .fetchedCrags(let crags):
+            state.designCrags = crags.map {
+                DesignCrag(id: $0.id, name: $0.name, address: $0.address)
+            }
+            return .none
+        
+        // 선택된 암장 정보 기반 난이도 조회
+        case .fetchGrades(let selectedCragId):
+            return fetchCragGrade(cragId: selectedCragId)
+            
         default:
             return .none
         }
@@ -336,11 +356,8 @@ extension RecordedFeature {
             // 암장 선택 바텀시트 - 저장버튼 클릭
             state.showSelectCragBottomSheet = false
             
-            // 준영: 암장을 정보를 요청하고 넣어주어야함
             state.selectedDesignCrag = designCrag
-            return .run { [designCrag] send in
-                await send(.gradeBottomSheetShow(designCrag))
-            }
+            return fetchCragGrade(cragId: designCrag.id)
             
         case .cragNameSkipButtonTapped:
             // 암장 선택 바텀시트 - 스킵 버튼 클릭
@@ -362,8 +379,11 @@ extension RecordedFeature {
         case .cragName(let keyWord):
             // 암장 등급을 검색할떄 호출
             return .none
-        case .gradeBottomSheetShow(let designCrag):
+        case .gradeBottomSheetShow(let grades):
             // 암장 등급을 보여주기 위해서 호출되는 값
+            state.designGrades = grades.map {
+                DesignGrade(id: $0.id, name: $0.name, color: .init(hex: $0.hexCode))
+            }
             state.showSelectCragDifficultyBottomSheet = true
             return .none
             
@@ -411,6 +431,28 @@ extension RecordedFeature {
         _ action: Action
     ) -> Effect<Action> {
         return .none
+    }
+    
+    private func fetchNearByCrags() -> Effect<Action> {
+        .run { send in
+            do {
+                let crags = try await cragUseCase.getCrags()
+                await send(.fetchedCrags(crags))
+            } catch {
+                debugPrint(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func fetchCragGrade(cragId: Int) -> Effect<Action> {
+        .run { send in
+            do {
+                let grades = try await gradeUseCase.getCragGrades(cragId: cragId)
+                await send(.gradeBottomSheetShow(grades))
+            } catch {
+                debugPrint(error.localizedDescription)
+            }
+        }
     }
 }
 
