@@ -48,7 +48,7 @@ public struct RecordedView: View {
                     store.send(.cragNameSkipButtonTapped)
                 }, didChangeSearchText: { keyword in
                     store.send(.cragName(keyWord: keyword))
-                }, crags: $store.designCrag)
+                }, crags: $store.designCrags)
             .presentDialog($store.scope(state: \.cragAlert, action: \.cragAlert))
             .showGradeBottomSheet(
                 isPresented: $store.showSelectCragDifficultyBottomSheet,

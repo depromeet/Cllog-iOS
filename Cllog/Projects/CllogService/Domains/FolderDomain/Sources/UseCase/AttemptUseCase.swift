@@ -13,8 +13,8 @@ import ComposableArchitecture
 
 public protocol AttemptUseCase {
     func execute(attemptId: Int) async throws -> ReadAttempt
-    func patchResult(attempt: ReadAttempt, result: AttemptResult) async throws
-    func patchInfo(attempt: ReadAttempt, grade: Grade?, crag: Crag?) async throws
+    func patchResult(attemptId: Int, attempt: ReadAttempt, result: AttemptResult) async throws
+    func patchInfo(attemptId: Int, attempt: ReadAttempt, grade: Grade?, crag: Crag?) async throws
     func delete(attemptId: Int) async throws
 }
 
@@ -40,15 +40,15 @@ public struct DefaultAttemptUseCase: AttemptUseCase {
         try await attemptRepository.getAttempt(attemptId: attemptId)
     }
     
-    public func patchResult(attempt: ReadAttempt, result: AttemptResult) async throws {
-        try await attemptRepository.patchResult(attempt: attempt, result: result)
+    public func patchResult(attemptId: Int, attempt: ReadAttempt, result: AttemptResult) async throws {
+        try await attemptRepository.patchResult(attemptId: attemptId, attempt: attempt, result: result)
     }
     
     public func delete(attemptId: Int) async throws {
         try await attemptRepository.deleteAttempt(attemptId: attemptId)
     }
     
-    public func patchInfo(attempt: ReadAttempt, grade: Grade? = nil, crag: Crag? = nil) async throws {
-        try await attemptRepository.patchInfo(attempt: attempt, grade: grade, crag: crag)
+    public func patchInfo(attemptId: Int, attempt: ReadAttempt, grade: Grade? = nil, crag: Crag? = nil) async throws {
+        try await attemptRepository.patchInfo(attemptId: attemptId, attempt: attempt, grade: grade, crag: crag)
     }
 }

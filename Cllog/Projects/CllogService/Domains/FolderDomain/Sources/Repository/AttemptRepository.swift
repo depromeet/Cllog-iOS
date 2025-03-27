@@ -12,8 +12,8 @@ import Shared
 public protocol AttemptRepository {
     func getFilteredAttempts() async throws -> [Attempt]
     func getAttempt(attemptId: Int) async throws -> ReadAttempt
-    func patchResult(attempt: ReadAttempt, result: AttemptResult) async throws
-    func patchInfo(attempt: ReadAttempt, grade: Grade?, crag: Crag?) async throws
+    func patchResult(attemptId: Int, attempt: ReadAttempt, result: AttemptResult) async throws
+    func patchInfo(attemptId: Int, attempt: ReadAttempt, grade: Grade?, crag: Crag?) async throws
     func deleteAttempt(attemptId: Int) async throws
 }
 
@@ -39,7 +39,7 @@ public struct MockAttemptRepository: AttemptRepository {
         throw NSError(domain: "attempt error", code: 0)
     }
     
-    public func patchResult(attempt: ReadAttempt, result: AttemptResult) async throws {
+    public func patchResult(attemptId: Int, attempt: ReadAttempt, result: AttemptResult) async throws {
         throw NSError(domain: "attempt", code: 0)
     }
     
@@ -47,7 +47,7 @@ public struct MockAttemptRepository: AttemptRepository {
         throw NSError(domain: "attempt", code: 0)
     }
     
-    public func patchInfo(attempt: ReadAttempt, grade: Grade?, crag: Crag?) async throws {
+    public func patchInfo(attemptId: Int, attempt: ReadAttempt, grade: Grade?, crag: Crag?) async throws {
         throw NSError(domain: "attempt", code: 0)
     }
 }
