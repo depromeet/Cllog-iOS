@@ -12,6 +12,7 @@ import SwiftUI
 // 내부 Module
 import Shared
 import DesignKit
+import Core
 
 // 외부 Module
 import ComposableArchitecture
@@ -50,6 +51,8 @@ public struct RecordedView: View {
                     store.send(.cragName(keyWord: keyword))
                 }, didNearEnd: {
                     
+                }, matchesPattern: { crag, searchText in
+                    crag.name.matchesPattern(searchText)
                 }, crags: $store.designCrags
             )
             .presentDialog($store.scope(state: \.cragAlert, action: \.cragAlert))

@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Combine
+import Shared
 
 public extension View {
     func showCragBottomSheet(
@@ -16,6 +17,7 @@ public extension View {
         didTapSkipButton: @escaping () -> Void,
         didChangeSearchText: @escaping (String) -> Void,
         didNearEnd: @escaping () -> Void,
+        matchesPattern: @escaping (DesignCrag, String) -> Bool,
         crags: Binding<[DesignCrag]>
     ) -> some View {
         self.bottomSheet(isPresented: isPresented) {
@@ -24,6 +26,7 @@ public extension View {
                 didTapSkipButton: didTapSkipButton,
                 didChangeSearchText: didChangeSearchText,
                 didNearEnd: didNearEnd,
+                matchesPattern: matchesPattern,
                 crags: crags
             )
             
@@ -51,12 +54,14 @@ struct SelectCragView: View {
         didTapSkipButton: @escaping () -> Void,
         didChangeSearchText: @escaping (String) -> Void,
         didNearEnd: @escaping () -> Void,
+        matchesPattern: @escaping (DesignCrag, String) -> Bool,
         crags: Binding<[DesignCrag]>
     ) {
         self.didTapSaveButton = didTapSaveButton
         self.didTapSkipButton = didTapSkipButton
         self.didChangeSearchText = didChangeSearchText
         self.didNearEnd = didNearEnd
+        self.matchesPattern = matchesPattern
         self._crags = crags
     }
     
@@ -64,6 +69,7 @@ struct SelectCragView: View {
     private var didTapSkipButton: () -> Void
     private var didChangeSearchText: (String) -> Void
     private var didNearEnd: () -> Void
+    private let matchesPattern: (DesignCrag, String) -> Bool
     
     @State private var searchText = ""
     @Binding private var crags: [DesignCrag]
@@ -71,6 +77,10 @@ struct SelectCragView: View {
     @FocusState private var isFocused: Bool
     @State private var debounceWorkItem: DispatchWorkItem?
     @State private var isLoading = false
+    private var filteredCrags: [DesignCrag] {
+        guard !searchText.isEmpty else { return crags }
+        return crags.filter { matchesPattern($0, searchText) }
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -102,7 +112,7 @@ struct SelectCragView: View {
     private var cragSelectionSection: some View {
         ScrollView {
             LazyVStack(alignment: .leading) {
-                ForEach(crags, id: \.id) { crag in
+                ForEach(filteredCrags, id: \.id) { crag in
                     TwoLineRow(
                         title: crag.name,
                         subtitle: crag.address
@@ -174,6 +184,9 @@ struct SelectCragView_Previews: PreviewProvider {
                 print("검색어 변경됨: \(text)")
             },
             didNearEnd: { },
+            matchesPattern: { _, _ in
+                true
+            },
             crags: .constant([
                 DesignCrag(id: 0, name: "강남점", address: "서울 강남구"),
                 DesignCrag(id: 1, name: "홍대점", address: "서울 마포구"),
