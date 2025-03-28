@@ -57,9 +57,6 @@ public struct AttemptView: ViewProtocol {
                 didTapSkipButton: {
                     store.send(.skipEditCragTapped)
                 },
-                didChangeSearchText: { text in
-                    print("text")
-                },
                 didNearEnd: {
                     store.send(.loadMoreCrags)
                 },

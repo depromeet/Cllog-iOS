@@ -47,8 +47,6 @@ public struct RecordedView: View {
                     store.send(.cragSaveButtonTapped(designCrag))
                 }, didTapSkipButton: {
                     store.send(.cragNameSkipButtonTapped)
-                }, didChangeSearchText: { keyword in
-                    store.send(.cragName(keyWord: keyword))
                 }, didNearEnd: {
                     
                 }, matchesPattern: { crag, searchText in
