@@ -84,6 +84,8 @@ struct SelectCragView: View {
             cragSelectionSection
             buttonSection
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .background(Color.clLogUI.gray800)
         .onChange(of: searchText) { _, newValue in
             debounceSearchText(newValue)
