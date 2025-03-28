@@ -42,7 +42,8 @@ public struct InfoPlist {
         "NSCameraUsageDescription": "이 앱은 프로필 사진 촬영을 위해 카메라 접근 권한이 필요합니다.",
         "NSMicrophoneUsageDescription": "이 앱은 음성 녹음 기능을 사용하기 위해 마이크 접근 권한이 필요합니다.",
         "NSPhotoLibraryUsageDescription": "촬영한 사진과 동영상을 저장하기 위해 사진 접근 권한이 필요합니다.",
-        "NSPhotoLibraryAddUsageDescription": "촬영한 동영상을 사진첩에 저장하려면 권한이 필요합니다."
+        "NSPhotoLibraryAddUsageDescription": "촬영한 동영상을 사진첩에 저장하려면 권한이 필요합니다.",
+        "NSUserTrackingUsageDescription": "클로그 앱에서 사용자에게 맞춤 서비스를 제공하기 위해 추적 권한을 요청합니다"
     ]
     
     static func appInfoPlist(_ appConfiguration: AppConfiguration) -> [String: Plist.Value] {
