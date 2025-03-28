@@ -18,7 +18,7 @@ import ComposableArchitecture
 @Reducer
 public struct AttemptFeature {
     @Dependency(\.attemptUseCase) private var attemptUseCase
-    @Dependency(\.cragUseCase) private var cragUseCase
+    @Dependency(\.nearByCragUseCase) private var cragUseCase
     @Dependency(\.gradeUseCase) private var gradeUseCase
 //    @Dependency(\.locationClient) var locationClient
     
@@ -81,10 +81,12 @@ public struct AttemptFeature {
         case moreActionTapped(_ action: AttemptEditAction)
         case videoTapped
         case stampTapped(id: Int)
+        case loadMoreCrags
         
         case onSplitPositionsCalculated(positions: [CGFloat])
         case getAttempt(attempt: ReadAttempt)
         case getNearByCrags(_ crags: [Crag])
+        case getMoreNearByCrags(_ crags: [Crag])
         case getCragGrades(_ grades: [Grade])
         case updateLocation(latitude: Double, longitude: Double)
         
@@ -147,6 +149,8 @@ public struct AttemptFeature {
             case .stampTapped(let id):
                 // TODO: Seek to video
                 return .none
+            case .loadMoreCrags:
+                return fetchMoreNearByCrags()
                 
             case .onSplitPositionsCalculated(let positions):
                 state.stampPositions = positions
@@ -248,6 +252,12 @@ public struct AttemptFeature {
                 state.showEditAttemptBottomSheet = false
                 state.showCragBottomSheet = true
                 return .none
+            case .getMoreNearByCrags(let crags):
+                let newCrags = crags.map {
+                    DesignCrag(id: $0.id, name: $0.name, address: $0.address)
+                }
+                state.nearByCrags.append(contentsOf: newCrags)
+                return .none
             case .getCragGrades(let grades):
                 state.showEditAttemptBottomSheet = false
                 state.showLoadingView = false
@@ -309,8 +319,19 @@ extension AttemptFeature {
     private func fetchNearByCrags() -> Effect<Action> {
         return .run { send in
             do {
-                let crags = try await cragUseCase.getCrags()
+                let crags = try await cragUseCase.fetch()
                 await send(.getNearByCrags(crags))
+            } catch {
+                debugPrint(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func fetchMoreNearByCrags() -> Effect<Action> {
+        return .run { send in
+            do {
+                let crags = try await cragUseCase.next()
+                await send(.getMoreNearByCrags(crags))
             } catch {
                 debugPrint(error.localizedDescription)
             }

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-struct BaseMetaResponseDTO: Decodable {
-    let nextCursor: Double?
-    let hasMore: Bool
+public struct BaseMetaResponseDTO: Decodable {
+    public let nextCursor: Double?
+    public let hasMore: Bool
 }

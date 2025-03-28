@@ -69,6 +69,8 @@ struct SelectGradeView: View {
             checkboxSection
             saveButtonSection
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .background(Color.clLogUI.gray800)
         .onChange(of: selectedGrade) { _, newValue in
             if selectedUnSaveGrade, newValue != nil {

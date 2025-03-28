@@ -57,8 +57,11 @@ public struct AttemptView: ViewProtocol {
                 didTapSkipButton: {
                     store.send(.skipEditCragTapped)
                 },
-                didChangeSearchText: { text in
-                    print("text")
+                didNearEnd: {
+                    store.send(.loadMoreCrags)
+                },
+                matchesPattern: { crag, searchText in
+                    crag.name.matchesPattern(searchText)
                 },
                 crags: $store.nearByCrags
             )

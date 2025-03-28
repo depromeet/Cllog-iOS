@@ -11,19 +11,20 @@ import Starlink
 import Networker
 
 public protocol CragDataSource {
-    func myCrags() async throws -> [FolderCragResponseDTO]
-    func nearByCrags(longitude: Double, latitude: Double) async throws -> [FolderCragResponseDTO]
+    func myCrags(cursor: Double?) async throws -> (crags: [FolderCragResponseDTO], meta: BaseMetaResponseDTO?)
+    func nearByCrags(longitude: Double, latitude: Double, cursor: Double?) async throws -> (crags: [FolderCragResponseDTO], meta: BaseMetaResponseDTO?)
 }
 
 public final class DefaultCragDataSource: CragDataSource {
+    private typealias CragResponseType = BaseResponseDTO<BaseContentsResponse<[FolderCragResponseDTO], BaseMetaResponseDTO>>
     private let provider: Provider
     
     public init(provider: Provider) {
         self.provider = provider
     }
     
-    public func myCrags() async throws -> [FolderCragResponseDTO] {
-        let response: BaseResponseDTO<BaseContentsResponse<[FolderCragResponseDTO], BaseMetaResponseDTO>> = try await provider.request(
+    public func myCrags(cursor: Double?) async throws -> (crags: [FolderCragResponseDTO], meta: BaseMetaResponseDTO?){
+        let response: CragResponseType = try await provider.request(
             CragTarget.myCrags
         )
         
@@ -31,24 +32,33 @@ public final class DefaultCragDataSource: CragDataSource {
             throw StarlinkError.inValidJSONData(nil)
         }
         
-        return crags.contents
+        let meta = response.data?.meta
+        
+        return (crags.contents, meta)
     }
     
-    public func nearByCrags(longitude: Double, latitude: Double) async throws -> [FolderCragResponseDTO] {
-        let response: BaseResponseDTO<BaseContentsResponse<[FolderCragResponseDTO], BaseMetaResponseDTO>> = try await provider.request(CragTarget.nearBy(longitude: longitude, latitude: latitude))
+    public func nearByCrags(
+        longitude: Double,
+        latitude: Double,
+        cursor: Double?
+    ) async throws -> (crags: [FolderCragResponseDTO], meta: BaseMetaResponseDTO?) {
+        let response: CragResponseType = try await provider.request(
+            CragTarget.nearBy(longitude: longitude, latitude: latitude, cursor: cursor)
+        )
         
         guard let crags = response.data else {
             throw StarlinkError.inValidJSONData(nil)
         }
+        let meta = response.data?.meta
         
-        return crags.contents
+        return (crags.contents, meta)
     }
     
 }
 
 enum CragTarget {
     case myCrags
-    case nearBy(longitude: Double, latitude: Double)
+    case nearBy(longitude: Double, latitude: Double, cursor: Double?)
 }
 
 extension CragTarget: EndpointType {
@@ -76,12 +86,13 @@ extension CragTarget: EndpointType {
     var parameters: Networker.ParameterType? {
         switch self {
         case .myCrags: return nil
-        case .nearBy(let longitude, let latitude):
+        case .nearBy(let longitude, let latitude, let cursor):
             let dictionary = Starlink.SafeDictionary<String, Any>(
                 storage: [
+                    "cursor" : cursor,
                     "longitude": longitude,
                     "latitude" : latitude,
-                ]
+                ].compactMapValues { $0 }
             )
             return Networker.ParameterType.dictionary(dictionary)
         }

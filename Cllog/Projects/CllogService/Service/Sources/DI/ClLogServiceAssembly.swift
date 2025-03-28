@@ -178,6 +178,18 @@ public struct ClLogServiceAssembly: Assembly {
             )
         }
         
+        container.register(NearByCragUseCase.self) { _ in
+            DefaultNearByCragUseCase(
+                repository: DefaultNearByCragRepository(
+                    dataSource: DefaultCragDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
+        
         container.register(CragUseCase.self) { _ in
             DefaultCragUseCase(
                 cragRepository: DefaultCragRepository(

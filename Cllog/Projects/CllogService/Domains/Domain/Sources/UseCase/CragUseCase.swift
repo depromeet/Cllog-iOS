@@ -14,6 +14,7 @@ import Dependencies
 
 public protocol CragUseCase {
     func getCrags() async throws -> [Crag]
+    func nextCrags() async throws -> [Crag]
 }
 
 enum CragUseCaseKey: DependencyKey {
@@ -38,5 +39,9 @@ public struct DefaultCragUseCase: CragUseCase {
         let currentLongitude = 126.9774418506923
         let currentLatitude = 37.56440029816974
         return try await cragRepository.getNearByCrags(longitude: currentLongitude, latitude: currentLatitude)
+    }
+    
+    public func nextCrags() async throws -> [Crag] {
+        []
     }
 }
