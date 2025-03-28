@@ -46,7 +46,7 @@ public struct VideoPlayerView: UIViewRepresentable {
 }
 
 final class VideoPlayerContainer: UIView {
-    private let mediaPlayer: AVPlayer
+    private let player: AVPlayer
     private var playerDisplayLayer: AVPlayerLayer?
     private var playbackTimeObserver: Any?
     
@@ -58,7 +58,7 @@ final class VideoPlayerContainer: UIView {
         isPlaying: Binding<Bool>,
         progress: Binding<Double>
     ) {
-        self.mediaPlayer = player
+        self.player = player
         self._playbackState = isPlaying
         self._playbackProgress = progress
         super.init(frame: .zero)
@@ -67,7 +67,7 @@ final class VideoPlayerContainer: UIView {
     }
     
     private func setupPlayerLayer() {
-        playerDisplayLayer = AVPlayerLayer(player: mediaPlayer)
+        playerDisplayLayer = AVPlayerLayer(player: player)
         guard let playerLayer = playerDisplayLayer else { return }
         playerLayer.frame = bounds
         playerLayer.videoGravity = .resizeAspectFill
@@ -84,16 +84,36 @@ final class VideoPlayerContainer: UIView {
     }
     
     private func configurePlaybackObserver() {
-        playbackTimeObserver = mediaPlayer.addPeriodicTimeObserver(
-            forInterval: CMTime(seconds: 1, preferredTimescale: 1),
+        playbackTimeObserver = player.addPeriodicTimeObserver(
+            forInterval: CMTime(seconds: 0.1, preferredTimescale: 600),
             queue: .main
         ) { [weak self] currentTime in
             guard let self = self else { return }
             
-            let totalDuration = self.mediaPlayer.currentItem?.duration.seconds ?? 1
+            let totalDuration = self.player.currentItem?.duration.seconds ?? 1
             if totalDuration > 0 {
                 self.playbackProgress = currentTime.seconds / totalDuration
             }
         }
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(videoDidEnd),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: player.currentItem
+        )
     }
+    
+    @objc private func videoDidEnd() {
+        Task { @MainActor in
+            let success = await player.seek(to: .zero)
+            
+            if success {
+                player.pause()
+                playbackProgress = 0
+                playbackState = false
+            }
+        }
+    }
+
 }
