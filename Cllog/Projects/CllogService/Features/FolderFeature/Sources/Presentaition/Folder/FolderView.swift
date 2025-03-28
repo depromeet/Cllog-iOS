@@ -173,7 +173,7 @@ extension FolderView {
         LazyVGrid(columns: columns, spacing: 20) {
             ForEach(store.attempts, id: \.self) { attempt in
                 ThumbnailView(
-                    imageURLString: "https://www.dictionary.com/e/wp-content/uploads/2018/05/lhtm.jpg",
+                    imageURLString: attempt.thumbnailUrl,
                     thumbnailType: .default(
                         cragName: attempt.crag?.name ?? "",
                         date: attempt.date

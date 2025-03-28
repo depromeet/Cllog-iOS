@@ -17,8 +17,13 @@ public struct DefaultAttemptRepository: AttemptRepository {
         self.dataSource = dataSource
     }
     
-    public func getFilteredAttempts() async throws -> [Attempt] {
-        try await dataSource.attempts().map { $0.toDomain() }
+    public func getFilteredAttempts(_ filter: AttemptFilter?) async throws -> [Attempt] {
+        let request = AttemptFilterRequestDTO(
+            attemptStatus: filter?.attemptResult?.rawValue,
+            cragId: filter?.crag?.id,
+            gradeId: filter?.grade?.id
+        )
+        return try await dataSource.attempts(request).map { $0.toDomain() }
     }
     
     public func getAttempt(attemptId: Int) async throws -> ReadAttempt {
