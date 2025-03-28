@@ -15,11 +15,11 @@ public struct VideoPlayerView: UIViewRepresentable {
     @Binding private var playbackProgress: Double
     
     public init(
-        player: AVPlayer,
+        videoPath: URL,
         isPlaying: Binding<Bool>,
         currentProgress: Binding<Double>
     ) {
-        self.player = player
+        self.player = AVPlayer(url: videoPath)
         self._playbackState = isPlaying
         self._playbackProgress = currentProgress
     }
