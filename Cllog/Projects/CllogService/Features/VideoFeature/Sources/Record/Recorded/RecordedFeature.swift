@@ -403,6 +403,8 @@ extension RecordedFeature {
             print("최종 저장 시간 : \(state.totalDuration)")
             // TODO: 최종 저장 버튼
             return .run { [state] send in
+                let assetId = try await videoUseCase.execute(saveFile: state.path)
+                
                 let request = StoryRequest(
                     cragId: nil, // 암장 ID
                     problem: ProblemRequest(gradeId: 0), // 난이도 ID
@@ -410,7 +412,7 @@ extension RecordedFeature {
                         status: "SUCCESS",
                         problemId: nil,
                         video: VideoRequest(
-                            localPath: state.path.absoluteString,
+                            localPath: assetId,
                             thumbnailUrl: "",
                             durationMs: state.totalDuration,
                             stamps: [
@@ -424,7 +426,6 @@ extension RecordedFeature {
                 let response = try await saveStoryUseCase.execute(request)
                 VideoDataManager.save(story: response)
                 VideoDataManager.attemptCount += 1
-                try await videoUseCase.execute(saveFile: state.path)
                 await send(.saveFinished)
                 
             }
