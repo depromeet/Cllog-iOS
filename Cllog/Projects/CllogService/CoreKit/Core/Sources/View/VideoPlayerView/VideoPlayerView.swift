@@ -33,22 +33,25 @@ public struct VideoPlayerView: UIViewRepresentable {
     }
     
     public func updateUIView(_ uiView: UIView, context: Context) {
+        guard let container = uiView as? VideoPlayerContainer else { return }
+        
         if playbackState {
-            if player.timeControlStatus != .playing {
-                player.play()
+            if container.player.timeControlStatus != .playing {
+                container.player.play()
             }
         } else {
-            if player.timeControlStatus != .paused {
-                player.pause()
+            if container.player.timeControlStatus != .paused {
+                container.player.pause()
             }
         }
     }
 }
 
 final class VideoPlayerContainer: UIView {
-    private let player: AVPlayer
+    let player: AVPlayer
     private var playerDisplayLayer: AVPlayerLayer?
     private var playbackTimeObserver: Any?
+    private var playerItemObserver: NSObjectProtocol?
     
     @Binding private var playbackState: Bool
     @Binding private var playbackProgress: Double
@@ -105,15 +108,15 @@ final class VideoPlayerContainer: UIView {
     }
     
     @objc private func videoDidEnd() {
-        Task { @MainActor in
-            let success = await player.seek(to: .zero)
-            
-            if success {
-                player.pause()
-                playbackProgress = 0
-                playbackState = false
-            }
-        }
+       player.seek(to: .zero)
+        player.pause()
+        playbackProgress = 0
+        playbackState = false
     }
-
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        playerItemObserver = nil
+        playbackTimeObserver = nil
+    }
 }
