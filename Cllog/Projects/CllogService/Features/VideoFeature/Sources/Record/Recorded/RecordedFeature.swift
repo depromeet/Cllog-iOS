@@ -44,11 +44,7 @@ public struct RecordedFeature {
         
         var selectedDesignCrag: DesignCrag?
         
-        var designGrades: [DesignGrade] = [
-            .init(id: 0, name: "블루", color: .init(hex: "#0000ff")),
-            .init(id: 0, name: "블루", color: .init(hex: "#0000ff")),
-            .init(id: 0, name: "블루", color: .init(hex: "#0000ff"))
-        ]
+        var designGrades: [DesignGrade] = []
         
         // bottomSheet
         var showSelectCragBottomSheet = false
