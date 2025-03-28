@@ -15,6 +15,7 @@ public extension View {
         didTapSaveButton: @escaping (DesignCrag) -> Void,
         didTapSkipButton: @escaping () -> Void,
         didChangeSearchText: @escaping (String) -> Void,
+        didNearEnd: @escaping () -> Void,
         crags: Binding<[DesignCrag]>
     ) -> some View {
         self.bottomSheet(isPresented: isPresented) {
@@ -22,6 +23,7 @@ public extension View {
                 didTapSaveButton: didTapSaveButton,
                 didTapSkipButton: didTapSkipButton,
                 didChangeSearchText: didChangeSearchText,
+                didNearEnd: didNearEnd,
                 crags: crags
             )
             
@@ -48,17 +50,20 @@ struct SelectCragView: View {
         didTapSaveButton: @escaping (DesignCrag) -> Void,
         didTapSkipButton: @escaping () -> Void,
         didChangeSearchText: @escaping (String) -> Void,
+        didNearEnd: @escaping () -> Void,
         crags: Binding<[DesignCrag]>
     ) {
         self.didTapSaveButton = didTapSaveButton
         self.didTapSkipButton = didTapSkipButton
         self.didChangeSearchText = didChangeSearchText
+        self.didNearEnd = didNearEnd
         self._crags = crags
     }
     
     private var didTapSaveButton: (DesignCrag) -> Void
     private var didTapSkipButton: () -> Void
     private var didChangeSearchText: (String) -> Void
+    private var didNearEnd: () -> Void
     
     @State private var searchText = ""
     @Binding private var crags: [DesignCrag]
@@ -115,6 +120,12 @@ struct SelectCragView: View {
                         isFocused = false
                     }
                 }
+                
+                Color.clear
+                    .frame(height: 10)
+                    .onAppear {
+                        didNearEnd()
+                    }
             }
         }
         .frame(height: 300) // TODO: 컨텐츠 사이즈 기반 동적 높이 적용
@@ -162,6 +173,7 @@ struct SelectCragView_Previews: PreviewProvider {
             didChangeSearchText: { text in
                 print("검색어 변경됨: \(text)")
             },
+            didNearEnd: { },
             crags: .constant([
                 DesignCrag(id: 0, name: "강남점", address: "서울 강남구"),
                 DesignCrag(id: 1, name: "홍대점", address: "서울 마포구"),

@@ -60,6 +60,9 @@ public struct AttemptView: ViewProtocol {
                 didChangeSearchText: { text in
                     print("text")
                 },
+                didNearEnd: {
+                    store.send(.loadMoreCrags)
+                },
                 crags: $store.nearByCrags
             )
             .sheet(isPresented: $store.showEditAttemptBottomSheet) {
