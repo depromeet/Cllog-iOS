@@ -105,7 +105,6 @@ private extension VideoView {
                                 .background(Color.clLogUI.gray500.opacity(0.5))
                                 .clipShape(Capsule())
                         }
-
                         
                         Button {
                             

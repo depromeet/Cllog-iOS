@@ -11,6 +11,7 @@ import Firebase
 import DesignKit
 import KakaoSDKCommon
 import Photos
+import AppTrackingTransparency
  
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -25,7 +26,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         Task {
+            await requestTrackingAuthorization()
             await requestPhotoLibraryPermission()
+            await requestVideoPermission()
+            await checkMicrophonePermission()
         }
         return true
     }
@@ -60,6 +64,43 @@ extension AppDelegate {
             print("❌ 권한 없음 또는 취소됨")
         @unknown default:
             break
+        }
+    }
+    
+    private func requestVideoPermission() async {
+        let status = await AVCaptureDevice.requestAccess(for: .video)
+        
+        if status {
+            print("✅ AVCapture 허용")
+        } else {
+            print("❌ AVCapture 권한 없음")
+        }
+    }
+    
+    private func checkMicrophonePermission() async {
+        let status = await AVAudioApplication.requestRecordPermission()
+        
+        if status {
+            print("✅ AVAudioApplication 허용")
+        } else {
+            print("❌ AVAudioApplication 권한 없음")
+        }
+    }
+    
+    private func requestTrackingAuthorization() async {
+        let status = await ATTrackingManager.requestTrackingAuthorization()
+        
+        switch status {
+        case .authorized:           // 허용됨
+            print("Authorized")
+        case .denied:               // 거부됨
+            print("Denied")
+        case .notDetermined:        // 결정되지 않음
+            print("Not Determined")
+        case .restricted:           // 제한됨
+            print("Restricted")
+        @unknown default:           // 알려지지 않음
+            print("unknow")
         }
     }
 }
