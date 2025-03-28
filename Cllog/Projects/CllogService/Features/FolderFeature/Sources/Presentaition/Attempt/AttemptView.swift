@@ -11,7 +11,6 @@ import FolderDomain
 import DesignKit
 import Shared
 import Core
-import _AVKit_SwiftUI
 
 import ComposableArchitecture
 
@@ -207,7 +206,7 @@ extension AttemptView {
                 .foregroundStyle(Color.clLogUI.dim)
             
             if let videoPath = store.videoURL {
-                VideoPlayerView(player: AVPlayer(url: videoPath), isPlaying: $isPlaying, currentProgress: $progressValue)
+                VideoPlayerView(videoPath: videoPath, isPlaying: $isPlaying, currentProgress: $progressValue)
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                     .onTapGesture {
                         isPlaying.toggle()
