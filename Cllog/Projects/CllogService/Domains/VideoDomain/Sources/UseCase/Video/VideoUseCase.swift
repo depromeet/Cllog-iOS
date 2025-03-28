@@ -28,7 +28,7 @@ public enum VideoError: Error {
 }
 
 public protocol VideoUseCase: Sendable {
-    func execute(saveFile fileURL: URL) async throws
+    func execute(saveFile fileURL: URL) async throws -> String
     func execute(loadName: String) async throws -> URL
     
     func execute(name: String, fileName: String, mimeType: String, value: Data) async throws -> Videothumbnails
@@ -46,7 +46,7 @@ public struct VideoUploadUsesCase {
 }
 
 extension VideoUploadUsesCase: VideoUseCase {
-    public func execute(saveFile fileURL: URL) async throws {
+    public func execute(saveFile fileURL: URL) async throws -> String {
         try await videoRepository.saveVideo(fileURL: fileURL)
     }
     

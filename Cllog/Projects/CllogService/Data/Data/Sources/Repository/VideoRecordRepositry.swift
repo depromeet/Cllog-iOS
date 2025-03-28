@@ -27,28 +27,11 @@ public struct VideoRecordRepository: VideoRepository {
     
     /// 비디오 저장 기능 - path
     /// - Parameter fileURL: 비디오 경로
-    public func saveVideo(fileURL: URL) async throws {
-        let fileManager = FileManager.default
-        // 앱의 Documents 디렉토리 경로를 가져옵니다.
-        guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            print("Documents 디렉토리를 찾을 수 없습니다.")
-            throw VideoError.notFoundDirectory
-        }
-        
-        // 목적지 URL 생성 (같은 파일명 사용)
-        let destinationURL = documentsDirectory.appendingPathComponent(fileURL.lastPathComponent)
-        
+    public func saveVideo(fileURL: URL) async throws -> String {
         do {
-            // 이미 동일한 파일이 존재하면 삭제합니다.
-            if fileManager.fileExists(atPath: destinationURL.path) {
-                try fileManager.removeItem(at: destinationURL)
-            }
-            
-            // 파일을 복사합니다.
-            try fileManager.copyItem(at: fileURL, to: destinationURL)
-            // TODO: 사진첩 AssetId 저장
-//            let videoAssetId = try await saveVideoToPhotoLibrary(from: fileURL)
-            print("파일이 성공적으로 저장되었습니다: \(destinationURL)")
+            let videoAssetId = try await saveVideoToPhotoLibrary(from: fileURL)
+            print("✅ 사진첩에 성공적으로 저장되었습니다")
+            return videoAssetId
         } catch {
             print("파일 저장 중 에러 발생: \(error.localizedDescription)")
             throw VideoError.saveFailed
