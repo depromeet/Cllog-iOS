@@ -57,7 +57,9 @@ public struct RecordedView: View {
             .showGradeBottomSheet(
                 isPresented: $store.showSelectCragDifficultyBottomSheet,
                 cragName: store.selectedDesignCrag?.name ?? "",
-                grades: store.designGrades,
+                grades: store.grades.map {
+                    DesignGrade(id: $0.id, name: $0.name, color: .init(hex: $0.hexCode))
+                },
                 didTapSaveButton: { designGrade in
                     store.send(.gradeSaveButtonTapped(designGrade))
                 }, didTapCragTitleButton: {

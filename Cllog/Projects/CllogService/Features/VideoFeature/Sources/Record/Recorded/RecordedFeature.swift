@@ -44,7 +44,7 @@ public struct RecordedFeature {
         
         var selectedDesignCrag: DesignCrag?
         
-        var designGrades: [DesignGrade] = []
+        var grades: [Grade] = []
         
         // bottomSheet
         var showSelectCragBottomSheet = false
@@ -388,9 +388,7 @@ extension RecordedFeature {
             return .none
         case .gradeBottomSheetShow(let grades):
             // 암장 등급을 보여주기 위해서 호출되는 값
-            state.designGrades = grades.map {
-                DesignGrade(id: $0.id, name: $0.name, color: .init(hex: $0.hexCode))
-            }
+            state.grades = grades
             state.showSelectCragDifficultyBottomSheet = true
             return .none
             
@@ -422,6 +420,18 @@ extension RecordedFeature {
                     ),
                     memo: nil
                 )
+                
+                // 난이도 저장
+                let grade = state.grades.first(where: { $0.id == designGrade?.id })
+                if let grade {
+                    VideoDataManager.savedGrade = SavedGrade(
+                        id: grade.id,
+                        name: grade.name,
+                        hexCode: grade.hexCode
+                    )
+                } else {
+                    VideoDataManager.savedGrade = nil
+                }
                 
                 let response = try await saveStoryUseCase.execute(request)
                 VideoDataManager.save(story: response)

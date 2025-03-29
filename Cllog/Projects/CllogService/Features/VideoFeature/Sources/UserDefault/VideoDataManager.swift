@@ -13,6 +13,8 @@ enum VideoDataKey {
     static let storyId = "storyId"
     static let problemId = "problemId"
     static let attemptCount = "attemptCount"
+    static let cragId = "cragId"
+    static let savedGrade = "savedGrade"
 }
 
 struct VideoDataManager {
@@ -29,6 +31,8 @@ struct VideoDataManager {
     }
     
     static func clear() {
+        savedGrade = nil
+        cragId = nil
         storyId = nil
         problemId = nil
         attemptCount = 0
@@ -46,7 +50,7 @@ struct VideoDataManager {
             }
         }
     }
-
+    
     private static var problemId: Int? {
         get {
             UserDefaults.standard.object(forKey: VideoDataKey.problemId) as? Int
@@ -66,6 +70,35 @@ struct VideoDataManager {
         }
         set {
             UserDefaults.standard.set(newValue, forKey: VideoDataKey.attemptCount)
+        }
+    }
+    
+    static var cragId: Int? {
+        get {
+            UserDefaults.standard.object(forKey: VideoDataKey.cragId) as? Int
+        }
+        set {
+            if let newValue {
+                UserDefaults.standard.set(newValue, forKey: VideoDataKey.cragId)
+            } else {
+                UserDefaults.standard.removeObject(forKey: VideoDataKey.cragId)
+            }
+        }
+    }
+    
+    static var savedGrade: SavedGrade? {
+        get {
+            guard let data = UserDefaults.standard.data(forKey: VideoDataKey.savedGrade) else { return nil }
+            return try? JSONDecoder().decode(SavedGrade.self, from: data)
+        }
+        set {
+            if let newValue = newValue {
+                if let encoded = try? JSONEncoder().encode(newValue) {
+                    UserDefaults.standard.set(encoded, forKey: VideoDataKey.savedGrade)
+                }
+            } else {
+                UserDefaults.standard.removeObject(forKey: VideoDataKey.savedGrade)
+            }
         }
     }
 }
