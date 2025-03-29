@@ -17,12 +17,6 @@ import ComposableArchitecture
 public struct AttemptView: ViewProtocol {
     @Bindable private var store: StoreOf<AttemptFeature>
     
-    // TODO: Feature로 이동
-    @State private var isPlaying = false
-    @State private var isLoading = true
-    @State private var progressValue: Double = 0.0
-    @State var splitXPositions: [CGFloat] = []
-    
     public var body: some View {
         makeBodyView()
             .background(Color.clLogUI.gray800)
@@ -200,27 +194,44 @@ extension AttemptView {
         .scrollIndicators(.hidden)
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
     }
-    
+   
     private func makeVideoView(_ attempt: ReadAttempt) -> some View {
         ZStack(alignment: .bottom) {
             RoundedRectangle(cornerRadius: 6)
                 .foregroundStyle(Color.clLogUI.dim)
             
             if let videoPath = store.videoURL {
-                VideoPlayerView(
-                    videoPath: videoPath,
-                    isPlaying: $isPlaying,
-                    currentProgress: $progressValue,
-                    seekTime: $store.seekTime
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 6))
-                .onTapGesture {
-                    isPlaying.toggle()
+                ZStack(alignment: .center) {
+                    VideoPlayerView(
+                        videoPath: videoPath,
+                        isPlaying: $store.isPlaying,
+                        currentProgress: $store.progress,
+                        seekTime: $store.seekTime
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .onTapGesture {
+                        store.send(.videoTapped)
+                    }
+                    
+                    if store.showVideoControlButton {
+                        
+                        Button {
+                            store.send(.videoControlTapped)
+                        } label: {
+                            let image = store.isPlaying ? Image.clLogUI.stopSmall : Image.clLogUI.playSmall
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 58, height: 58)
+                        }
+                        .transition(.opacity)
+                        .animation(.easeInOut(duration: 0.2), value: store.showVideoControlButton)
+                    }
                 }
             }
             
             PlayerProgressBar(
-                progress: CGFloat(progressValue),
+                progress: CGFloat(store.progress),
                 stamps: attempt.attempt.video.stamps.map { TempStamp(id: $0.id, position: CGFloat($0.position)) },
                 onStampTapped: { stampId in
                     store.send(.stampTapped(id: stampId))
