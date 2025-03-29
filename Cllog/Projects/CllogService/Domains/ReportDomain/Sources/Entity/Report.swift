@@ -100,10 +100,10 @@ public struct MostAttemptedProblem: Equatable {
 public struct AttemptVideo: Equatable, Hashable {
     public let id: Int
     public let localPath: String
-    public let thumbnailUrl: String
+    public let thumbnailUrl: String?
     public let durationMs: Int
     
-    public init(id: Int, localPath: String, thumbnailUrl: String, durationMs: Int) {
+    public init(id: Int, localPath: String, thumbnailUrl: String?, durationMs: Int) {
         self.id = id
         self.localPath = localPath
         self.thumbnailUrl = thumbnailUrl

@@ -13,7 +13,7 @@ import StoryDomain
 struct StoryVideoResponseDTO: Decodable {
     let id: Int
     let localPath: String
-    let thumbnailUrl: String
+    let thumbnailUrl: String?
     let durationMs: Int
     let stamps: [StoryStampResponseDTO]
     
