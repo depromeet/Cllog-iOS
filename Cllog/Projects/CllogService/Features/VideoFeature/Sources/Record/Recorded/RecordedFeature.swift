@@ -52,6 +52,9 @@ public struct RecordedFeature {
         
         var showSelectCragDifficultyBottomSheet = false
         
+        // loading
+        var isLoading: Bool = false
+        
         public enum ClimbingResult: Sendable {
             case success
             case failture
@@ -64,7 +67,7 @@ public struct RecordedFeature {
         }
     }
     
-    public enum Action: BindableAction, Equatable {
+    public enum Action: BindableAction {
         
         // life cycle
         case onAppear
@@ -108,7 +111,9 @@ public struct RecordedFeature {
         case gradeSaveButtonTapped(DesignGrade?)
         case gradeTapCragTitleButton
         
+        // Save Story
         case saveFinished
+        case saveFailure(Error)
         
         @CasePathable
         public enum Dialog: Equatable {
@@ -401,7 +406,9 @@ extension RecordedFeature {
         case .gradeSaveButtonTapped(let designGrade):
             // 암장 등급 바텀시트에서 등급을 저장하기 버튼을 누르면 오는 이벤트
             print("최종 저장 시간 : \(state.totalDuration)")
-            // TODO: 최종 저장 버튼
+            state.isLoading = true
+            state.showSelectCragDifficultyBottomSheet = false
+            
             return .run { [state] send in
                 let assetId = try await videoUseCase.execute(saveFile: state.path)
                 
@@ -422,13 +429,25 @@ extension RecordedFeature {
                     ),
                     memo: nil
                 )
-                
-                let response = try await saveStoryUseCase.execute(request)
-                VideoDataManager.save(story: response)
-                VideoDataManager.attemptCount += 1
-                await send(.saveFinished)
-                
+                do {
+                    let response = try await saveStoryUseCase.execute(request)
+                    VideoDataManager.save(story: response)
+                    VideoDataManager.attemptCount += 1
+                    await send(.saveFinished)
+                } catch {
+                    await send(.saveFailure(error))
+                }
             }
+            
+        case .saveFinished:
+            state.isLoading = false
+            return .none
+            
+        case .saveFailure(let error):
+            print("error: \(error)")
+            state.isLoading = false
+            state.showSelectCragDifficultyBottomSheet = true
+            return .none
             
         default: return .none
         }

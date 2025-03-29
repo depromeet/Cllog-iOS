@@ -21,7 +21,7 @@ public struct RecordHomeFeature {
         var recordedState: RecordedFeature.State?
     }
     
-    public enum Action: Equatable {
+    public enum Action {
         
         case onAppear
     
