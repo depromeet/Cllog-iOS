@@ -22,6 +22,7 @@ public struct RecordedFeature {
     
     @Dependency(\.videoUseCase) var videoUseCase
     @Dependency(\.saveStoryUseCase) var saveStoryUseCase
+    @Dependency(\.saveAttemptUseCase) private var saveAttemptUseCase
     @Dependency(\.nearByCragUseCase) private var cragUseCase
     @Dependency(\.gradeUseCase) private var gradeUseCase
     
@@ -295,17 +296,37 @@ extension RecordedFeature {
         case .successTapped:
             // 성공하기로 저장 버튼 클릭
             state.climbingResult = .success
-            state.showSelectCragBottomSheet = true
-            return .run { send in
-                await send(.pause)
+            if VideoDataManager.isFirstAttempt() {
+                // 첫 시도
+                state.showSelectCragBottomSheet = true
+                return .run { send in
+                    await send(.pause)
+                }
+            } else {
+                // 이후 시도
+                state.isLoading = true
+                return .merge(
+                    .send(.pause),
+                    registerAttempts(state)
+                )
             }
             
         case .failureTapped:
             // 실패하기로 저장 버튼 클릭
-            state.climbingResult = .success
-            state.showSelectCragBottomSheet = true
-            return .run { send in
-                await send(.pause)
+            state.climbingResult = .failure
+            if VideoDataManager.isFirstAttempt() {
+                // 첫 시도
+                state.showSelectCragBottomSheet = true
+                return .run { send in
+                    await send(.pause)
+                }
+            } else {
+                // 이후 시도
+                state.isLoading = true
+                return .merge(
+                    .send(.pause),
+                    registerAttempts(state)
+                )
             }
             
         default:
@@ -404,35 +425,7 @@ extension RecordedFeature {
             state.isLoading = true
             state.showSelectCragDifficultyBottomSheet = false
             
-            return .run { [state] send in
-                let assetId = try await videoUseCase.execute(saveFile: state.path)
-                
-                let request = StoryRequest(
-                    cragId: state.selectedDesignCrag?.id,
-                    problem: ProblemRequest(gradeId: 0), // 난이도 ID
-                    attempt: AttemptRequest(
-                        status: state.climbingResult,
-                        problemId: nil,
-                        video: VideoRequest(
-                            localPath: assetId,
-                            thumbnailUrl: "",
-                            durationMs: state.totalDuration,
-                            stamps: [
-                                StampRequest(timeMs: 0) // 타임 스탬프
-                            ]
-                        )
-                    ),
-                    memo: nil
-                )
-                do {
-                    let response = try await saveStoryUseCase.execute(request)
-                    VideoDataManager.save(story: response)
-                    VideoDataManager.attemptCount += 1
-                    await send(.saveFinished)
-                } catch {
-                    await send(.saveFailure(error))
-                }
-            }
+            return registerStory(state)
             
         case .saveFinished:
             state.isLoading = false
@@ -484,6 +477,69 @@ extension RecordedFeature {
                 await send(.fetchedMoreCrags(crags))
             } catch {
                 debugPrint(error.localizedDescription)
+            }
+        }
+    }
+    
+    /// 시도 저장
+    private func registerAttempts(_ state: State) -> Effect<Action> {
+        return .run { send in
+            guard let story = VideoDataManager.savedStory else { return }
+            let assetId = try await videoUseCase.execute(saveFile: state.path)
+            
+            let request = AttemptRequest(
+                status: state.climbingResult,
+                problemId: story.problemId,
+                video: VideoRequest(
+                    localPath: assetId,
+                    thumbnailUrl: "",
+                    durationMs: state.totalDuration,
+                    stamps: [
+                        StampRequest(timeMs: 0) // 타임 스탬프
+                    ]
+                )
+            )
+            
+            do {
+                try await saveAttemptUseCase.register(request)
+                VideoDataManager.attemptCount += 1
+                await send(.saveFinished)
+            } catch {
+                await send(.saveFailure(error))
+            }
+        }
+    }
+    
+    /// 최초 스토리 저장
+    private func registerStory(_ state: State) -> Effect<Action> {
+        return .run { send in
+            let assetId = try await videoUseCase.execute(saveFile: state.path)
+            
+            let request = StoryRequest(
+                cragId: state.selectedDesignCrag?.id,
+                problem: ProblemRequest(gradeId: 0), // 난이도 ID
+                attempt: AttemptRequest(
+                    status: state.climbingResult,
+                    problemId: nil,
+                    video: VideoRequest(
+                        localPath: assetId,
+                        thumbnailUrl: "",
+                        durationMs: state.totalDuration,
+                        stamps: [
+                            StampRequest(timeMs: 0) // 타임 스탬프
+                        ]
+                    )
+                ),
+                memo: nil
+            )
+            
+            do {
+                let response = try await saveStoryUseCase.execute(request)
+                VideoDataManager.save(story: response)
+                VideoDataManager.attemptCount += 1
+                await send(.saveFinished)
+            } catch {
+                await send(.saveFailure(error))
             }
         }
     }

@@ -233,5 +233,17 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
+        
+        container.register(SaveAttemptUseCase.self) { _ in
+            SaveAttempt(
+                repository: DefaultSaveAttemptRepository(
+                    dataSource: DefaultAttemptDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
     }
 }
