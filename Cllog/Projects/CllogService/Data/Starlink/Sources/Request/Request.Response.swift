@@ -126,14 +126,20 @@ extension Starlink.Request: StarlinkRequest {
         
         var urlRequest = URLRequest(url: urlConversion)
         urlRequest.httpMethod = "POST"
-        
+
+        for interceptor in self.interceptors {
+            urlRequest = try await interceptor.adapt(&urlRequest)
+        }
+
         if let parameters = params?.toDictionary() {
             try urlRequest = encoding.encode(&urlRequest, with: parameters)
         }
         
         let boundary = UUID().uuidString
         urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
+
+        self.trakers.allTrackers().forEach { $0.didRequest(self, urlRequest: urlRequest) }
+
         do {
             let (data, response) = try await self.upload(urlRequest: urlRequest, uploadForm: uploadForm)
             let model: T = try self.alamofileValidReponse(response, data: data)
@@ -141,7 +147,7 @@ extension Starlink.Request: StarlinkRequest {
         } catch {
             let response = Starlink.Response(response: nil, data: nil, error: error)
             self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
-            throw StarlinkError(error: error)
+            throw await Starlink.sessionErrorHandler(error)
         }
     }
     
