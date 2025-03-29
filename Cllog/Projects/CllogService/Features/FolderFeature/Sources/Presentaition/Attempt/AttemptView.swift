@@ -17,12 +17,6 @@ import ComposableArchitecture
 public struct AttemptView: ViewProtocol {
     @Bindable private var store: StoreOf<AttemptFeature>
     
-    // TODO: Feature로 이동
-    @State private var isPlaying = false
-    @State private var isLoading = true
-    @State private var progressValue: Double = 0.0
-    @State var splitXPositions: [CGFloat] = []
-    
     public var body: some View {
         makeBodyView()
             .background(Color.clLogUI.gray800)
@@ -200,21 +194,46 @@ extension AttemptView {
         .scrollIndicators(.hidden)
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
     }
-    
+   
     private func makeVideoView(_ attempt: ReadAttempt) -> some View {
         ZStack(alignment: .bottom) {
             RoundedRectangle(cornerRadius: 6)
                 .foregroundStyle(Color.clLogUI.dim)
             
             if let videoPath = store.videoURL {
-                VideoPlayerView(videoPath: videoPath, isPlaying: $isPlaying, currentProgress: $progressValue)
+                ZStack(alignment: .center) {
+                    VideoPlayerView(
+                        videoPath: videoPath,
+                        isPlaying: $store.isPlaying,
+                        currentProgress: $store.progress,
+                        seekTime: $store.seekTime
+                    )
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                     .onTapGesture {
-                        isPlaying.toggle()
+                        store.send(.videoTapped)
                     }
+                    
+                    if store.showVideoControlButton {
+                        
+                        Button {
+                            store.send(.videoControlTapped)
+                        } label: {
+                            let image = store.isPlaying ? Image.clLogUI.stopSmall : Image.clLogUI.playSmall
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 58, height: 58)
+                        }
+                        .transition(.opacity)
+                        .animation(.easeInOut(duration: 0.2), value: store.showVideoControlButton)
+                    }
+                }
             }
             
-            PlayerProgressBar(duration: Double(attempt.attempt.video.durationMs / 1000), progress: CGFloat(progressValue), stampTimeList: attempt.attempt.video.stamps.map { Double($0.timeMs / 1000) }) { stampTime in
+            PlayerProgressBar(
+                duration: Double(attempt.attempt.video.durationMs / 1000),
+                progress: CGFloat(store.progress),
+                stampTimeList: attempt.attempt.video.stamps.map { Double($0.timeMs / 1000) }) { stampTime in
                 print("### stampTime: \(stampTime)")
             }
         }
@@ -223,7 +242,7 @@ extension AttemptView {
     
     private func makeAttemptInfoView(_ attempt: ReadAttempt) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("TEST")
+            Text(attempt.date)
                 .font(.h1)
                 .foregroundStyle(Color.clLogUI.white)
             
@@ -300,8 +319,8 @@ extension AttemptView {
             } else {
                 
                 switch store.selectedAction {
-                case .video:
-                    Text("Video")
+//                case .video:
+//                    Text("Video")
                 case .result:
                     makeEditResultBottomSheet()
                 case .info:
@@ -318,8 +337,8 @@ extension AttemptView {
     private func makeEditActionDetailView(for action: AttemptFeature.AttemptEditAction) -> some View {
         VStack {
             switch action {
-            case .video:
-                Text("Video")
+//            case .video:
+//                Text("Video")
             case .result:
                 makeEditResultBottomSheet()
             case .info:

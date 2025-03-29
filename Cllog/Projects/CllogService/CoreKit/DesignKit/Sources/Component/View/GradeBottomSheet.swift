@@ -83,10 +83,15 @@ struct SelectGradeView: View {
             }
         }
         .onChange(of: selectedUnSaveGrade) { _, newValue in
-            if newValue, selectedGrade != nil {
-                selectedGrade = nil
+            if newValue {
                 isEnableSave = true
-            } else if !newValue, selectedGrade == nil {
+                
+                if selectedGrade != nil {
+                    selectedGrade = nil
+                }
+            }
+            
+            if !newValue, selectedGrade == nil {
                 isEnableSave = false
             }
         }

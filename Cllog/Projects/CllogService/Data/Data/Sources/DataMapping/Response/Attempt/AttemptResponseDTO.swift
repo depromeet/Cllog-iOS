@@ -11,10 +11,11 @@ import FolderDomain
 
 struct AttemptResponseDTO: Decodable {
     let status: String
+    let createdAt: String
     let video: AttemptVideoResponseDTO
     
     func toDomain() -> ReadAttemptDetail {
-        ReadAttemptDetail(
+        return ReadAttemptDetail(
             status: AttemptResult(rawValue: status) ?? .complete,
             video: video.toDomain()
         )

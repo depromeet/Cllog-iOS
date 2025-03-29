@@ -26,7 +26,7 @@ public struct VideoUploadRequestDTO: Codable {
 
     public struct Video: Codable {
         public let localPath: String
-        public let thumbnailUrl: String
+        public let thumbnailUrl: String?
         public let durationMs: Double
         public let stamps: [Stamp]
     }

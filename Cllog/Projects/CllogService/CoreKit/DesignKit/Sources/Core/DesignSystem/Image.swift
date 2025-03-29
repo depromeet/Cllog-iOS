@@ -16,6 +16,8 @@ extension ClLogUI where Base == UIImage {
     public static var recodeButton: UIImage { asset(#function) }
     public static var recordingButton: UIImage { asset(#function) }
     
+    public static var basicThumbnail: UIImage { asset(#function) }
+    
     // icon
     public static var alert: UIImage { asset(#function) }
     public static var back: UIImage { asset(#function) }
@@ -67,6 +69,7 @@ extension ClLogUI where Base == Image {
     public static var recodeButton: Image { asset(#function) }
     public static var recordingButton: Image { asset(#function) }
     
+    public static var basicThumbnail: Image{ asset(#function) }
     // icon
     public static var alert: Image { asset(#function) }
     public static var back: Image { asset(#function) }

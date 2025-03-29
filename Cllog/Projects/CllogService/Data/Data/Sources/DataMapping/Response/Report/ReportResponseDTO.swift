@@ -74,7 +74,7 @@ public struct MostAttemptedProblemResponseDTO: Decodable {
 public struct ReportAttemptVideoResponseDTO: Decodable {
     let id: Int
     let localPath: String
-    let thumbnailUrl: String
+    let thumbnailUrl: String?
     let durationMs: Int
     
     func toDomain() -> AttemptVideo {

@@ -12,14 +12,14 @@ import Foundation
 public struct AttemptVideo: Hashable, Equatable {
     public let id: Int
     public let localPath: String
-    public let thumbnailUrl: String
+    public let thumbnailUrl: String?
     public let durationMs: Int
     public let stamps: [AttemptStamp]
     
     public init(
         id: Int,
         localPath: String,
-        thumbnailUrl: String,
+        thumbnailUrl: String?,
         durationMs: Int,
         stamps: [AttemptStamp]
     ) {

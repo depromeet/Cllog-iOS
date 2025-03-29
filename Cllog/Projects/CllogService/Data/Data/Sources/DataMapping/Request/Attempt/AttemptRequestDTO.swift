@@ -16,7 +16,7 @@ public struct AttemptRequestDTO: Encodable {
 
 public struct VideoRequestDTO: Encodable {
     public let localPath: String
-    public let thumbnailUrl: String
+    public let thumbnailUrl: String?
     public let durationMs: Int
     public let stamps: [StampRequestDTO]
 }

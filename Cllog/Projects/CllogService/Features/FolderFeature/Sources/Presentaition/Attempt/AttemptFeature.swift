@@ -20,7 +20,6 @@ public struct AttemptFeature {
     @Dependency(\.attemptUseCase) private var attemptUseCase
     @Dependency(\.nearByCragUseCase) private var cragUseCase
     @Dependency(\.gradeUseCase) private var gradeUseCase
-//    @Dependency(\.locationClient) var locationClient
     
     public init() {}
     
@@ -39,6 +38,11 @@ public struct AttemptFeature {
         var videoURL: URL?
         let editActions = AttemptEditAction.allCases
         
+        var showVideoControlButton = false
+        var loadedVideo = false
+        var isPlaying = false
+        var progress: Double = 0
+        var seekTime: Int?
         var selectedAction: AttemptEditAction?
         var stampPositions = [CGFloat]()
         
@@ -57,8 +61,8 @@ public struct AttemptFeature {
         
         var dynamicSheetHeight: CGFloat {
             switch selectedAction {
-            case .video:
-                251
+//            case .video:
+//                251
             case .result:
                 230
             case .info:
@@ -95,6 +99,7 @@ public struct AttemptFeature {
         case onEditSheetDismissed
         case editBackButtonTapped
         case deleteActionTapped
+        case videoControlTapped
         case editCragTapped
         case didTapSaveGradeTapped(id: Int?)
         case cancelEditCragTapped
@@ -132,8 +137,13 @@ public struct AttemptFeature {
                 state.showEditAttemptBottomSheet = true
                 return .none
             case .moreActionTapped(let action):
+                
                 switch action {
-                case .video, .result:
+//                case .video,
+//                    state.selectedAction = action
+//                    return .none
+                    
+                case .result:
                     state.selectedAction = action
                     return .none
                 case .info:
@@ -146,9 +156,14 @@ public struct AttemptFeature {
                     return .send(.deleteActionTapped)
                 }
             case .videoTapped:
+                guard state.loadedVideo else {
+                    return .none
+                }
+                state.showVideoControlButton.toggle()
                 return .none
             case .stampTapped(let id):
-                // TODO: Seek to video
+                let stamp = state.attempt?.attempt.video.stamps.first(where: { $0.id == id })
+                state.seekTime = stamp?.timeMs
                 return .none
             case .loadMoreCrags:
                 return fetchMoreNearByCrags()
@@ -162,6 +177,7 @@ public struct AttemptFeature {
                 state.selectedEditCrag = attempt.crag
                 return .none
             case .getAssetURL(let url):
+                state.loadedVideo = true
                 state.videoURL = url
                 return .none
                 
@@ -189,7 +205,14 @@ public struct AttemptFeature {
                     TextState("기록을 삭제하면 복구가 어려워요.\n영상 기록을 삭제하시나요?")
                 }
                 return .none
-                
+            case .videoControlTapped:
+                if state.isPlaying {
+                    state.isPlaying = false
+                } else {
+                    state.isPlaying = true
+                    state.showVideoControlButton = false
+                }
+                return .none
             case .deletedAttempt:
                 return .none
                 
@@ -368,14 +391,14 @@ extension AttemptFeature {
 
 extension AttemptFeature {
     public enum AttemptEditAction: CaseIterable {
-        case video
+//        case video
         case result
         case info
         case delete
         
         var title: String {
             switch self {
-            case .video:    "영상/스탬프 편집"
+//            case .video:    "영상/스탬프 편집"
             case .result:   "완등/실패 수정"
             case .info:     "암장 정보, 난이도 수정"
             case .delete:   "영상 기록 삭제"
@@ -384,7 +407,7 @@ extension AttemptFeature {
         
         var leadingIcon: Image {
             switch self {
-            case .video:    Image.clLogUI.cut
+//            case .video:    Image.clLogUI.cut
             case .result:   Image.clLogUI.tag
             case .info:     Image.clLogUI.location
             case .delete:   Image.clLogUI.delete
@@ -393,7 +416,8 @@ extension AttemptFeature {
         
         var color: Color {
             switch self {
-            case .video, .result, .info:
+//            case .video,
+            case .result, .info:
                 Color.clLogUI.white
             case .delete:
                 Color.clLogUI.fail

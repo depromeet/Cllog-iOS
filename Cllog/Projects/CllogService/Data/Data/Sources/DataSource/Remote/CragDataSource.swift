@@ -29,6 +29,7 @@ public final class DefaultCragDataSource: CragDataSource {
         )
         
         guard let crags = response.data else {
+            print("ERROR", #function)
             throw StarlinkError.inValidJSONData(nil)
         }
         
