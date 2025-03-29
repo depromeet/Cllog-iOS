@@ -7,14 +7,15 @@
 //
 
 import Foundation
+import Shared
 
 public struct AttemptRequest {
-    public let status: String
+    public let status: AttemptStatus
     public let problemId: Int?
     public let video: VideoRequest
     
     public init(
-        status: String,
+        status: AttemptStatus,
         problemId: Int?,
         video: VideoRequest
     ) {
