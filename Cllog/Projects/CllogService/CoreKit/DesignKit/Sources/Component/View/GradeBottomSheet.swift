@@ -115,31 +115,8 @@ struct SelectGradeView: View {
                 .padding(.top, 16)
                 .padding(.bottom, 10)
             
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 36, maximum: 36), spacing: 28)], spacing: 18) {
-                ForEach(grades, id: \.self) { grade in
-                    gradeGradeChip(for: grade)
-                }
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 16)
-            .background(Color.clLogUI.gray900)
-            .cornerRadius(12)
+            GridGradeView(grades: grades, selectedGrade: $selectedGrade)
         }
-    }
-    
-    private func gradeGradeChip(for grade: DesignGrade) -> some View {
-        Circle()
-            .foregroundStyle(grade.color)
-            .overlay(
-                Circle()
-                    .strokeBorder(
-                        selectedGrade == grade ? Color.clLogUI.white : Color.clear,
-                        lineWidth: 3
-                    )
-            )
-            .onTapGesture {
-                selectedGrade = grade
-            }
     }
     
     private var checkboxSection: some View {

@@ -30,6 +30,36 @@ public struct VideoView: View {
             .onAppear {
                 store.send(.onAppear)
             }
+            .overlay(
+                Group {
+                    if store.state.showSelectGradeView {
+                        VStack(spacing: 18) {
+                            Text("다음 문제 난이도를 선택해주세요")
+                                .font(.h3)
+                                .foregroundStyle(ClLogUI.gray10)
+                                .frame(maxWidth: .infinity)
+                                
+                            GridGradeView(
+                                grades: store.grades.map {
+                                    DesignGrade(id: $0.id, name: $0.name, color: .init(hex: $0.hexCode))
+                                },
+                                selectedGrade: $store.selectedGrade
+                            )
+                            
+                            CheckBoxButton(
+                                title: "난이도 미등록",
+                                isActive: .constant(false)
+                            )
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 16)
+                        .background(ClLogUI.gray900)
+                        .cornerRadius(12)
+                        .shadow(radius: 10)
+                    }
+                }
+                    .padding(.horizontal, 16)
+            )
     }
 }
 
