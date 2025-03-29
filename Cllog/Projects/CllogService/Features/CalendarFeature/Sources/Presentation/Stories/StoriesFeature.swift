@@ -15,7 +15,14 @@ import StoryDomain
 public struct StoriesFeature {
     @ObservableState
     public struct State: Equatable {
-        var story: Story = Story(id: 0, problems: [])
+        var story: Story = Story(
+            id: 0,
+            totalDurationMs: 0,
+            problems: [],
+            successCount: 0,
+            failCount: 0,
+            colorHex: nil
+        )
     }
     
     public enum Action: Equatable {
