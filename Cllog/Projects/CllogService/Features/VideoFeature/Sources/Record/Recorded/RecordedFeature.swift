@@ -11,6 +11,7 @@ import AVFoundation
 
 import DesignKit
 import VideoDomain
+import EditDomain
 import Domain
 import Shared
 
@@ -35,9 +36,10 @@ public struct RecordedFeature {
         let fileName: String
         let path: URL
         var duration: String = ""
-        var totalDuration: Int = 0
+        var totalDuration: Double = 0
         let viewModel: RecordedPlayViewModel
         var progress: CGFloat = .zero
+        var stampTimeList: [Double] = []
         
         var image: UIImage?
         
@@ -76,10 +78,12 @@ public struct RecordedFeature {
         case play
         case pause
         case closeButtonTapped
+        case updateVideo(Video)
+        case seek(Double)
         
         // navigationCore
         case editButtonTapped
-        case moveEditRecord(URL)
+        case moveEditRecord(URL, [Double])
         case close
         
         // savebuttonCore
@@ -157,8 +161,7 @@ extension RecordedFeature {
             
         case .upload(type: let type, image: let image):
             return .none
-            
-        case .play, .pause, .startListeningPlayTime, .startListeningEndPlay, .timerTicked:
+        case .play, .pause, .startListeningPlayTime, .startListeningEndPlay, .timerTicked, .updateVideo, .seek:
             return recordCore(&state, action)
             
         case .closeButtonTapped, .editButtonTapped, .moveEditRecord, .close:
@@ -234,16 +237,25 @@ extension RecordedFeature {
             
         case .timerTicked(let playTime, let duration):
             // 영상 시간 표시 및 progress
-            let totalTime = CGFloat(CMTimeGetSeconds(duration))
-            let currentTime = CGFloat(CMTimeGetSeconds(playTime))
+            let totalTime = Double(CMTimeGetSeconds(duration))
+            let currentTime = Double(CMTimeGetSeconds(playTime))
             state.duration = playTime.formatTimeInterval()
+
             state.progress = currentTime/totalTime
             if state.totalDuration == 0, !totalTime.isNaN {
-                state.totalDuration = Int(totalTime * 1000)
-                print("영상 총 길이 MS: \(state.totalDuration)")
+                state.totalDuration = totalTime * 1000
             }
             return .none
-            
+        case .updateVideo(let video):
+            state.viewModel.updateVideoUrl(videoURL: video.videoUrl)
+            state.stampTimeList = video.stampTimeList
+            return .send(.play)
+        case .seek(let time):
+            return .run { [weak viewModel = state.viewModel] _ in
+                guard let viewModel else { return }
+                await viewModel.seek(CMTime(seconds: time, preferredTimescale: 600))
+                viewModel.play()
+            }
         default:
             return .none
         }
@@ -275,7 +287,7 @@ extension RecordedFeature {
         case .editButtonTapped:
             // 편집 버튼 클릭 Action
             return .merge(
-                .send(.moveEditRecord(state.path)),
+                .send(.moveEditRecord(state.path, state.stampTimeList)),
                 .send(.pause)
             )
             
@@ -424,7 +436,6 @@ extension RecordedFeature {
             saveSelectedGrade(grades: state.grades, selectedGrade: designGrade)
             state.isLoading = true
             state.showSelectCragDifficultyBottomSheet = false
-            
             return registerStory(state)
             
         case .saveFinished:
@@ -436,7 +447,6 @@ extension RecordedFeature {
             state.isLoading = false
             state.showSelectCragDifficultyBottomSheet = true
             return .none
-            
         default: return .none
         }
     }
@@ -499,7 +509,7 @@ extension RecordedFeature {
         return .run { send in
             guard let story = VideoDataManager.savedStory else { return }
             
-            let thumbNailImage = try await generateImage(path: state.path, totalDuration: state.totalDuration)
+            let thumbNailImage = try await generateImage(path: state.path, totalDuration: Int(state.totalDuration))
             
             let thumbNail = try? await videoUseCase.execute(
                 name: state.fileName,
@@ -516,7 +526,7 @@ extension RecordedFeature {
                 video: VideoRequest(
                     localPath: assetId,
                     thumbnailUrl: thumbNail?.fileUrl ?? "",
-                    durationMs: state.totalDuration,
+                    durationMs: Int(state.totalDuration),
                     stamps: [
                         StampRequest(timeMs: 0) // 타임 스탬프
                     ]
@@ -536,7 +546,7 @@ extension RecordedFeature {
     /// 최초 스토리 저장
     private func registerStory(_ state: State) -> Effect<Action> {
         return .run { send in
-            let thumbNailImage = try await generateImage(path: state.path, totalDuration: state.totalDuration)
+            let thumbNailImage = try await generateImage(path: state.path, totalDuration: Int(state.totalDuration))
             
             let thumbNail = try? await videoUseCase.execute(
                 name: state.fileName,
@@ -556,7 +566,7 @@ extension RecordedFeature {
                     video: VideoRequest(
                         localPath: assetId,
                         thumbnailUrl: thumbNail?.fileUrl ?? "",
-                        durationMs: state.totalDuration,
+                        durationMs: Int(state.totalDuration),
                         stamps: [
                             StampRequest(timeMs: 0) // 타임 스탬프
                         ]

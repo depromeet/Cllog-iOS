@@ -61,6 +61,8 @@ public struct RouterFeature {
 extension RouterFeature {
     public func reducerCore(state: inout State, action: Action) -> Effect<Action> {
         switch action {
+        case .videoEditAction(let action):
+            return videoEditCore(state: &state, action: action)
         case .rootAction(let action):
             return rootCore(state: &state, action: action)
         case .path(.element(id: let id, action: .calendarDetail(.backButtonTapped))):
@@ -104,10 +106,27 @@ extension RouterFeature {
         case let .mainAction(.routerAction(.pushToAttempt(attemptId))):
             state.path.append(.attempt(AttemptFeature.State(attemptId: attemptId)))
             return .none
-        case let .mainAction(.routerAction(.presentToEdit(url))):
+        case let .mainAction(.routerAction(.presentToEdit(url, stampTimeList))):
             state.isPresentEdit = true
-            state.videoEditState = VideoEditFeature.State(videoURL: url)
+            state.videoEditState = VideoEditFeature.State(video: .init(videoUrl: url, stampTimeList: stampTimeList))
             return .none
+        default:
+            return .none
+        }
+    }
+    
+    public func videoEditCore(state: inout State, action: VideoEditFeature.Action) -> Effect<Action> {
+        switch action {
+        case .delegate(.edittedVideo(let video)):
+            return .send(
+                .rootAction(
+                    .mainAction(
+                        .recordFeatureAction(
+                            .recordedAction(.updateVideo(video))
+                        )
+                    )
+                )
+            )
         default:
             return .none
         }

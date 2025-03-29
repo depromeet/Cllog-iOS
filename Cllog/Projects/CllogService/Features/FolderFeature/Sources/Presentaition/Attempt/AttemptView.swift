@@ -214,13 +214,9 @@ extension AttemptView {
                     }
             }
             
-            PlayerProgressBar(
-                progress: CGFloat(progressValue),
-                stamps: attempt.attempt.video.stamps.map { TempStamp(id: $0.id, position: CGFloat($0.position)) },
-                onStampTapped: { stampId in
-                    store.send(.stampTapped(id: stampId))
-                }
-            )
+            PlayerProgressBar(duration: Double(attempt.attempt.video.durationMs / 1000), progress: CGFloat(progressValue), stampTimeList: attempt.attempt.video.stamps.map { Double($0.timeMs / 1000) }) { stampTime in
+                print("### stampTime: \(stampTime)")
+            }
         }
         .cornerRadius(6, corners: [.bottomLeft, .bottomRight])
     }
