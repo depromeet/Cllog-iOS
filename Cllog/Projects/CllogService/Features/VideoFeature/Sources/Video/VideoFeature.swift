@@ -29,6 +29,7 @@ public struct VideoFeature {
         
         // 저장된 난이도가 있는지 확인
         var grade: SavedGrade?
+        var cragId: Int?
         
         // 저장된 스토리가 있는지 확인
         var count: Int = 0
@@ -113,8 +114,10 @@ private extension VideoFeature {
         case .binding(_):
             return .none
         case .onAppear:
+            print("on appear video feature")
             state.count = VideoDataManager.attemptCount
             state.grade = VideoDataManager.savedGrade
+            state.cragId = VideoDataManager.cragId
             
             return .run { [permissionUseCase] send in
                 do {
@@ -168,8 +171,26 @@ private extension VideoFeature {
             return .none
             
         case .nextProblemTapped:
-            state.showSelectGradeView = true
-            return .none
+            
+            guard state.cragId != VideoDataManager.cragId else {
+                state.showSelectGradeView = true
+                return .none
+            }
+            
+            guard let cragId = VideoDataManager.cragId else {
+                // 저장된 암장이 없는 경우, 난이도 선택 불가능
+                // 바로 영상 편집
+                return .none
+            }
+            return .run { send in
+                do {
+                    let grades = try await gradeUseCase.getCragGrades(cragId: cragId)
+                    await send(.fetchedGrade(grades: grades))
+                } catch {
+                    // 에러 처리
+                    await send(.fetchedGrade(grades: []))
+                }
+            }
         case .backgroundViewTapped:
             state.showSelectGradeView = false
             return .none
