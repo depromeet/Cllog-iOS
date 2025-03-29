@@ -30,6 +30,10 @@ struct VideoDataManager {
         problemId = story.problemId
     }
     
+    static func isFirstAttempt() -> Bool {
+        storyId == nil
+    }
+    
     static func clear() {
         savedGrade = nil
         cragId = nil
