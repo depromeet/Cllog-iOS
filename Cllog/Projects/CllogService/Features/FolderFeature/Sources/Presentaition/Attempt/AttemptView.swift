@@ -243,7 +243,7 @@ extension AttemptView {
     
     private func makeAttemptInfoView(_ attempt: ReadAttempt) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("TEST")
+            Text(attempt.date)
                 .font(.h1)
                 .foregroundStyle(Color.clLogUI.white)
             

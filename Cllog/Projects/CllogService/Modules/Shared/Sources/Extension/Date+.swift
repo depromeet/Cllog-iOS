@@ -16,4 +16,11 @@ public extension Date {
     var month: Int {
         return Calendar.current.component(.month, from: self)
     }
+    
+    func formattedString(_ format: String, locale: Locale = .current) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        dateFormatter.locale = locale
+        return dateFormatter.string(from: self)
+    }
 }

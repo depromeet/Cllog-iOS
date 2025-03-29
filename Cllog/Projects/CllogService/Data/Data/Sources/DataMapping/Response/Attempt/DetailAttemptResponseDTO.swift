@@ -20,7 +20,12 @@ public struct DetailAttemptResponseDTO: Decodable {
         ReadAttempt(
             storyId: storyId,
             problemId: problemId,
-            date: "", // TODO: FIXME
+            date: attempt.createdAt
+                .toDate(format: "y-MM-dd'T'HH:mm:ss")
+                .formattedString(
+                    "yy.MM.dd E",
+                    locale: Locale(identifier: "en_US")
+                ).uppercased(),
             grade: color?.toDomain(),
             crag: crag?.toDomain(),
             result: AttemptResult(rawValue: attempt.status) ?? .complete,
