@@ -171,13 +171,13 @@ extension ReportView {
     private func makeChallengeView() -> some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
-                Text("김클로그님의 가장 뿌듯했던 도전")
+                Text("\(store.report.userName)님의 가장 뿌듯했던 도전")
                     .font(.h5)
                     .foregroundStyle(Color.clLogUI.gray400)
                 
                 Spacer(minLength: 4)
                 
-                Text("클라이밍 파크 강남점에서")
+                Text("\(store.report.mostVisitedCrag)에서")
                     .font(.h3)
                     .foregroundStyle(Color.clLogUI.gray10)
                 HStack(spacing: 0) {

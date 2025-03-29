@@ -22,4 +22,8 @@ public struct DefaultTokenRepository: TokenRepository {
     public func fetchValidateUserSession() -> Bool {
         return DefaultTokenDataSource().loadToken()?.refreshToken != nil
     }
+
+    public func clearToken() async {
+        DefaultTokenDataSource().clearToken()
+    }
 }

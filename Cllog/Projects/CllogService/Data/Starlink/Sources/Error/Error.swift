@@ -23,7 +23,26 @@ public enum StarlinkError: Swift.Error, Equatable {
             self = .error(error)
         }
     }
-    
+
+    public var errorInfo: ErrorInfo? {
+        switch self {
+        case .inValidParams(let info):
+            return info
+        case .inValidURLPath(let info):
+            return info
+        case .nullPointStatusCode(let info):
+            return info
+        case .nullPointData(let info):
+            return info
+        case .inValidJSONData(let info):
+            return info
+        case .inValidStatusCode(let info):
+            return info
+        case .error:
+            return nil
+        }
+    }
+
     public static func == (lhs: StarlinkError, rhs: StarlinkError) -> Bool {
         switch (lhs, rhs) {
         case (.inValidURLPath(let lhsInfo), .inValidURLPath(let rhsInfo)):
