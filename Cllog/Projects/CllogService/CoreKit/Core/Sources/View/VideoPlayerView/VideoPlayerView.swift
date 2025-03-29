@@ -8,9 +8,10 @@
 
 import SwiftUI
 import AVKit
+import Photos
 
 public struct VideoPlayerView: UIViewRepresentable {
-    private let player: AVPlayer
+    private let playerManager: VideoPlayerManager
     @Binding private var playbackState: Bool
     @Binding private var playbackProgress: Double
     
@@ -19,14 +20,24 @@ public struct VideoPlayerView: UIViewRepresentable {
         isPlaying: Binding<Bool>,
         currentProgress: Binding<Double>
     ) {
-        self.player = AVPlayer(url: videoPath)
+        self.playerManager = VideoPlayerManager(url: videoPath)
+        self._playbackState = isPlaying
+        self._playbackProgress = currentProgress
+    }
+    
+    public init(
+        assetID: String,
+        isPlaying: Binding<Bool>,
+        currentProgress: Binding<Double>
+    ) {
+        self.playerManager = VideoPlayerManager(assetID: assetID)
         self._playbackState = isPlaying
         self._playbackProgress = currentProgress
     }
     
     public func makeUIView(context: Context) -> UIView {
         VideoPlayerContainer(
-            player: player,
+            player: playerManager.player,
             isPlaying: $playbackState,
             progress: $playbackProgress
         )
@@ -118,5 +129,35 @@ final class VideoPlayerContainer: UIView {
         NotificationCenter.default.removeObserver(self)
         playerItemObserver = nil
         playbackTimeObserver = nil
+    }
+}
+
+class VideoPlayerManager {
+    let player: AVPlayer
+    
+    init(url: URL) {
+        self.player = AVPlayer(url: url)
+    }
+    
+    init(assetID: String) {
+        // 임시 플레이어 생성
+        self.player = AVPlayer(url: URL(string: "about:blank")!)
+        
+        // PHAsset에서 비디오 로드
+        let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [assetID], options: nil)
+        
+        if let asset = fetchResult.firstObject {
+            let options = PHVideoRequestOptions()
+            options.version = .original
+            options.deliveryMode = .highQualityFormat
+            
+            PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { [weak self] asset, _, _ in
+                DispatchQueue.main.async {
+                    if let urlAsset = asset as? AVURLAsset, let self = self {
+                        self.player.replaceCurrentItem(with: AVPlayerItem(url: urlAsset.url))
+                    }
+                }
+            }
+        }
     }
 }
