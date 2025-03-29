@@ -177,7 +177,7 @@ extension ReportView {
                 
                 Spacer(minLength: 4)
                 
-                Text("\(store.report.mostVisitedCrag)에서")
+                Text("\(store.report.mostVisitedCrag.mostVisitedCragName)에서")
                     .font(.h3)
                     .foregroundStyle(Color.clLogUI.gray10)
                 HStack(spacing: 0) {

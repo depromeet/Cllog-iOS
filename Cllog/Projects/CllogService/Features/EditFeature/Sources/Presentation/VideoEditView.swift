@@ -131,6 +131,7 @@ public struct VideoEditView: View {
             .padding(.horizontal, 16)
             
             videoPlayer
+                .disabled(true)
             
             HStack {
                 Spacer()
@@ -241,15 +242,5 @@ public struct VideoEditView: View {
                 presentationMode.wrappedValue.dismiss()
             }
         }
-    }
-}
-
-public extension VideoEditView {
-    static func build(videoURL: URL) -> some View {
-        let store = Store(initialState: VideoEditFeature.State(videoURL: videoURL)) {
-            VideoEditFeature()
-        }
-        
-        return VideoEditView(store: store)
     }
 }

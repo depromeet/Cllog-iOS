@@ -85,7 +85,7 @@ public struct MainFeature {
             case pushToCalendarDetail(Int)
             case pushToSetting
             case pushToAttempt(Int)
-            case presentToEdit(URL)
+            case presentToEdit(URL, [Double])
         }
     }
     
@@ -191,8 +191,8 @@ private extension MainFeature {
                 await send(.videoTabAction(.onStartSession))
             }
             
-        case .moveEditRecord(let path):
-            return .send(.routerAction(.presentToEdit(path)))
+        case .moveEditRecord(let path, let stampTimeList):
+            return .send(.routerAction(.presentToEdit(path, stampTimeList)))
         default:
             return .none
         }

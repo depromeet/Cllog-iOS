@@ -131,12 +131,9 @@ public struct RecordedView: View {
     @ViewBuilder
     private var footerActionsView: some View {
         VStack(spacing: .zero) {
-            PlayerProgressBar(
-                progress: store.progress,
-                stamps: [35, 89, 110, 220].map {
-                    TempStamp(id: $0, position: CGFloat($0))
-                }
-            )
+            PlayerProgressBar(duration: Double(store.totalDuration / 1000), progress: store.progress, stampTimeList: store.stampTimeList) { stampTime in
+                store.send(.seek(stampTime))
+            }
             
             Group {
                 HStack(spacing: 7) {

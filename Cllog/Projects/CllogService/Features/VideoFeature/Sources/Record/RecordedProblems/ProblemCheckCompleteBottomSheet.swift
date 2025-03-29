@@ -7,9 +7,17 @@
 //
 
 import SwiftUI
+
+import ComposableArchitecture
 import DesignKit
 
 struct ProblemCheckCompleteBottomSheet: View {
+    private let store: StoreOf<ProblemCheckCompleteBottomSheetFeature>
+    
+    init(store: StoreOf<ProblemCheckCompleteBottomSheetFeature>) {
+        self.store = store
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 0) {
@@ -17,7 +25,7 @@ struct ProblemCheckCompleteBottomSheet: View {
                     .frame(height: 21)
                     .font(.h5)
                     .foregroundStyle(Color.clLogUI.gray400)
-                Text("00:32:10")
+                Text(store.story.totalDurationMs.msToTimeString)
                     .frame(height: 36)
                     .font(.h1)
                     .foregroundStyle(Color.clLogUI.gray10)
@@ -31,24 +39,8 @@ struct ProblemCheckCompleteBottomSheet: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 16)
             
-            ScrollView(.horizontal) {
-                LazyHStack(spacing: 12) {
-                    ForEach(0..<10, id: \.self) { idx in
-                        ReportVideoImageView(
-                            imageName: "clogLogo",
-                            challengeResult: idx == 0 ? .fail : .complete,
-                            deleteButtonHandler: { print("### 탭") })
-                    }
-                }
-                .frame(height: 84)
-                .padding(.top, 4)
-                .padding(.horizontal, 16)
-            }
-            .scrollIndicators(.hidden)
-            .padding(.bottom, 24)
-            
             GeneralButton("종료하기") {
-                print("### 종료하기 탭탭")
+                store.send(.finishTapped)
             }
             .style(.white)
             .padding(.horizontal, 16)
@@ -59,6 +51,10 @@ struct ProblemCheckCompleteBottomSheet: View {
 #Preview {
     Color.white
         .bottomSheet(isPresented: .constant(true), height: 355) {
-            ProblemCheckCompleteBottomSheet()
+            ProblemCheckCompleteBottomSheet(
+                store: .init(initialState: ProblemCheckCompleteBottomSheetFeature.State(storyId: 0), reducer: {
+                    ProblemCheckCompleteBottomSheetFeature()
+                })
+            )
         }
 }

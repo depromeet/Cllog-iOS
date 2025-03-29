@@ -8,14 +8,15 @@
 
 import SwiftUI
 
-// FIXME: 임시 스탬프 모델
-public struct TempStamp: Identifiable {
-    public let id: Int
-    public let position: CGFloat
-    
-    public init(id: Int, position: CGFloat) {
-        self.id = id
-        self.position = position
+struct Stamp: Identifiable {
+    let id: Double
+    let time: Double
+    let xPos: CGFloat
+
+    init(time: Double, xPos: CGFloat) {
+        self.id = time
+        self.time = time
+        self.xPos = xPos
     }
 }
 
@@ -25,17 +26,24 @@ public struct PlayerProgressBar: View {
         static let stampYOffset: CGFloat = -3
     }
     
+    private let width: CGFloat
     private let progress: CGFloat
-    private let stamps: [TempStamp]
-    private let onStampTapped: ((Int) -> Void)?
+    private let stamps: [Stamp]
+    private let onStampTapped: ((Double) -> Void)?
     
     public init(
+        width: CGFloat = UIScreen.main.bounds.width,
+        duration: Double,
         progress: CGFloat,
-        stamps: [TempStamp] = [],
-        onStampTapped: ((Int) -> Void)? = nil
+        stampTimeList: [Double] = [],
+        onStampTapped: ((Double) -> Void)?
     ) {
+        self.width = width
         self.progress = progress.isNaN ? 0 : progress
-        self.stamps = stamps
+        self.stamps = stampTimeList.map {
+            let xPos = $0 / duration * width
+            return Stamp(time: $0, xPos: xPos)
+        }
         self.onStampTapped = onStampTapped
     }
     
@@ -43,10 +51,13 @@ public struct PlayerProgressBar: View {
         Color.clear
             .frame(height: 15)
             .overlay {
-                ForEach(stamps) {
+                ForEach(stamps) { stamp in
                     Image.clLogUI.stamp
                         .foregroundStyle(Color.clLogUI.primary)
-                        .position(x: $0.position + Constnats.stampHalfWidth, y: Constnats.stampYOffset)
+                        .position(x: stamp.xPos - Constnats.stampHalfWidth, y: Constnats.stampYOffset)
+                        .onTapGesture {
+                            onStampTapped?(stamp.time)
+                        }
                 }
             }
     }
@@ -68,10 +79,7 @@ public struct PlayerProgressBar: View {
                         Rectangle()
                             .fill(Color.clLogUI.gray900)
                             .frame(width: 1)
-                            .position(x: stamp.position + Constnats.stampHalfWidth, y: geometry.size.height / 2)
-                            .onTapGesture {
-                                onStampTapped?(stamp.id)
-                            }
+                            .position(x: stamp.xPos - Constnats.stampHalfWidth, y: geometry.size.height / 2)
                     }
                 }
             }
