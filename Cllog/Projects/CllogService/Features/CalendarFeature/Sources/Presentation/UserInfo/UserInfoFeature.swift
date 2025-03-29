@@ -63,7 +63,7 @@ public struct UserInfoFeature {
                 return .none
             case let .updateStoryInfo(summary):
                 state.id = summary.id
-                state.cragName = summary.cragName ?? ""
+                state.cragName = summary.cragName ?? "암장 정보 미등록"
                 state.totalDurationMs = summary.totalDurationMs
                 state.totalAttemptsCount = summary.totalAttemptsCount
                 state.totalSuccessCount = summary.totalSuccessCount
