@@ -47,7 +47,12 @@ public struct VideoUploadUsesCase {
 
 extension VideoUploadUsesCase: VideoUseCase {
     public func execute(saveFile fileURL: URL) async throws -> String {
-        try await videoRepository.saveVideo(fileURL: fileURL)
+        do {
+            return try await videoRepository.saveVideo(fileURL: fileURL)
+        } catch {
+            print("비디오 업로드 에러:\(error)")
+            throw VideoError.unknown
+        }
     }
     
     public func execute(loadName: String) async throws -> URL {

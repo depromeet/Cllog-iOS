@@ -488,12 +488,13 @@ extension RecordedFeature {
             
             let thumbNailImage = try await generateImage(path: state.path, totalDuration: state.totalDuration)
             
-            let thumbNail = try await videoUseCase.execute(
+            let thumbNail = try? await videoUseCase.execute(
                 name: state.fileName,
-                fileName: state.fileName,
+                fileName: "\(state.fileName).png",
                 mimeType: "image/png",
                 value: thumbNailImage
             )
+            
             let assetId = try await videoUseCase.execute(saveFile: state.path)
             
             let request = AttemptRequest(
@@ -501,7 +502,7 @@ extension RecordedFeature {
                 problemId: story.problemId,
                 video: VideoRequest(
                     localPath: assetId,
-                    thumbnailUrl: thumbNail.fileUrl,
+                    thumbnailUrl: thumbNail?.fileUrl ?? "",
                     durationMs: state.totalDuration,
                     stamps: [
                         StampRequest(timeMs: 0) // 타임 스탬프
@@ -524,9 +525,9 @@ extension RecordedFeature {
         return .run { send in
             let thumbNailImage = try await generateImage(path: state.path, totalDuration: state.totalDuration)
             
-            let thumbNail = try await videoUseCase.execute(
+            let thumbNail = try? await videoUseCase.execute(
                 name: state.fileName,
-                fileName: state.fileName,
+                fileName: "\(state.fileName).png",
                 mimeType: "image/png",
                 value: thumbNailImage
             )
@@ -541,7 +542,7 @@ extension RecordedFeature {
                     problemId: nil,
                     video: VideoRequest(
                         localPath: assetId,
-                        thumbnailUrl: thumbNail.fileUrl,
+                        thumbnailUrl: thumbNail?.fileUrl ?? "",
                         durationMs: state.totalDuration,
                         stamps: [
                             StampRequest(timeMs: 0) // 타임 스탬프
@@ -565,13 +566,16 @@ extension RecordedFeature {
     private func generateImage(path: URL, totalDuration: Int) async throws -> Data {
         let generator = AVAssetImageGenerator(asset: AVAsset(url: path))
         generator.appliesPreferredTrackTransform = true
-        let cmTime = CMTime(seconds: Double(totalDuration / 2), preferredTimescale: 600)
-        let thumbnail = try await generator.image(at: cmTime)
-        guard let resizeImage = UIImage(cgImage: thumbnail.image).resizedPNGData() else {
+        let cmTime = CMTime(seconds: Double((totalDuration / 1_000) / 2), preferredTimescale: 600)
+        do {
+            let thumbnail = try await generator.image(at: cmTime)
+            guard let resizeImage = UIImage(cgImage: thumbnail.image).resizedPNGData() else {
+                throw VideoError.unknown
+            }
+            return resizeImage
+        } catch {
             throw VideoError.unknown
         }
-        
-        return resizeImage
     }
 }
 
