@@ -40,7 +40,7 @@ public struct RecordedFeature {
         
         var image: UIImage?
         
-        var climbingResult: ClimbingResult?
+        var climbingResult: AttemptStatus = .success
         
         var selectedDesignCrag: DesignCrag?
         
@@ -54,11 +54,6 @@ public struct RecordedFeature {
         
         // loading
         var isLoading: Bool = false
-        
-        public enum ClimbingResult: Sendable {
-            case success
-            case failture
-        }
         
         public init(fileName: String, path: URL) {
             self.fileName = fileName
@@ -416,7 +411,7 @@ extension RecordedFeature {
                     cragId: nil, // 암장 ID
                     problem: ProblemRequest(gradeId: 0), // 난이도 ID
                     attempt: AttemptRequest(
-                        status: "SUCCESS",
+                        status: state.climbingResult,
                         problemId: nil,
                         video: VideoRequest(
                             localPath: assetId,
