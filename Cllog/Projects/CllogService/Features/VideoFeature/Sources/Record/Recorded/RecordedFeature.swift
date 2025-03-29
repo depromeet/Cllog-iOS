@@ -361,6 +361,7 @@ extension RecordedFeature {
             
         case .cragSaveButtonTapped(let designCrag):
             // 암장 선택 바텀시트 - 저장버튼 클릭
+            VideoDataManager.cragId = designCrag.id
             state.showSelectCragBottomSheet = false
             
             state.selectedDesignCrag = designCrag
