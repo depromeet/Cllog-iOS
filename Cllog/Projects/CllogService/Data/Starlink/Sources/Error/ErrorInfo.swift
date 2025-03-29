@@ -33,6 +33,9 @@ public struct ErrorInfo: Equatable {
     }
 }
 
-public struct ErrorMessage: Decodable, Hashable, Sendable {
+public struct ErrorMessage: Codable, Hashable, Sendable {
+    public let code: String?
     public let message: String?
+    public let detail: String?
+    public let name: String?
 }

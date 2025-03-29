@@ -21,7 +21,7 @@ public struct DefaultSaveStoryRepository: SaveStoryRepository {
             cragId: request.cragId,
             problem: ProblemRequestDTO(gradeId: request.problem.gradeId),
             attempt: AttemptRequestDTO(
-                status: request.attempt.status,
+                status: request.attempt.status.rawValue,
                 problemId: request.attempt.problemId,
                 video: VideoRequestDTO(
                     localPath: request.attempt.video.localPath,
