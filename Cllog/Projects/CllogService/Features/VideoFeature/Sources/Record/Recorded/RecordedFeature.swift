@@ -405,7 +405,7 @@ extension RecordedFeature {
                 let assetId = try await videoUseCase.execute(saveFile: state.path)
                 
                 let request = StoryRequest(
-                    cragId: nil, // 암장 ID
+                    cragId: VideoDataManager.cragId, // 암장 ID
                     problem: ProblemRequest(gradeId: designGrade?.id), // 난이도 ID
                     attempt: AttemptRequest(
                         status: "SUCCESS",
