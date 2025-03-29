@@ -18,6 +18,14 @@ extension Starlink {
 
         let errorInfo = starlinkError.errorInfo
 
+        if starlinkError.errorInfo?.code == "401" {
+            NotificationCenter.default.post(
+                name: .didKickOut,
+                object: nil,
+                userInfo: nil
+            )
+        }
+
         switch errorInfo?.message?.code {
         case "C4010":
             if let errorInfoMessage = errorInfo?.message {
@@ -33,6 +41,18 @@ extension Starlink {
         }
 
         return starlinkError
+    }
+    private static func status401Handler(starlinkError: StarlinkError) async {
+
+        guard starlinkError.errorInfo?.code == "401" else {
+            let errorInfoMessage = starlinkError.errorInfo?.message
+            NotificationCenter.default.post(
+                name: .didKickOut,
+                object: nil,
+                userInfo: ["ErrorInfoMessage": errorInfoMessage]
+            )
+            return
+        }
     }
 }
 
