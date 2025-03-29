@@ -61,6 +61,7 @@ struct SelectGradeView: View {
     
     @State private var selectedGrade: DesignGrade?
     @State private var selectedUnSaveGrade: Bool = false
+    @State private var isEnableSave = false
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -73,13 +74,20 @@ struct SelectGradeView: View {
         .padding(.vertical, 12)
         .background(Color.clLogUI.gray800)
         .onChange(of: selectedGrade) { _, newValue in
-            if selectedUnSaveGrade, newValue != nil {
-                selectedUnSaveGrade = false
+            if newValue != nil {
+                isEnableSave = true
+                
+                if selectedUnSaveGrade {
+                    selectedUnSaveGrade = false
+                }
             }
         }
         .onChange(of: selectedUnSaveGrade) { _, newValue in
             if newValue, selectedGrade != nil {
                 selectedGrade = nil
+                isEnableSave = true
+            } else if !newValue, selectedGrade == nil {
+                isEnableSave = false
             }
         }
     }
@@ -133,6 +141,7 @@ struct SelectGradeView: View {
             didTapSaveButton(selectedGrade)
         }
         .style(.white)
+        .disabled(!isEnableSave)
     }
 }
 
