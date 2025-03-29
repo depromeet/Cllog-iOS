@@ -70,6 +70,9 @@ public struct VideoFeature {
         // 다음 문제
         case nextProblemTapped
         
+        // 다음 문제 백그라운드 뷰 선택
+        case backgroundViewTapped
+        
         case selectNextGrade(grade: DesignGrade?)
         
         // 난이도 정보 조회
@@ -166,6 +169,9 @@ private extension VideoFeature {
             
         case .nextProblemTapped:
             state.showSelectGradeView = true
+            return .none
+        case .backgroundViewTapped:
+            state.showSelectGradeView = false
             return .none
             
         case .fetchedGrade(let grades):

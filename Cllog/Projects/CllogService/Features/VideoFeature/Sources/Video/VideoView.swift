@@ -72,6 +72,9 @@ private extension VideoView {
         ZStack {
             ClLogUI.dim.opacity(0.5)
                 .edgesIgnoringSafeArea(.all)
+                .onTapGesture {
+                    store.send(.backgroundViewTapped)
+                }
             
             VStack(spacing: 18) {
                 Text("다음 문제 난이도를 선택해주세요")
