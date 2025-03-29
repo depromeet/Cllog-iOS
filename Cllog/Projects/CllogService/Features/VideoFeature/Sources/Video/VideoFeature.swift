@@ -114,7 +114,6 @@ private extension VideoFeature {
         case .binding(_):
             return .none
         case .onAppear:
-            print("on appear video feature")
             state.count = VideoDataManager.attemptCount
             state.grade = VideoDataManager.savedGrade
             state.cragId = VideoDataManager.cragId
@@ -171,9 +170,8 @@ private extension VideoFeature {
             return .none
             
         case .nextProblemTapped:
-            
+            state.showSelectGradeView = true
             guard state.cragId != VideoDataManager.cragId else {
-                state.showSelectGradeView = true
                 return .none
             }
             
@@ -197,6 +195,16 @@ private extension VideoFeature {
             
         case .fetchedGrade(let grades):
             state.grades = grades
+            
+            if let previousGradeId = VideoDataManager.savedGrade?.id {
+                let currentGrade = grades.first(where: { $0.id == previousGradeId })
+                    .map { SavedGrade(id: $0.id, name: $0.name, hexCode: $0.hexCode) }
+                VideoDataManager.savedGrade = currentGrade
+            } else {
+                // 저장된 난이도 정보가 없는 경우 난이도 정보 없음으로 초기화
+                VideoDataManager.savedGrade = nil
+                state.selectedGrade = nil
+            }
             return .none
             
         case .selectNextGrade(let designGrade):
