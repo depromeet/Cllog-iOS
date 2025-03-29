@@ -406,7 +406,7 @@ extension RecordedFeature {
                 
                 let request = StoryRequest(
                     cragId: nil, // 암장 ID
-                    problem: ProblemRequest(gradeId: 0), // 난이도 ID
+                    problem: ProblemRequest(gradeId: designGrade?.id), // 난이도 ID
                     attempt: AttemptRequest(
                         status: "SUCCESS",
                         problemId: nil,

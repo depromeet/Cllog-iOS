@@ -28,9 +28,9 @@ public struct StoryRequest {
 }
 
 public struct ProblemRequest {
-    public let gradeId: Int
+    public let gradeId: Int?
     
-    public init(gradeId: Int) {
+    public init(gradeId: Int?) {
         self.gradeId = gradeId
     }
 }
