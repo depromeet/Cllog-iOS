@@ -21,6 +21,7 @@ public enum LoginType: String {
 
 public protocol LoginTypeFetcherUseCase {
     func fetch() -> LoginType
+    func clear() async
 }
 
 public struct LoginTypeFetcher: LoginTypeFetcherUseCase {
@@ -33,12 +34,18 @@ public struct LoginTypeFetcher: LoginTypeFetcherUseCase {
     public func fetch() -> LoginType {
         repository.fetchLoginType()
     }
+
+    public func clear() async {
+        await repository.clearToken()
+    }
 }
 
 public struct MockLoginTypeFetcher: LoginTypeFetcherUseCase {
     public func fetch() -> LoginType {
         return .kakao
     }
+
+    public func clear() async {}
 }
 
 public enum LoginTypeFetcherDependencyKey: DependencyKey {

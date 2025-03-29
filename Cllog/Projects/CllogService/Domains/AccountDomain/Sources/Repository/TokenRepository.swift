@@ -11,4 +11,5 @@ import Foundation
 public protocol TokenRepository {
     func fetchLoginType() -> LoginType
     func fetchValidateUserSession() -> Bool
+    func clearToken() async
 }

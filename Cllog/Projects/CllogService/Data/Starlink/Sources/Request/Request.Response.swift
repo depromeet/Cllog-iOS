@@ -18,8 +18,6 @@ extension Starlink.Request {
             throw StarlinkError.inValidURLPath(ErrorInfo(code: "-999", error: nil, message: nil))
         }
         
-        let urlComponents = URLComponents(string: urlConversion.absoluteString)
-        
         var urlRequest = URLRequest(url: urlConversion)
         urlRequest.httpMethod = "\(method)"
         
@@ -97,7 +95,7 @@ extension Starlink.Request: StarlinkRequest {
             let model: T = try self.validResponse(response)
             return model
         } catch {
-            throw StarlinkError(error: error)
+            throw await Starlink.sessionErrorHandler(error)
         }
         
     }
@@ -116,7 +114,10 @@ extension Starlink.Request: StarlinkRequest {
     
     public func uploadResponse<T>() async throws -> T where T : Decodable {
         guard let uploadForm = self.uploadForm else {
-            throw StarlinkError.inValidParams(.init(code: "-999", error: nil, message: .init(message: "Upload form is missing")))
+            throw StarlinkError.inValidParams(.init(
+                code: "-999",
+                error: nil,
+                message: .init(code: nil, message: "Upload form is missing", detail: nil, name: nil)))
         }
         
         guard let urlConversion = try? path.asURL() else {
@@ -182,11 +183,11 @@ extension StarlinkRequest {
     func alamofileValidReponse<T: Decodable>(_ response: HTTPURLResponse?, data: Data?) throws -> T {
         // 200 응답 체크
         guard let response = response, (200 ..< 300).contains(response.statusCode) else {
-            throw StarlinkError.inValidStatusCode(.init(code: "", error: nil, message: .init(message: "message")))
+            throw StarlinkError.inValidStatusCode(.init(code: "", error: nil, message: .init(code: nil, message: "Upload form is missing", detail: nil, name: nil)))
         }
         
         guard let data = data else {
-            throw StarlinkError.nullPointData(.init(code: "", error: nil, message: .init(message: "message")))
+            throw StarlinkError.nullPointData(.init(code: "", error: nil, message: .init(code: nil, message: "Upload form is missing", detail: nil, name: nil)))
         }
         
         do {
@@ -194,7 +195,7 @@ extension StarlinkRequest {
             return model
             
         } catch {
-            throw StarlinkError.inValidJSONData(.init(code: "", error: nil, message: .init(message: "message")))
+            throw StarlinkError.inValidJSONData(.init(code: "", error: nil, message: .init(code: nil, message: "Upload form is missing", detail: nil, name: nil)))
         }
     }
     
@@ -229,7 +230,11 @@ extension StarlinkRequest {
                 message = errorMessage
             }
         }
-        return ErrorInfo(code: "\((response.response as? HTTPURLResponse)?.statusCode ?? -999)", error: response.error, message: message)
+        return ErrorInfo(
+            code: "\((response.response as? HTTPURLResponse)?.statusCode ?? -999)",
+            error: response.error,
+            message: message
+        )
     }
 }
 
