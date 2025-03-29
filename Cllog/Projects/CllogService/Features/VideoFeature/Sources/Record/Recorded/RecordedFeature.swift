@@ -512,7 +512,7 @@ extension RecordedFeature {
             let thumbNailImage = try await generateImage(path: state.path, totalDuration: Int(state.totalDuration))
             
             let thumbNail = try? await videoUseCase.execute(
-                name: state.fileName,
+                name: "file",
                 fileName: "\(state.fileName).png",
                 mimeType: "image/png",
                 value: thumbNailImage

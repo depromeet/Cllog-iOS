@@ -145,11 +145,19 @@ extension Starlink.Request: StarlinkRequest {
         for interceptor in self.interceptors {
             urlRequest = try await interceptor.adapt(&urlRequest)
         }
-        
-        self.trakers.allTrackers().forEach { $0.didRequest(self, urlRequest: urlRequest) }
-        
+
+        var alamofireHeaders = urlRequest.allHTTPHeaderFields?.map { key, value in
+            HTTPHeader(name: key, value: value)
+        } ?? .init()
+
+        let headers = headers.map { header in
+            HTTPHeader(name: header.name, value: header.value)
+        }
+
+        alamofireHeaders.append(contentsOf: headers)
+
         do {
-            let (data, response) = try await self.upload(urlRequest: urlRequest, uploadForm: uploadForm)
+            let (data, response) = try await self.upload(urlRequest: urlRequest, uploadForm: uploadForm, header: alamofireHeaders)
             let model: T = try self.alamofileValidReponse(response, data: data)
             return model
         } catch {
@@ -159,7 +167,7 @@ extension Starlink.Request: StarlinkRequest {
         }
     }
     
-    private func upload(urlRequest: URLRequest, uploadForm: UploadDataForm) async throws -> (Data?, HTTPURLResponse?) {
+    private func upload(urlRequest: URLRequest, uploadForm: UploadDataForm, header: [HTTPHeader]) async throws -> (Data?, HTTPURLResponse?) {
         return try await withCheckedThrowingContinuation { continuation in
             AF.upload(multipartFormData: { multipartFormData in
                 multipartFormData.append(uploadForm.data,
@@ -177,7 +185,7 @@ extension Starlink.Request: StarlinkRequest {
             },
                       to: urlRequest.url!,
                       method: .post,
-                      headers: .init(headers.map { HTTPHeader(name: $0.name, value: $0.value) }))
+                      headers: .init(header))
             .validate()
             .response { response in
                 switch response.result {
