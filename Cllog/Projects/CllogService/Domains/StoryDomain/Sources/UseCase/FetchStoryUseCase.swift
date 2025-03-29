@@ -34,7 +34,14 @@ public struct FetchStory: FetchStoryUseCase {
 // MARK: - Mock
 public struct MockFetchStory: FetchStoryUseCase {
     public func fetchStory(_ storyId: Int) async throws -> Story {
-        return Story(id: 0, problems: [])
+        return Story(
+            id: 0,
+            totalDurationMs: 0,
+            problems: [],
+            successCount: 0,
+            failCount: 0,
+            colorHex: nil
+        )
     }
     
     public func fetchSummary(_ storyId: Int) async throws -> StorySummary {

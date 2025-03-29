@@ -39,10 +39,13 @@ public struct VideoFeature {
         var selectedGrade: DesignGrade?
         var doNotSaveGrade = false
         
+        var showProblemCheckCompleteBottomSheet = false
+        var problemCheckCompleteBottomSheetState: ProblemCheckCompleteBottomSheetFeature.State?
+        
         public init() {}
     }
     
-    public enum Action: Equatable, BindableAction {
+    public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case onAppear
         
@@ -71,6 +74,9 @@ public struct VideoFeature {
         
         // 난이도 정보 조회
         case fetchedGrade(grades: [Grade])
+        
+        case problemCheckCompleteBottomSheetAction(ProblemCheckCompleteBottomSheetFeature.Action)
+        case recordCompleted
     }
     
     public enum ViewState {
@@ -88,6 +94,9 @@ public struct VideoFeature {
         BindingReducer()
         
         Reduce(videoCore)
+            .ifLet(\.problemCheckCompleteBottomSheetState, action: \.problemCheckCompleteBottomSheetAction) {
+                ProblemCheckCompleteBottomSheetFeature()
+            }
     }
 }
 
@@ -147,7 +156,9 @@ private extension VideoFeature {
             return .none
             
         case .endedStoryTapped:
-            VideoDataManager.clear()
+            guard let storyId = VideoDataManager.savedStory?.storyId else { return .none }
+            state.showProblemCheckCompleteBottomSheet = true
+            state.problemCheckCompleteBottomSheetState = .init(storyId: storyId)
             return .none
             
         case .folderTapped:
@@ -178,6 +189,26 @@ private extension VideoFeature {
             }
             state.selectedGrade = designGrade
             state.doNotSaveGrade = false
+            return .none
+            
+        case .problemCheckCompleteBottomSheetAction(let action):
+            return problemCheckCompleteBottomSheetCore(&state, action)
+        case .recordCompleted:
+            return .none
+        }
+    }
+    
+    func problemCheckCompleteBottomSheetCore(
+        _ state: inout State,
+        _ action: ProblemCheckCompleteBottomSheetFeature.Action
+    ) -> Effect<Action> {
+        switch action {
+        case .finishTapped:
+            VideoDataManager.clear()
+            state.showProblemCheckCompleteBottomSheet = false
+            state.count = 0
+            return .send(.recordCompleted)
+        default:
             return .none
         }
     }

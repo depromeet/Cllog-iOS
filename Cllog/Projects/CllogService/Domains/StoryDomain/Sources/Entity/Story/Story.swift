@@ -10,13 +10,25 @@ import Foundation
 
 public struct Story: Equatable {
     public let id: Int
+    public let totalDurationMs: Int
     public let problems: [StoryProblem]
+    public let successCount: Int
+    public let failCount: Int
+    public let colorHex: String?
     
     public init(
         id: Int,
-        problems: [StoryProblem]
+        totalDurationMs: Int,
+        problems: [StoryProblem],
+        successCount: Int,
+        failCount: Int,
+        colorHex: String?
     ) {
         self.id = id
+        self.totalDurationMs = totalDurationMs
         self.problems = problems
+        self.successCount = successCount
+        self.failCount = failCount
+        self.colorHex = colorHex
     }
 }
