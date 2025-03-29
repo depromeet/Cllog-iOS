@@ -12,7 +12,7 @@ import AVFoundation
 public protocol RecordedPlayerable: AnyObject {
     func pause()
     func play()
-    func seek(to time: CMTime) async -> Bool
+    func seek(to time: CMTime, toleranceBefore: CMTime, toleranceAfter: CMTime) async -> Bool
     func addPeriodicTimeObserver(forInterval interval: CMTime, queue: dispatch_queue_t?, using block: @escaping @Sendable (CMTime) -> Void) -> Any
     var currentItem: AVPlayerItem? { get }
 }
@@ -21,7 +21,7 @@ public final class RecordedPlayViewModel: NSObject, ObservableObject {
     
     private let sessionQueue = DispatchQueue(label: "RecordedPlay.Session.Queue")
     private weak var player: RecordedPlayerable?
-    let videoURL: URL
+    var videoURL: URL
     
     // MARK: - Observer Properties
     private var addPeriodicTimeObserver: Any?
@@ -78,7 +78,11 @@ public final class RecordedPlayViewModel: NSObject, ObservableObject {
         }
     }
     
+    public func updateVideoUrl(videoURL: URL) {
+        self.videoURL = videoURL
+    }
+    
     public func seek(_ time: CMTime) async -> Bool {
-        return await player?.seek(to: time) ?? false
+        return await player?.seek(to: time,  toleranceBefore: .zero, toleranceAfter: .zero) ?? false
     }
 }
