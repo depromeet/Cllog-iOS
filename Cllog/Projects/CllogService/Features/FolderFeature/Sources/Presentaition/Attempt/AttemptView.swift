@@ -11,7 +11,6 @@ import FolderDomain
 import DesignKit
 import Shared
 import Core
-import _AVKit_SwiftUI
 
 import ComposableArchitecture
 
@@ -19,8 +18,11 @@ public struct AttemptView: ViewProtocol {
     @Bindable private var store: StoreOf<AttemptFeature>
     
     // TODO: Feature로 이동
-    @State var progressValue: Float = 0.5
+    @State private var isPlaying = false
+    @State private var isLoading = true
+    @State private var progressValue: Double = 0.0
     @State var splitXPositions: [CGFloat] = []
+    
     public var body: some View {
         makeBodyView()
             .background(Color.clLogUI.gray800)
@@ -205,19 +207,12 @@ extension AttemptView {
                 .foregroundStyle(Color.clLogUI.dim)
             
             if let videoPath = store.videoURL {
-                VideoPlayer(player: AVPlayer(url: videoPath))
-                    .clipShape(
-                        RoundedRectangle(cornerRadius: 6)
-                    )
+                VideoPlayerView(videoPath: videoPath, isPlaying: $isPlaying, currentProgress: $progressValue)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
                     .onTapGesture {
-                        
-                        print("재생 또는 정지")
+                        isPlaying.toggle()
                     }
             }
-
-//                .onTapGesture {
-//                    print("재생 또는 정지")
-//                }
             
             PlayerProgressBar(
                 progress: CGFloat(progressValue),
@@ -227,12 +222,12 @@ extension AttemptView {
                 }
             )
         }
+        .cornerRadius(6, corners: [.bottomLeft, .bottomRight])
     }
     
     private func makeAttemptInfoView(_ attempt: ReadAttempt) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("TEST")
-//            Text(attempt.date) // TODO: 서버 작업 후 추가
                 .font(.h1)
                 .foregroundStyle(Color.clLogUI.white)
             
