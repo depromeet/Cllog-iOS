@@ -207,11 +207,16 @@ extension AttemptView {
                 .foregroundStyle(Color.clLogUI.dim)
             
             if let videoPath = store.videoURL {
-                VideoPlayerView(videoPath: videoPath, isPlaying: $isPlaying, currentProgress: $progressValue)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-                    .onTapGesture {
-                        isPlaying.toggle()
-                    }
+                VideoPlayerView(
+                    videoPath: videoPath,
+                    isPlaying: $isPlaying,
+                    currentProgress: $progressValue,
+                    seekTime: $store.seekTime
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .onTapGesture {
+                    isPlaying.toggle()
+                }
             }
             
             PlayerProgressBar(

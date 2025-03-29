@@ -39,6 +39,7 @@ public struct AttemptFeature {
         var videoURL: URL?
         let editActions = AttemptEditAction.allCases
         
+        var seekTime: Int?
         var selectedAction: AttemptEditAction?
         var stampPositions = [CGFloat]()
         
@@ -148,7 +149,8 @@ public struct AttemptFeature {
             case .videoTapped:
                 return .none
             case .stampTapped(let id):
-                // TODO: Seek to video
+                let stamp = state.attempt?.attempt.video.stamps.first(where: { $0.id == id })
+                state.seekTime = stamp?.timeMs
                 return .none
             case .loadMoreCrags:
                 return fetchMoreNearByCrags()

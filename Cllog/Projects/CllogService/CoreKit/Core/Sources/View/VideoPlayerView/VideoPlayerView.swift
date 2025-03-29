@@ -14,15 +14,18 @@ public struct VideoPlayerView: UIViewRepresentable {
     private let player: AVPlayer
     @Binding private var playbackState: Bool
     @Binding private var playbackProgress: Double
+    @Binding var seekTime: Int?
     
     public init(
         videoPath: URL,
         isPlaying: Binding<Bool>,
-        currentProgress: Binding<Double>
+        currentProgress: Binding<Double>,
+        seekTime: Binding<Int?>
     ) {
         self.player = AVPlayer(url: videoPath)
         self._playbackState = isPlaying
         self._playbackProgress = currentProgress
+        self._seekTime = seekTime
     }
     
     public func makeUIView(context: Context) -> UIView {
@@ -44,6 +47,11 @@ public struct VideoPlayerView: UIViewRepresentable {
             if container.player.timeControlStatus != .paused {
                 container.player.pause()
             }
+        }
+        
+        if let timeMs = seekTime {
+            container.seekTo(timeMs: timeMs)
+            self.seekTime = nil
         }
     }
 }
@@ -109,10 +117,16 @@ final class VideoPlayerContainer: UIView {
     }
     
     @objc private func videoDidEnd() {
-       player.seek(to: .zero)
+        player.seek(to: .zero)
         player.pause()
         playbackProgress = 0
         playbackState = false
+    }
+    
+    func seekTo(timeMs: Int) {
+        let timeInSeconds = Double(timeMs) / 1000.0
+        let time = CMTime(seconds: timeInSeconds, preferredTimescale: 600)
+        player.seek(to: time)
     }
     
     deinit {
