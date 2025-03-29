@@ -125,6 +125,7 @@ extension Starlink.Request: StarlinkRequest {
         }
         
         var urlRequest = URLRequest(url: urlConversion)
+        urlRequest.timeoutInterval = 300
         urlRequest.httpMethod = "POST"
 
         for interceptor in self.interceptors {
@@ -137,9 +138,13 @@ extension Starlink.Request: StarlinkRequest {
         
         let boundary = UUID().uuidString
         urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-
+        
+        for interceptor in self.interceptors {
+            urlRequest = try await interceptor.adapt(&urlRequest)
+        }
+        
         self.trakers.allTrackers().forEach { $0.didRequest(self, urlRequest: urlRequest) }
-
+        
         do {
             let (data, response) = try await self.upload(urlRequest: urlRequest, uploadForm: uploadForm)
             let model: T = try self.alamofileValidReponse(response, data: data)

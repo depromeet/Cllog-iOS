@@ -37,6 +37,7 @@ public final class Starlink: @unchecked Sendable {
     ) {
         self.session = session
         self.interceptors = interceptors
+        self.trackers.append([StarlinkLogTraking()])
     }
     
     /// 네트워크 중간에 tracking을 하기 위해서 추가
