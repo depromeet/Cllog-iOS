@@ -85,6 +85,7 @@ public struct AttemptFeature {
         
         case onSplitPositionsCalculated(positions: [CGFloat])
         case getAttempt(attempt: ReadAttempt)
+        case getAssetURL(url: URL)
         case getNearByCrags(_ crags: [Crag])
         case getMoreNearByCrags(_ crags: [Crag])
         case getCragGrades(_ grades: [Grade])
@@ -157,9 +158,11 @@ public struct AttemptFeature {
                 return .none
             case .getAttempt(let attempt):
                 state.attempt = attempt
-                state.videoURL = URL(fileURLWithPath: attempt.attempt.video.localPath)
                 state.selectedEditGrade = attempt.grade
                 state.selectedEditCrag = attempt.crag
+                return .none
+            case .getAssetURL(let url):
+                state.videoURL = url
                 return .none
                 
             // MARK: Bottom Sheet
@@ -285,6 +288,10 @@ extension AttemptFeature {
             do {
                 let attempt = try await attemptUseCase.execute(attemptId: attemptId)
                 await send(.getAttempt(attempt: attempt))
+                
+                if let url = await MediaUtility.getURL(fromAssetID: attempt.attempt.video.localPath) {
+                    await send(.getAssetURL(url: url))
+                }
             } catch {
                 // TODO: show error message
                 debugPrint(error.localizedDescription)

@@ -19,6 +19,7 @@ public struct AttemptView: ViewProtocol {
     
     // TODO: Feature로 이동
     @State private var isPlaying = false
+    @State private var isLoading = true
     @State private var progressValue: Double = 0.0
     @State var splitXPositions: [CGFloat] = []
     
@@ -205,14 +206,12 @@ extension AttemptView {
             RoundedRectangle(cornerRadius: 6)
                 .foregroundStyle(Color.clLogUI.dim)
             
-            VideoPlayerView(
-                assetID: attempt.attempt.video.localPath,
-                isPlaying: $isPlaying,
-                currentProgress: $progressValue
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-            .onTapGesture {
-                isPlaying.toggle()
+            if let videoPath = store.videoURL {
+                VideoPlayerView(videoPath: videoPath, isPlaying: $isPlaying, currentProgress: $progressValue)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .onTapGesture {
+                        isPlaying.toggle()
+                    }
             }
             
             PlayerProgressBar(
