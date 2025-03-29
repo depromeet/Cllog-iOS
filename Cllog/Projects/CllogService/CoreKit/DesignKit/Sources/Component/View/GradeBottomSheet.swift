@@ -61,6 +61,7 @@ struct SelectGradeView: View {
     
     @State private var selectedGrade: DesignGrade?
     @State private var selectedUnSaveGrade: Bool = false
+    @State private var isEnableSave = false
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -73,13 +74,20 @@ struct SelectGradeView: View {
         .padding(.vertical, 12)
         .background(Color.clLogUI.gray800)
         .onChange(of: selectedGrade) { _, newValue in
-            if selectedUnSaveGrade, newValue != nil {
-                selectedUnSaveGrade = false
+            if newValue != nil {
+                isEnableSave = true
+                
+                if selectedUnSaveGrade {
+                    selectedUnSaveGrade = false
+                }
             }
         }
         .onChange(of: selectedUnSaveGrade) { _, newValue in
             if newValue, selectedGrade != nil {
                 selectedGrade = nil
+                isEnableSave = true
+            } else if !newValue, selectedGrade == nil {
+                isEnableSave = false
             }
         }
     }
@@ -115,31 +123,8 @@ struct SelectGradeView: View {
                 .padding(.top, 16)
                 .padding(.bottom, 10)
             
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 36, maximum: 36), spacing: 28)], spacing: 18) {
-                ForEach(grades, id: \.self) { grade in
-                    gradeGradeChip(for: grade)
-                }
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 16)
-            .background(Color.clLogUI.gray900)
-            .cornerRadius(12)
+            GridGradeView(grades: grades, selectedGrade: $selectedGrade)
         }
-    }
-    
-    private func gradeGradeChip(for grade: DesignGrade) -> some View {
-        Circle()
-            .foregroundStyle(grade.color)
-            .overlay(
-                Circle()
-                    .strokeBorder(
-                        selectedGrade == grade ? Color.clLogUI.white : Color.clear,
-                        lineWidth: 3
-                    )
-            )
-            .onTapGesture {
-                selectedGrade = grade
-            }
     }
     
     private var checkboxSection: some View {
@@ -156,6 +141,7 @@ struct SelectGradeView: View {
             didTapSaveButton(selectedGrade)
         }
         .style(.white)
+        .disabled(!isEnableSave)
     }
 }
 
