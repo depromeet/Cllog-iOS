@@ -485,6 +485,12 @@ extension RecordedFeature {
     private func registerAttempts(_ state: State) -> Effect<Action> {
         return .run { send in
             guard let story = VideoDataManager.savedStory else { return }
+            let thumbNail = try await videoUseCase.execute(
+                name: state.fileName,
+                fileName: state.fileName,
+                mimeType: "image/png",
+                value: Data()
+            )
             let assetId = try await videoUseCase.execute(saveFile: state.path)
             
             let request = AttemptRequest(
@@ -492,7 +498,7 @@ extension RecordedFeature {
                 problemId: story.problemId,
                 video: VideoRequest(
                     localPath: assetId,
-                    thumbnailUrl: "",
+                    thumbnailUrl: thumbNail.fileUrl,
                     durationMs: state.totalDuration,
                     stamps: [
                         StampRequest(timeMs: 0) // 타임 스탬프
@@ -513,6 +519,13 @@ extension RecordedFeature {
     /// 최초 스토리 저장
     private func registerStory(_ state: State) -> Effect<Action> {
         return .run { send in
+            let thumbNail = try await videoUseCase.execute(
+                name: state.fileName,
+                fileName: state.fileName,
+                mimeType: "image/png",
+                value: Data()
+            )
+            
             let assetId = try await videoUseCase.execute(saveFile: state.path)
             
             let request = StoryRequest(
@@ -523,7 +536,7 @@ extension RecordedFeature {
                     problemId: nil,
                     video: VideoRequest(
                         localPath: assetId,
-                        thumbnailUrl: "",
+                        thumbnailUrl: thumbNail.fileUrl,
                         durationMs: state.totalDuration,
                         stamps: [
                             StampRequest(timeMs: 0) // 타임 스탬프
