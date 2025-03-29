@@ -37,6 +37,7 @@ public struct VideoFeature {
         
         var grades: [Grade] = []
         var selectedGrade: DesignGrade?
+        var doNotSaveGrade = false
         
         public init() {}
     }
@@ -65,6 +66,8 @@ public struct VideoFeature {
         
         // 다음 문제
         case nextProblemTapped
+        
+        case selectNextGrade(grade: DesignGrade?)
         
         // 난이도 정보 조회
         case fetchedGrade(grades: [Grade])
@@ -156,6 +159,25 @@ private extension VideoFeature {
             
         case .fetchedGrade(let grades):
             state.grades = grades
+            return .none
+            
+        case .selectNextGrade(let designGrade):
+            state.showSelectGradeView = false
+            let grade = state.grades.first(where: { $0.id == designGrade?.id })
+            if let grade {
+                let savedGrade = SavedGrade(
+                    id: grade.id,
+                    name: grade.name,
+                    hexCode: grade.hexCode
+                )
+                state.grade = savedGrade
+                VideoDataManager.savedGrade = savedGrade
+            } else {
+                state.grade = nil
+                VideoDataManager.savedGrade = nil
+            }
+            state.selectedGrade = designGrade
+            state.doNotSaveGrade = false
             return .none
         }
     }
