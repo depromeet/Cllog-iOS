@@ -320,8 +320,8 @@ extension AttemptView {
             } else {
                 
                 switch store.selectedAction {
-                case .video:
-                    Text("Video")
+//                case .video:
+//                    Text("Video")
                 case .result:
                     makeEditResultBottomSheet()
                 case .info:
@@ -338,8 +338,8 @@ extension AttemptView {
     private func makeEditActionDetailView(for action: AttemptFeature.AttemptEditAction) -> some View {
         VStack {
             switch action {
-            case .video:
-                Text("Video")
+//            case .video:
+//                Text("Video")
             case .result:
                 makeEditResultBottomSheet()
             case .info:
