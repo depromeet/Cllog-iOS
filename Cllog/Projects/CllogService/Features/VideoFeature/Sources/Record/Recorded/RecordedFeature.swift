@@ -485,11 +485,14 @@ extension RecordedFeature {
     private func registerAttempts(_ state: State) -> Effect<Action> {
         return .run { send in
             guard let story = VideoDataManager.savedStory else { return }
+            
+            let thumbNailImage = try await generateImage(path: state.path, totalDuration: state.totalDuration)
+            
             let thumbNail = try await videoUseCase.execute(
                 name: state.fileName,
                 fileName: state.fileName,
                 mimeType: "image/png",
-                value: Data()
+                value: thumbNailImage
             )
             let assetId = try await videoUseCase.execute(saveFile: state.path)
             
@@ -519,11 +522,13 @@ extension RecordedFeature {
     /// 최초 스토리 저장
     private func registerStory(_ state: State) -> Effect<Action> {
         return .run { send in
+            let thumbNailImage = try await generateImage(path: state.path, totalDuration: state.totalDuration)
+            
             let thumbNail = try await videoUseCase.execute(
                 name: state.fileName,
                 fileName: state.fileName,
                 mimeType: "image/png",
-                value: Data()
+                value: thumbNailImage
             )
             
             let assetId = try await videoUseCase.execute(saveFile: state.path)
@@ -555,6 +560,18 @@ extension RecordedFeature {
                 await send(.saveFailure(error))
             }
         }
+    }
+    
+    private func generateImage(path: URL, totalDuration: Int) async throws -> Data {
+        let generator = AVAssetImageGenerator(asset: AVAsset(url: path))
+        generator.appliesPreferredTrackTransform = true
+        let cmTime = CMTime(seconds: Double(totalDuration / 2), preferredTimescale: 600)
+        let thumbnail = try await generator.image(at: cmTime)
+        guard let resizeImage = UIImage(cgImage: thumbnail.image).resizedPNGData() else {
+            throw VideoError.unknown
+        }
+        
+        return resizeImage
     }
 }
 
