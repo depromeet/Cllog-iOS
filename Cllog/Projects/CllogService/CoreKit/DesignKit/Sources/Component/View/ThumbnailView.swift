@@ -14,7 +14,7 @@ public enum ThumbnailType {
 }
 
 public struct ThumbnailView: View {
-    private let imageURLString: String
+    private let imageURLString: String?
     private let thumbnailType: ThumbnailType
     private let challengeResult: ChallengeResult
     private let levelName: String?
@@ -23,7 +23,7 @@ public struct ThumbnailView: View {
     private let deleteButtonHandler: (() -> Void)?
     
     public init(
-        imageURLString: String,
+        imageURLString: String?,
         thumbnailType: ThumbnailType,
         challengeResult: ChallengeResult,
         levelName: String? = nil,
@@ -52,20 +52,24 @@ public struct ThumbnailView: View {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color.clLogUI.gray600)
                         
-                        AsyncImage(url: URL(string: imageURLString)) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image.resizable()
-                                    .scaledToFit()
-                            case .failure:
-                                Image.clLogUI.alert
-                                    .resizable()
-                                    .frame(width: 60, height: 60)
-                                    .foregroundStyle(Color.clLogUI.gray500)
-                            default:
-                                Image(systemName: "photo")
-                                    .foregroundColor(.clLogUI.gray600)
+                        if let imageURLString {
+                            AsyncImage(url: URL(string: imageURLString)) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image.resizable()
+                                        .scaledToFit()
+                                case .failure:
+                                    Image.clLogUI.alert
+                                        .resizable()
+                                        .frame(width: 60, height: 60)
+                                        .foregroundStyle(Color.clLogUI.gray500)
+                                default:
+                                    Image(systemName: "photo")
+                                        .foregroundColor(.clLogUI.gray600)
+                                }
                             }
+                        } else {
+                            ClLogUI.basicThumbnail
                         }
                     }
                     .aspectRatio(1, contentMode: .fit)

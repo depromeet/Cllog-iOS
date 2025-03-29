@@ -505,7 +505,7 @@ extension RecordedFeature {
                 problemId: story.problemId,
                 video: VideoRequest(
                     localPath: assetId,
-                    thumbnailUrl: "",
+                    thumbnailUrl: nil, // TODO: 썸내일 url 추가
                     durationMs: state.totalDuration,
                     stamps: [
                         StampRequest(timeMs: 0) // 타임 스탬프
