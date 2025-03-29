@@ -16,5 +16,5 @@ public struct StoryRequestDTO: Encodable {
 }
 
 public struct ProblemRequestDTO: Encodable {
-    public let gradeId: Int
+    public let gradeId: Int?
 }

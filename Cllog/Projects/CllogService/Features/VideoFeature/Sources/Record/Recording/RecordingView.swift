@@ -51,7 +51,9 @@ public struct RecordingView: View {
         VStack(spacing: .zero) {
             ZStack {
                 HStack {
-                    LevelChip(name: "파랑", color: .blue)
+                    if let grade = store.grade {
+                        LevelChip(name: grade.name, color: .init(hex: grade.hexCode))
+                    }
                     Spacer()
                 }
                 

@@ -45,7 +45,7 @@ public struct RecordedFeature {
         
         var selectedDesignCrag: DesignCrag?
         
-        var designGrades: [DesignGrade] = []
+        var grades: [Grade] = []
         
         // bottomSheet
         var showSelectCragBottomSheet = false
@@ -382,6 +382,7 @@ extension RecordedFeature {
             
         case .cragSaveButtonTapped(let designCrag):
             // 암장 선택 바텀시트 - 저장버튼 클릭
+            VideoDataManager.cragId = designCrag.id
             state.showSelectCragBottomSheet = false
             
             state.selectedDesignCrag = designCrag
@@ -409,9 +410,7 @@ extension RecordedFeature {
             return .none
         case .gradeBottomSheetShow(let grades):
             // 암장 등급을 보여주기 위해서 호출되는 값
-            state.designGrades = grades.map {
-                DesignGrade(id: $0.id, name: $0.name, color: .init(hex: $0.hexCode))
-            }
+            state.grades = grades
             state.showSelectCragDifficultyBottomSheet = true
             return .none
             
@@ -422,6 +421,7 @@ extension RecordedFeature {
         case .gradeSaveButtonTapped(let designGrade):
             // 암장 등급 바텀시트에서 등급을 저장하기 버튼을 누르면 오는 이벤트
             print("최종 저장 시간 : \(state.totalDuration)")
+            saveSelectedGrade(grades: state.grades, selectedGrade: designGrade)
             state.isLoading = true
             state.showSelectCragDifficultyBottomSheet = false
             
@@ -481,6 +481,19 @@ extension RecordedFeature {
         }
     }
     
+    private func saveSelectedGrade(grades: [Grade], selectedGrade: DesignGrade?) {
+        let grade = grades.first(where: { $0.id == selectedGrade?.id })
+        if let grade {
+            VideoDataManager.savedGrade = SavedGrade(
+                id: grade.id,
+                name: grade.name,
+                hexCode: grade.hexCode
+            )
+        } else {
+            VideoDataManager.savedGrade = nil
+        }
+    }
+    
     /// 시도 저장
     private func registerAttempts(_ state: State) -> Effect<Action> {
         return .run { send in
@@ -514,10 +527,10 @@ extension RecordedFeature {
     private func registerStory(_ state: State) -> Effect<Action> {
         return .run { send in
             let assetId = try await videoUseCase.execute(saveFile: state.path)
-            
+            let grade = VideoDataManager.savedGrade
             let request = StoryRequest(
                 cragId: state.selectedDesignCrag?.id,
-                problem: ProblemRequest(gradeId: 0), // 난이도 ID
+                problem: ProblemRequest(gradeId: grade?.id), // 난이도 ID
                 attempt: AttemptRequest(
                     status: state.climbingResult,
                     problemId: nil,

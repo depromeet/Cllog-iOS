@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import VideoDomain
 
 import ComposableArchitecture
 
@@ -21,6 +22,10 @@ public struct RecordingFeature {
         var elapsedTime: TimeInterval = 0
         var fileName: String = ""
         let viewModel: RecordingPlayViewModel = .init()
+        
+        // 저장된 난이도 정보 확인
+        var grade: SavedGrade?
+        
         // 저장된 스토리가 있는지 확인
         var count: Int = 0
     }
@@ -65,6 +70,7 @@ extension RecordingFeature {
         switch action {
         case .onAppear:
             state.count = VideoDataManager.attemptCount
+            state.grade = VideoDataManager.savedGrade
             return .run { send in
                 await send(.onStartSession)
                 await send(.onStartRecording)

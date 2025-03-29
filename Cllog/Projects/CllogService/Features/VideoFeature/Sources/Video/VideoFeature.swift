@@ -10,12 +10,14 @@ import Shared
 
 import ComposableArchitecture
 import VideoDomain
+import DesignKit
 
 @Reducer
 public struct VideoFeature {
     
     @Dependency(\.logConsole) var log
     @Dependency(\.videoPermission) var permissionUseCase
+    @Dependency(\.gradeUseCase) var gradeUseCase
     
     @ObservableState
     public struct State: Equatable {
@@ -25,8 +27,18 @@ public struct VideoFeature {
         // 카메라를 컨드롤하는 Model
         var cameraModel: VideoPreviewViewModel = .init()
         
+        // 저장된 난이도가 있는지 확인
+        var grade: SavedGrade?
+        
         // 저장된 스토리가 있는지 확인
         var count: Int = 0
+        
+        var showSelectGradeView = false
+        
+        var grades: [Grade] = []
+        var selectedGrade: DesignGrade?
+        var doNotSaveGrade = false
+        
         public init() {}
     }
     
@@ -54,6 +66,11 @@ public struct VideoFeature {
         
         // 다음 문제
         case nextProblemTapped
+        
+        case selectNextGrade(grade: DesignGrade?)
+        
+        // 난이도 정보 조회
+        case fetchedGrade(grades: [Grade])
     }
     
     public enum ViewState {
@@ -85,11 +102,19 @@ private extension VideoFeature {
             return .none
         case .onAppear:
             state.count = VideoDataManager.attemptCount
+            state.grade = VideoDataManager.savedGrade
             
             return .run { [permissionUseCase] send in
                 do {
                     try await permissionUseCase.execute()
                     await send(.updateViewState(.video))
+                    
+                    // 저장된 암장 Id 있는 경우 난이도 업데이트
+                    if let cragId = VideoDataManager.cragId {
+                        // TODO: 오류처리
+                        let grades = try? await gradeUseCase.getCragGrades(cragId: cragId)
+                        await send(.fetchedGrade(grades: grades ?? []))
+                    }
                 } catch {
                     await send(.updateViewState(.noneVideoPermission))
                 }
@@ -129,6 +154,30 @@ private extension VideoFeature {
             return .none
             
         case .nextProblemTapped:
+            state.showSelectGradeView = true
+            return .none
+            
+        case .fetchedGrade(let grades):
+            state.grades = grades
+            return .none
+            
+        case .selectNextGrade(let designGrade):
+            state.showSelectGradeView = false
+            let grade = state.grades.first(where: { $0.id == designGrade?.id })
+            if let grade {
+                let savedGrade = SavedGrade(
+                    id: grade.id,
+                    name: grade.name,
+                    hexCode: grade.hexCode
+                )
+                state.grade = savedGrade
+                VideoDataManager.savedGrade = savedGrade
+            } else {
+                state.grade = nil
+                VideoDataManager.savedGrade = nil
+            }
+            state.selectedGrade = designGrade
+            state.doNotSaveGrade = false
             return .none
         }
     }

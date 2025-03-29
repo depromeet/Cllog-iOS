@@ -30,6 +30,13 @@ public struct VideoView: View {
             .onAppear {
                 store.send(.onAppear)
             }
+            .overlay(
+                Group {
+                    if store.state.showSelectGradeView {
+                        selectGradeView
+                    }
+                }
+            )
     }
 }
 
@@ -51,6 +58,47 @@ private extension VideoView {
                 }
         }
     }
+    
+    private var selectGradeView: some View {
+        ZStack {
+            ClLogUI.dim.opacity(0.5)
+                .edgesIgnoringSafeArea(.all)
+            
+            VStack(spacing: 18) {
+                Text("다음 문제 난이도를 선택해주세요")
+                    .font(.h3)
+                    .foregroundStyle(ClLogUI.gray10)
+                    .frame(maxWidth: .infinity)
+                
+                GridGradeView(
+                    grades: store.grades.map {
+                        DesignGrade(id: $0.id, name: $0.name, color: .init(hex: $0.hexCode))
+                    },
+                    selectedGrade: $store.selectedGrade
+                )
+                
+                CheckBoxButton(
+                    title: "난이도 미등록",
+                    isActive: $store.doNotSaveGrade
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .onChange(of: store.selectedGrade) { _, newValue in
+                store.send(.selectNextGrade(grade: newValue))
+            }
+            .onChange(of: store.doNotSaveGrade) { _, newValue in
+                store.send(.selectNextGrade(grade: nil))
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 16)
+            .background(ClLogUI.gray900)
+            .cornerRadius(12)
+            .shadow(radius: 10)
+            .padding(.bottom, 150)
+            .frame(maxHeight: .infinity, alignment: .bottom)
+            .padding(.horizontal, 16)
+        }
+    }
 }
 
 private extension VideoView {
@@ -69,7 +117,10 @@ private extension VideoView {
                 
                 if store.count > 0 {
                     HStack(alignment: .center) {
-                        LevelChip(name: "파랑", color: .blue)
+                        
+                        if let grade = store.grade {
+                            LevelChip(name: grade.name, color: .init(hex: grade.hexCode))
+                        }
                         
                         Spacer()
                         
