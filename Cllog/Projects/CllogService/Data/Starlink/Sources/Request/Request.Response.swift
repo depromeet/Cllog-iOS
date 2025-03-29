@@ -9,6 +9,9 @@ import Foundation
 import Combine
 
 import Alamofire
+import Pulse
+import PulseProxy
+import PulseUI
 
 extension Starlink.Request {
     
@@ -256,3 +259,9 @@ extension Data {
         }
     }
 }
+public enum PulseManager {
+    public static func onPulse() {
+        URLSessionProxyDelegate.enableAutomaticRegistration()
+    }
+}
+
