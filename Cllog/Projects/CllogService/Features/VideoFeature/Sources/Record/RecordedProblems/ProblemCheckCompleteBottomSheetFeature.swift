@@ -21,7 +21,12 @@ public struct ProblemCheckCompleteBottomSheetFeature {
     @ObservableState
     public struct State: Equatable {
         let storyId: Int
-        var story: Story = .init(id: -999, totalDurationMs: 0, problems: [], successCount: 0, failCount: 0, colorHex: nil)
+        var story: Story = .init(
+            id: -999,
+            totalDurationMs: 0,
+            problems: [],
+            colorHex: nil
+        )
         
         public init(storyId: Int) {
             self.storyId = storyId

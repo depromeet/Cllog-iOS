@@ -13,8 +13,6 @@ public struct StoryResponseDTO: Decodable {
     let id: Int
     let totalDurationMs: Int
     let problems: [StoryProblemResponseDTO]
-    let successCount: Int
-    let failCount: Int
     let colorHex: String?
     
     func toDomain() -> Story {
@@ -22,8 +20,6 @@ public struct StoryResponseDTO: Decodable {
             id: id,
             totalDurationMs: totalDurationMs,
             problems: problems.map { $0.toDomain() },
-            successCount: successCount,
-            failCount: failCount,
             colorHex: colorHex
         )
     }

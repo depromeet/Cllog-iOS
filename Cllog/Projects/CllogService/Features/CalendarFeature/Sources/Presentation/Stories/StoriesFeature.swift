@@ -19,8 +19,6 @@ public struct StoriesFeature {
             id: 0,
             totalDurationMs: 0,
             problems: [],
-            successCount: 0,
-            failCount: 0,
             colorHex: nil
         )
     }
