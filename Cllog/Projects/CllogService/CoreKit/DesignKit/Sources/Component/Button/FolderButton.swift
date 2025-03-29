@@ -43,7 +43,7 @@ public struct FolderButton: View {
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
                         .background(Color.clLogUI.primary)
-                        .clipShape(RoundedRectangle(cornerRadius: 99))
+                        .clipShape(Circle())
                 }
                 
             }
