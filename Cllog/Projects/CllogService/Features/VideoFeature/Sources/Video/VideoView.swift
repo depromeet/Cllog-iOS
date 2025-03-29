@@ -69,7 +69,10 @@ private extension VideoView {
                 
                 if store.count > 0 {
                     HStack(alignment: .center) {
-                        LevelChip(name: "파랑", color: .blue)
+                        
+                        if let grade = store.grade {
+                            LevelChip(name: grade.name, color: .init(hex: grade.hexCode))
+                        }
                         
                         Spacer()
                         

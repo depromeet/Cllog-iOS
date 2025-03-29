@@ -25,6 +25,9 @@ public struct VideoFeature {
         // 카메라를 컨드롤하는 Model
         var cameraModel: VideoPreviewViewModel = .init()
         
+        // 저장된 난이도가 있는지 확인
+        var grade: SavedGrade?
+        
         // 저장된 스토리가 있는지 확인
         var count: Int = 0
         public init() {}
@@ -85,6 +88,7 @@ private extension VideoFeature {
             return .none
         case .onAppear:
             state.count = VideoDataManager.attemptCount
+            state.grade = VideoDataManager.savedGrade
             
             return .run { [permissionUseCase] send in
                 do {

@@ -8,10 +8,10 @@
 
 import Foundation
 
-public struct SavedGrade: Codable {
-    let id: Int
-    let name: String
-    let hexCode: String
+public struct SavedGrade: Codable, Identifiable, Equatable {
+    public let id: Int
+    public let name: String
+    public let hexCode: String
     
     public init(id: Int, name: String, hexCode: String) {
         self.id = id
