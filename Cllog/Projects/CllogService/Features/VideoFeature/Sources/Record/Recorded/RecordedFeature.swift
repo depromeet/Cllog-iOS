@@ -403,6 +403,22 @@ extension RecordedFeature {
             print("최종 저장 시간 : \(state.totalDuration)")
             // TODO: 최종 저장 버튼
             return .run { [state] send in
+
+                let generator = AVAssetImageGenerator(asset: AVAsset(url: state.path))
+                generator.appliesPreferredTrackTransform = true
+                let cmTime = CMTime(seconds: 0, preferredTimescale: 600)
+                let thumbnail = try await generator.image(at: cmTime)
+                guard let resizeImage = UIImage(cgImage: thumbnail.image).resizedPNGData() else {
+                    throw NSError(domain: "", code: -999, userInfo: nil)
+                }
+
+                // 이미지 네이밍이랑 파일명은 아무렇게나 보내도 되는거같음,
+                let thumbnailPaht = try await videoUseCase.execute(
+                    name: "MyImages",
+                    fileName: "MyImages.png",
+                    mimeType: "image/png",
+                    value: resizeImage)
+
                 let assetId = try await videoUseCase.execute(saveFile: state.path)
                 
                 let request = StoryRequest(
@@ -413,7 +429,7 @@ extension RecordedFeature {
                         problemId: nil,
                         video: VideoRequest(
                             localPath: assetId,
-                            thumbnailUrl: "",
+                            thumbnailUrl: thumbnailPaht.fileUrl,
                             durationMs: state.totalDuration,
                             stamps: [
                                 StampRequest(timeMs: 0) // 타임 스탬프
