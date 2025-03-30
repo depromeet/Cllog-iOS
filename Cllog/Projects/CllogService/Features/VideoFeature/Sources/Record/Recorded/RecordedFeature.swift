@@ -271,11 +271,12 @@ extension RecordedFeature {
             state.alert = AlertState {
                 TextState("기록 저장 취소")
             } actions: {
-                ButtonState(action: .cancel) {
-                    TextState("계속 편집")
-                }
                 ButtonState(action: .confirm) {
                     TextState("저장 안함")
+                }
+                
+                ButtonState(action: .cancel) {
+                    TextState("계속 편집")
                 }
             } message: {
                 TextState("이 페이지를 나가면 촬영하신 영상이 저장되지 않아요")
