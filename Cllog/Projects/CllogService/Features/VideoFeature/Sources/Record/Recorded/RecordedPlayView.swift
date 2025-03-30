@@ -8,19 +8,22 @@
 
 import UIKit
 import AVFoundation
+import Combine
 
 extension AVPlayer: RecordedPlayerable {}
 
 public class RecordedPlayView: UIView {
     private let viewModel: RecordedPlayViewModel
-    private let player: AVPlayer
+    private var player: AVPlayer
     
     private let sessionQueue = DispatchQueue(label: "RecordingPlay.Session.Queue")
+    private var bag = Set<AnyCancellable>()
     
     init(frame: CGRect = .zero, viewModel: RecordedPlayViewModel) {
         self.viewModel = viewModel
-        self.player = AVPlayer(url: viewModel.videoURL)
+        self.player = AVPlayer(url: viewModel.videoURL.value)
         super.init(frame: frame)
+        bind()
         self.viewModel.configurePlayer(with: player)
         setupPlayer()
     }
@@ -43,6 +46,17 @@ public class RecordedPlayView: UIView {
             playerLayer.player = player
             playerLayer.videoGravity = .resizeAspectFill
         }
+    }
+    
+    private func bind() {
+        viewModel.videoURL
+            .removeDuplicates()
+            .sink { [weak self] url in
+                guard let self else { return }
+                self.player.replaceCurrentItem(with: AVPlayerItem(url: url))
+                self.player.seek(to: .zero, toleranceBefore: .zero, toleranceAfter: .zero)
+            }
+            .store(in: &bag)
     }
 }
 

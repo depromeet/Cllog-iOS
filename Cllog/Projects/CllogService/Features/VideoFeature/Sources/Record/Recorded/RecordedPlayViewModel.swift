@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 import AVFoundation
 
 public protocol RecordedPlayerable: AnyObject {
@@ -21,7 +22,7 @@ public final class RecordedPlayViewModel: NSObject, ObservableObject {
     
     private let sessionQueue = DispatchQueue(label: "RecordedPlay.Session.Queue")
     private weak var player: RecordedPlayerable?
-    var videoURL: URL
+    var videoURL: CurrentValueSubject<URL, Never>
     
     // MARK: - Observer Properties
     private var addPeriodicTimeObserver: Any?
@@ -39,7 +40,7 @@ public final class RecordedPlayViewModel: NSObject, ObservableObject {
     }
     
     public init(videoURL: URL) {
-        self.videoURL = videoURL
+        self.videoURL = CurrentValueSubject(videoURL)
         super.init()
     }
     
@@ -55,12 +56,12 @@ public final class RecordedPlayViewModel: NSObject, ObservableObject {
     }
     
     private func configureNotification() {
-        addPeriodicTimeObserver = player?.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.01, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: .main) { [weak self, weak player] time in
+        addPeriodicTimeObserver = player?.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.03, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: .main) { [weak self, weak player] time in
             self?.playTimeStream?.yield((time, player?.currentItem?.duration ?? .zero))
         }
         
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
-                                               object: player?.currentItem,
+                                               object: nil,
                                                queue: .main) { [weak self] _ in
             self?.playEndStream?.yield(())
         }
@@ -79,7 +80,7 @@ public final class RecordedPlayViewModel: NSObject, ObservableObject {
     }
     
     public func updateVideoUrl(videoURL: URL) {
-        self.videoURL = videoURL
+        self.videoURL.send(videoURL)
     }
     
     public func seek(_ time: CMTime) async -> Bool {

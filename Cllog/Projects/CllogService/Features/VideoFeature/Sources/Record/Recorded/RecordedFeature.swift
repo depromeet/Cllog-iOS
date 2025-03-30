@@ -224,7 +224,7 @@ extension RecordedFeature {
                 for await (playTime, totalduration) in viewModel.playTimeAsyncStream {
                     await send(.timerTicked(playTime, totalduration))
                 }
-            }.cancellable(id: "PlayTime", cancelInFlight: true)
+            }
         case .startListeningEndPlay:
             // 영상 end 이벤트
             return .run { [weak viewModel = state.viewModel] send in
@@ -233,7 +233,7 @@ extension RecordedFeature {
                     _ = await viewModel.seek(.zero)
                     viewModel.play()
                 }
-            }.cancellable(id: "EndPlay", cancelInFlight: true)
+            }
             
         case .timerTicked(let playTime, let duration):
             // 영상 시간 표시 및 progress
@@ -247,9 +247,14 @@ extension RecordedFeature {
             }
             return .none
         case .updateVideo(let video):
+            state.totalDuration = 0
             state.viewModel.updateVideoUrl(videoURL: video.videoUrl)
             state.stampTimeList = video.stampTimeList
-            return .send(.play)
+            return .merge(
+                .send(.play),
+                .send(.startListeningPlayTime),
+                .send(.startListeningEndPlay)
+            )
         case .seek(let time):
             return .run { [weak viewModel = state.viewModel] _ in
                 guard let viewModel else { return }

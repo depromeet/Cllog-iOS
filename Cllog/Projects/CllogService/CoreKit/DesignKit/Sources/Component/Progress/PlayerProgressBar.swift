@@ -22,7 +22,6 @@ struct Stamp: Identifiable {
 
 public struct PlayerProgressBar: View {
     private enum Constnats {
-        static let stampHalfWidth: CGFloat = 9
         static let stampYOffset: CGFloat = -3
     }
     
@@ -41,7 +40,7 @@ public struct PlayerProgressBar: View {
         self.width = width
         self.progress = progress.isNaN ? 0 : progress
         self.stamps = stampTimeList.map {
-            let xPos = $0 / duration * width
+            let xPos = ($0 / duration) * width
             return Stamp(time: $0, xPos: xPos)
         }
         self.onStampTapped = onStampTapped
@@ -54,7 +53,7 @@ public struct PlayerProgressBar: View {
                 ForEach(stamps) { stamp in
                     Image.clLogUI.stamp
                         .foregroundStyle(Color.clLogUI.primary)
-                        .position(x: stamp.xPos - Constnats.stampHalfWidth, y: Constnats.stampYOffset)
+                        .position(x: stamp.xPos, y: Constnats.stampYOffset)
                         .onTapGesture {
                             onStampTapped?(stamp.time)
                         }
@@ -79,7 +78,7 @@ public struct PlayerProgressBar: View {
                         Rectangle()
                             .fill(Color.clLogUI.gray900)
                             .frame(width: 1)
-                            .position(x: stamp.xPos - Constnats.stampHalfWidth, y: geometry.size.height / 2)
+                            .position(x: stamp.xPos, y: geometry.size.height / 2)
                     }
                 }
             }
