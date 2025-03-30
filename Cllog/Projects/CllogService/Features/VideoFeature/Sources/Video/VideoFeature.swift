@@ -29,6 +29,7 @@ public struct VideoFeature {
         
         // 저장된 난이도가 있는지 확인
         var grade: SavedGrade?
+        var cragId: Int?
         
         // 저장된 스토리가 있는지 확인
         var count: Int = 0
@@ -69,6 +70,9 @@ public struct VideoFeature {
         
         // 다음 문제
         case nextProblemTapped
+        
+        // 다음 문제 백그라운드 뷰 선택
+        case backgroundViewTapped
         
         case selectNextGrade(grade: DesignGrade?)
         
@@ -112,6 +116,7 @@ private extension VideoFeature {
         case .onAppear:
             state.count = VideoDataManager.attemptCount
             state.grade = VideoDataManager.savedGrade
+            state.cragId = VideoDataManager.cragId
             
             return .run { [permissionUseCase] send in
                 do {
@@ -166,10 +171,40 @@ private extension VideoFeature {
             
         case .nextProblemTapped:
             state.showSelectGradeView = true
+            guard state.cragId != VideoDataManager.cragId else {
+                return .none
+            }
+            
+            guard let cragId = VideoDataManager.cragId else {
+                // 저장된 암장이 없는 경우, 난이도 선택 불가능
+                // 바로 영상 편집
+                return .none
+            }
+            return .run { send in
+                do {
+                    let grades = try await gradeUseCase.getCragGrades(cragId: cragId)
+                    await send(.fetchedGrade(grades: grades))
+                } catch {
+                    // 에러 처리
+                    await send(.fetchedGrade(grades: []))
+                }
+            }
+        case .backgroundViewTapped:
+            state.showSelectGradeView = false
             return .none
             
         case .fetchedGrade(let grades):
             state.grades = grades
+            
+            if let previousGradeId = VideoDataManager.savedGrade?.id {
+                let currentGrade = grades.first(where: { $0.id == previousGradeId })
+                    .map { SavedGrade(id: $0.id, name: $0.name, hexCode: $0.hexCode) }
+                VideoDataManager.savedGrade = currentGrade
+            } else {
+                // 저장된 난이도 정보가 없는 경우 난이도 정보 없음으로 초기화
+                VideoDataManager.savedGrade = nil
+                state.selectedGrade = nil
+            }
             return .none
             
         case .selectNextGrade(let designGrade):
