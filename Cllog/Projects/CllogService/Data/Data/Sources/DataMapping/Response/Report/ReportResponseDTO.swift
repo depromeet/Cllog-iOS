@@ -9,7 +9,7 @@
 import ReportDomain
 
 public struct ReportResponseDTO: Decodable {
-    let userName: String
+    let userName: String?
     let recentAttemptCount: Int
     let totalExerciseTime: TotalExerciseTimeResponseDTO
     let totalAttemptCount: TotalAttemptCountResponseDTO
@@ -18,7 +18,7 @@ public struct ReportResponseDTO: Decodable {
     
     func toDomain() -> Report {
         return Report(
-            userName: userName,
+            userName: userName ?? "사용자", // 기본 값 "사용자"
             recentAttemptCount: recentAttemptCount,
             totalExerciseTime: totalExerciseTime.toDomain(),
             totalAttemptCount: totalAttemptCount.toDomain(),
