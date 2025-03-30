@@ -31,7 +31,7 @@ public struct FolderView: ViewProtocol {
             .onAppear {
                 store.send(.onAppear)
             }
-            .bottomSheet(isPresented: $store.showSelectGradeBottomSheet) {
+            .bottomSheet(isPresented: $store.showSelectGradeBottomSheet, height: 276) {
                 showSelectGradeBottomSheet()
                     .padding(16)
             }
@@ -199,8 +199,9 @@ extension FolderView {
                 .font(.h3)
                 .foregroundStyle(Color.clLogUI.white)
             
-            Divider()
-                .foregroundStyle(Color.clLogUI.gray600)
+            Rectangle()
+                .fill(Color.clLogUI.gray600)
+                .frame(height: 1)
             
             LazyVGrid(columns: rows) {
                 ForEach(store.filterableAttemptInfo?.grades ?? [], id: \.self) { grade in
