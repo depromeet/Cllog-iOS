@@ -13,6 +13,8 @@ import Starlink
 public protocol UserDataSource {
     func leave(_ request: AppleWithdrawCodeRequestDTO?) async throws
     func logout() async throws
+    func me() async throws -> UserResponseDTO
+    func name(_ request: UserNameRequestDTO) async throws
 }
 
 public final class DefaultUserDataSource: UserDataSource {
@@ -33,11 +35,32 @@ public final class DefaultUserDataSource: UserDataSource {
             UserTarget.logout
         )
     }
+    
+    public func me() async throws -> UserResponseDTO {
+        let response : BaseResponseDTO<UserResponseDTO> = try await provider.request(
+            UserTarget.me
+        )
+        
+        guard let data = response.data else {
+            throw StarlinkError.inValidJSONData(nil)
+            
+        }
+        
+        return data
+    }
+    
+    public func name(_ request: UserNameRequestDTO) async throws {
+        let _ : BaseResponseDTO<EmptyResponseDTO> = try await provider.request(
+            UserTarget.name(request)
+        )
+    }
 }
 
 enum UserTarget {
     case leave(AppleWithdrawCodeRequestDTO?)
     case logout
+    case me
+    case name(UserNameRequestDTO)
 }
 
 extension UserTarget: EndpointType {
@@ -49,6 +72,8 @@ extension UserTarget: EndpointType {
         switch self {
         case .leave: "/leave"
         case .logout: "/log-out"
+        case .me: "/me"
+        case .name: "/name"
         }
     }
     
@@ -56,12 +81,14 @@ extension UserTarget: EndpointType {
         switch self {
         case .leave: .delete
         case .logout: .post
+        case .me: .get
+        case .name: .patch
         }
     }
     
     var parameters: Networker.ParameterType? {
         switch self {
-        case .logout:
+        case .logout, .me:
             return .none
         case .leave(let request):
             if let request {
@@ -69,6 +96,8 @@ extension UserTarget: EndpointType {
             } else {
                 return .none
             }
+        case .name(let request):
+            return .encodable(request)
         }
     }
     
