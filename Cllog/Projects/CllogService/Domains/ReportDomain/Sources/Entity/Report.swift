@@ -11,16 +11,16 @@ public struct Report: Equatable {
     public let recentAttemptCount: Int
     public let totalExerciseTime: TotalExerciseTime
     public let totalAttemptCount: TotalAttemptCount
-    public let mostAttemptedProblem: MostAttemptedProblem
-    public let mostVisitedCrag: MostVisitedCrag
+    public let mostAttemptedProblem: MostAttemptedProblem?
+    public let mostVisitedCrag: MostVisitedCrag?
     
     public init(
         userName: String,
         recentAttemptCount: Int,
         totalExerciseTime: TotalExerciseTime,
         totalAttemptCount: TotalAttemptCount,
-        mostAttemptedProblem: MostAttemptedProblem,
-        mostVisitedCrag: MostVisitedCrag
+        mostAttemptedProblem: MostAttemptedProblem?,
+        mostVisitedCrag: MostVisitedCrag?
     ) {
         self.userName = userName
         self.recentAttemptCount = recentAttemptCount
@@ -79,14 +79,14 @@ public struct TotalAttemptCount: Equatable {
 
 // MARK: - 가장 많이 시도한 문제
 public struct MostAttemptedProblem: Equatable {
-    public let mostAttemptedProblemCrag: String
-    public let mostAttemptedProblemGrade: String
+    public let mostAttemptedProblemCrag: String?
+    public let mostAttemptedProblemGrade: String?
     public let mostAttemptedProblemAttemptCount: Int
     public let attemptVideos: [AttemptVideo]
     
     public init(
-        mostAttemptedProblemCrag: String,
-        mostAttemptedProblemGrade: String,
+        mostAttemptedProblemCrag: String?,
+        mostAttemptedProblemGrade: String?,
         mostAttemptedProblemAttemptCount: Int,
         attemptVideos: [AttemptVideo]
     ) {

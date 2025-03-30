@@ -37,8 +37,7 @@ public struct MockFetchStory: FetchStoryUseCase {
         return Story(
             id: 0,
             totalDurationMs: 0,
-            problems: [],
-            colorHex: nil
+            problems: []
         )
     }
     

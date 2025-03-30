@@ -13,8 +13,8 @@ public struct ReportResponseDTO: Decodable {
     let recentAttemptCount: Int
     let totalExerciseTime: TotalExerciseTimeResponseDTO
     let totalAttemptCount: TotalAttemptCountResponseDTO
-    let mostAttemptedProblem: MostAttemptedProblemResponseDTO
-    let mostVisitedCrag: MostVisitedCragResponseDTO
+    let mostAttemptedProblem: MostAttemptedProblemResponseDTO?
+    let mostVisitedCrag: MostVisitedCragResponseDTO?
     
     func toDomain() -> Report {
         return Report(
@@ -22,8 +22,8 @@ public struct ReportResponseDTO: Decodable {
             recentAttemptCount: recentAttemptCount,
             totalExerciseTime: totalExerciseTime.toDomain(),
             totalAttemptCount: totalAttemptCount.toDomain(),
-            mostAttemptedProblem: mostAttemptedProblem.toDomain(),
-            mostVisitedCrag: mostVisitedCrag.toDomain()
+            mostAttemptedProblem: mostAttemptedProblem?.toDomain(),
+            mostVisitedCrag: mostVisitedCrag?.toDomain()
         )
     }
 }
@@ -56,8 +56,8 @@ public struct TotalAttemptCountResponseDTO: Decodable {
 
 // MARK: - 가장 많이 시도한 문제
 public struct MostAttemptedProblemResponseDTO: Decodable {
-    let mostAttemptedProblemCrag: String
-    let mostAttemptedProblemGrade: String
+    let mostAttemptedProblemCrag: String?
+    let mostAttemptedProblemGrade: String?
     let mostAttemptedProblemAttemptCount: Int
     let attemptVideos: [ReportAttemptVideoResponseDTO]
     

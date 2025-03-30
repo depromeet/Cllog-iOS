@@ -12,17 +12,14 @@ public struct Story: Equatable {
     public let id: Int
     public let totalDurationMs: Int
     public let problems: [StoryProblem]
-    public let colorHex: String?
     
     public init(
         id: Int,
         totalDurationMs: Int,
-        problems: [StoryProblem],
-        colorHex: String?
+        problems: [StoryProblem]
     ) {
         self.id = id
         self.totalDurationMs = totalDurationMs
         self.problems = problems
-        self.colorHex = colorHex
     }
 }

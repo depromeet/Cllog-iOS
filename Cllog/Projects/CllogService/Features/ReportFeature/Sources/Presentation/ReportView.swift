@@ -10,6 +10,7 @@ import SwiftUI
 
 import ComposableArchitecture
 import DesignKit
+import ReportDomain
 
 public struct ReportView: View {
     private let store: StoreOf<ReportFeature>
@@ -40,8 +41,12 @@ extension ReportView {
                     
                     makeWorkoutDurationView()
                     makeCompletionStatsView()
-                    makeChallengeView()
-                    makeFavoriteCragView()
+                    if let mostAttemptedProblem = store.report.mostAttemptedProblem {
+                        makeChallengeView(mostAttemptedProblem)
+                    }
+                    if let mostVisitCrag = store.report.mostVisitedCrag {
+                        makeFavoriteCragView(mostVisitCrag)
+                    }
 //                    makeSaveAndSharedButton()
                     informationText()
                         .padding(.bottom, 40)
@@ -168,7 +173,7 @@ extension ReportView {
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
-    private func makeChallengeView() -> some View {
+    private func makeChallengeView(_ mostAttemptedProblem: MostAttemptedProblem) -> some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
                 Text("\(store.report.userName)님의 가장 뿌듯했던 도전")
@@ -176,23 +181,30 @@ extension ReportView {
                     .foregroundStyle(Color.clLogUI.gray400)
                 
                 Spacer(minLength: 4)
-                
-                Text("\(store.report.mostVisitedCrag.mostVisitedCragName)에서")
-                    .font(.h3)
-                    .foregroundStyle(Color.clLogUI.gray10)
+                if let mostAttemptedProblemCrag = mostAttemptedProblem.mostAttemptedProblemCrag {
+                    Text("\(mostAttemptedProblemCrag)에서")
+                        .font(.h3)
+                        .foregroundStyle(Color.clLogUI.gray10)
+                } else {
+                    Text("최근에 도전한 암장이 없습니다.")
+                        .font(.h3)
+                        .foregroundStyle(Color.clLogUI.gray10)
+                }
                 HStack(spacing: 0) {
-                    Text("\(store.report.mostAttemptedProblem.mostAttemptedProblemGrade) ")
-                        .font(.h3)
-                        .foregroundStyle(Color.clLogUI.primary)
-                    Text("문제를 ")
-                        .font(.h3)
-                        .foregroundStyle(Color.clLogUI.gray10)
-                    Text("\(store.report.mostAttemptedProblem.mostAttemptedProblemAttemptCount)번 ")
-                        .font(.h3)
-                        .foregroundStyle(Color.clLogUI.primary)
-                    Text("도전해 완등했네요!")
-                        .font(.h3)
-                        .foregroundStyle(Color.clLogUI.gray10)
+                    if let mostAttemptedProblemGrade = mostAttemptedProblem.mostAttemptedProblemGrade {
+                        Text("\(mostAttemptedProblemGrade) ")
+                            .font(.h3)
+                            .foregroundStyle(Color.clLogUI.primary)
+                        Text("문제를 ")
+                            .font(.h3)
+                            .foregroundStyle(Color.clLogUI.gray10)
+                        Text("\(mostAttemptedProblem.mostAttemptedProblemAttemptCount)번 ")
+                            .font(.h3)
+                            .foregroundStyle(Color.clLogUI.primary)
+                        Text("도전해 완등했네요!")
+                            .font(.h3)
+                            .foregroundStyle(Color.clLogUI.gray10)
+                    }
                     Spacer()
                 }
             }
@@ -204,7 +216,7 @@ extension ReportView {
             ZStack {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(store.report.mostAttemptedProblem.attemptVideos, id: \.self) { video in
+                        ForEach(mostAttemptedProblem.attemptVideos, id: \.self) { video in
                             ThumbnailView(
                                 imageURLString: video.thumbnailUrl,
                                 thumbnailType: .calendar,
@@ -243,11 +255,11 @@ extension ReportView {
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
-    private func makeFavoriteCragView() -> some View {
+    private func makeFavoriteCragView(_ mostVisitedCrag: MostVisitedCrag) -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("\(store.report.mostVisitedCrag.mostVisitedCragVisitCount)회")
+                    Text("\(mostVisitedCrag.mostVisitedCragVisitCount)회")
                         .font(.h5)
                         .foregroundStyle(Color.clLogUI.white)
                     Text("방문한 최애 암장")
@@ -257,7 +269,7 @@ extension ReportView {
                     Spacer()
                 }
                 
-                Text("\(store.report.mostVisitedCrag.mostVisitedCragName)")
+                Text("\(mostVisitedCrag.mostVisitedCragName)")
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .font(.h1)

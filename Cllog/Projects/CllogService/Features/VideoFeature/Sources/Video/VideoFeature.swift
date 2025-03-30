@@ -39,8 +39,12 @@ public struct VideoFeature {
         var selectedGrade: DesignGrade?
         var doNotSaveGrade = false
         
+        // 폴더 및 종료 바텀시트
         var showProblemCheckCompleteBottomSheet = false
         var problemCheckCompleteBottomSheetState: ProblemCheckCompleteBottomSheetFeature.State?
+        
+        var showFolderBottomSheet = false
+        var problemCheckState: ProblemCheckFeature.State?
         
         public init() {}
     }
@@ -76,6 +80,7 @@ public struct VideoFeature {
         case fetchedGrade(grades: [Grade])
         
         case problemCheckCompleteBottomSheetAction(ProblemCheckCompleteBottomSheetFeature.Action)
+        case problemCheckAction(ProblemCheckFeature.Action)
         case recordCompleted
     }
     
@@ -96,6 +101,9 @@ public struct VideoFeature {
         Reduce(videoCore)
             .ifLet(\.problemCheckCompleteBottomSheetState, action: \.problemCheckCompleteBottomSheetAction) {
                 ProblemCheckCompleteBottomSheetFeature()
+            }
+            .ifLet(\.problemCheckState, action: \.problemCheckAction) {
+                ProblemCheckFeature()
             }
     }
 }
@@ -162,6 +170,9 @@ private extension VideoFeature {
             return .none
             
         case .folderTapped:
+            guard let storyId = VideoDataManager.savedStory?.storyId else { return .none }
+            state.showFolderBottomSheet = true
+            state.problemCheckState = .init(storyId: storyId)
             return .none
             
         case .nextProblemTapped:
@@ -195,6 +206,8 @@ private extension VideoFeature {
             return problemCheckCompleteBottomSheetCore(&state, action)
         case .recordCompleted:
             return .none
+        case .problemCheckAction(let action):
+            return problemCheckCore(&state, action)
         }
     }
     
@@ -208,6 +221,26 @@ private extension VideoFeature {
             state.showProblemCheckCompleteBottomSheet = false
             state.count = 0
             return .send(.recordCompleted)
+        default:
+            return .none
+        }
+    }
+    
+    func problemCheckCore(
+        _ state: inout State,
+        _ action: ProblemCheckFeature.Action
+    ) -> Effect<Action> {
+        switch action {
+        case .deleteSuccess:
+            VideoDataManager.attemptCount -= 1
+            state.count = VideoDataManager.attemptCount
+            
+            if state.count == 0 {
+                state.showFolderBottomSheet = false
+                VideoDataManager.clear()
+                return .send(.recordCompleted)
+            }
+            return .none
         default:
             return .none
         }
