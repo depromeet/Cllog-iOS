@@ -19,12 +19,13 @@ import ComposableArchitecture
 import FolderFeature
 import CalendarFeature
 import ReportFeature
+import DesignKit
 
 /// 구현부
 public struct MainView: View {
     
     // MARK: - Private Properties
-    private let store: StoreOf<MainFeature>
+    @Bindable private var store: StoreOf<MainFeature>
     
     @State private var selectedTab: Int = 1
     
@@ -39,6 +40,7 @@ public struct MainView: View {
     
     public var body: some View {
         bodyView
+            .toast($store.toast)
     }
 }
 

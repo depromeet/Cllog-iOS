@@ -18,6 +18,7 @@ public struct VideoFeature {
     @Dependency(\.logConsole) var log
     @Dependency(\.videoPermission) var permissionUseCase
     @Dependency(\.gradeUseCase) var gradeUseCase
+    @Dependency(\.registerProblemUseCase) var registerProblemUseCase
     
     @ObservableState
     public struct State: Equatable {
@@ -86,6 +87,8 @@ public struct VideoFeature {
         case problemCheckCompleteBottomSheetAction(ProblemCheckCompleteBottomSheetFeature.Action)
         case problemCheckAction(ProblemCheckFeature.Action)
         case recordCompleted
+        
+        case registerProblemSuccess(Int)
     }
     
     public enum ViewState {
@@ -121,6 +124,7 @@ private extension VideoFeature {
         switch action {
         case .binding(_):
             return .none
+            
         case .onAppear:
             state.count = VideoDataManager.attemptCount
             state.grade = VideoDataManager.savedGrade
@@ -235,14 +239,20 @@ private extension VideoFeature {
             }
             state.selectedGrade = designGrade
             state.doNotSaveGrade = false
-            return .none
+            return registerProblem(gradeId: grade?.id)
             
         case .problemCheckCompleteBottomSheetAction(let action):
             return problemCheckCompleteBottomSheetCore(&state, action)
+            
         case .recordCompleted:
             return .none
+            
         case .problemCheckAction(let action):
             return problemCheckCore(&state, action)
+            
+        case .registerProblemSuccess(let problemId):
+            VideoDataManager.changeProblemId(problemId)
+            return .none
         }
     }
     
@@ -278,6 +288,16 @@ private extension VideoFeature {
             return .none
         default:
             return .none
+        }
+    }
+    
+    private func registerProblem(gradeId: Int?) -> Effect<Action> {
+        .run { send in
+            guard let storyId = VideoDataManager.savedStory?.storyId else {
+                return
+            }
+            let id = try await registerProblemUseCase.execute(storyId: storyId, gradeId: gradeId)
+            await send(.registerProblemSuccess(id))
         }
     }
 }

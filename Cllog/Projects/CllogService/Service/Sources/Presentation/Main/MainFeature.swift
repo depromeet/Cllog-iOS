@@ -19,6 +19,7 @@ import ReportFeature
 
 // 외부 Module
 import ComposableArchitecture
+import DesignKit
 
 @Reducer
 public struct MainFeature {
@@ -54,6 +55,8 @@ public struct MainFeature {
         
         var pushToCalendarDetail: Int?
         
+        var toast: Toast?
+        
         var tabImages: [Image] = [
             Image.clLogUI.folder,
             Image.clLogUI.camera,
@@ -61,7 +64,9 @@ public struct MainFeature {
         ]
     }
     
-    public enum Action {
+    public enum Action: BindableAction {
+        case binding(BindingAction<State>)
+        
         // Main Tab Action
         case selectedTab(Int)
         case pushToCalendarDetailCompleted
@@ -90,6 +95,7 @@ public struct MainFeature {
     }
     
     public var body: some ReducerOf<Self> {
+        BindingReducer()
         
         Scope(state: \.vidoeTabState, action: \.videoTabAction) {
             ClLogDI.container.resolve(VideoFeature.self)!
@@ -190,6 +196,18 @@ private extension MainFeature {
             return .run { send in
                 await send(.videoTabAction(.onStartSession))
             }
+            
+        case .saveSuccess:
+            state.recordState = nil
+            state.isRecording = false
+            state.toast = Toast(message: "영상을 저장했습니다.", type: .success)
+            return .run { send in
+                await send(.videoTabAction(.onStartSession))
+            }
+            
+        case .changeLoadingState:
+            // 영상 저장 중
+            return .none
             
         case .moveEditRecord(let path, let stampTimeList):
             return .send(.routerAction(.presentToEdit(path, stampTimeList)))

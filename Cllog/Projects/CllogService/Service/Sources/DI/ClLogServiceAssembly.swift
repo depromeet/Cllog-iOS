@@ -257,5 +257,17 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
+        
+        container.register(RegisterProblemUseCase.self) { _ in
+            RegisterProblem(
+                repository: DefaultProblemRepository(
+                    dataSource: DefaultStoriesDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
     }
 }

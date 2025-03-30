@@ -32,6 +32,8 @@ public struct RecordHomeFeature {
         
         case moveEditRecord(URL, [Double])
         case recordEnd
+        case saveSuccess
+        case changeLoadingState(Bool)
     }
     
     public var body: some ReducerOf<Self> {
@@ -61,9 +63,6 @@ extension RecordHomeFeature {
             state.recordingState = .init()
             return .none
             
-        case .recordEnd:
-            return .none
-            
         case .recordingAction(let action):
             return recordingReduceCore(&state, action)
             
@@ -71,6 +70,9 @@ extension RecordHomeFeature {
             return recordedReduceCore(&state, action)
         
         case .moveEditRecord(let path, let timeStampList):
+            return .none
+            
+        default:
             return .none
         }
     }
@@ -118,8 +120,8 @@ private extension RecordHomeFeature {
                 await send(.moveEditRecord(path, timeStampList))
             }
             
-        case .saveFinished:
-            return .send(.recordEnd)
+        case .saveSuccess:
+            return .send(.saveSuccess)
             
         case .close:
             state.recordingState = nil
@@ -127,6 +129,10 @@ private extension RecordHomeFeature {
             return .run { send in
                 await send(.recordEnd)
             }
+            
+        case .changeLoadingState(let isLoading):
+            return .send(.changeLoadingState(isLoading))
+            
         default:
             return .none
         }

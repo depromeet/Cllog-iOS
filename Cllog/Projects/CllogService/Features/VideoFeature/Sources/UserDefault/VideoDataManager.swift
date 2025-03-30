@@ -25,6 +25,10 @@ struct VideoDataManager {
         return SavedStory(storyId: storyId, problemId: problemId)
     }
     
+    static func changeProblemId(_ id: Int) {
+        problemId = id
+    }
+    
     static func save(story: SavedStory) {
         storyId = story.storyId
         problemId = story.problemId
