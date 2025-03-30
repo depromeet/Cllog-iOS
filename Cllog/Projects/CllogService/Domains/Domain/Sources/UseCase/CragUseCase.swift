@@ -36,8 +36,8 @@ public struct DefaultCragUseCase: CragUseCase {
     }
     
     public func getCrags() async throws -> [Crag] {
-        let currentLongitude = 126.9774418506923
-        let currentLatitude = 37.56440029816974
+        let currentLongitude: Double? = nil
+        let currentLatitude: Double? = nil
         return try await cragRepository.getNearByCrags(longitude: currentLongitude, latitude: currentLatitude)
     }
     

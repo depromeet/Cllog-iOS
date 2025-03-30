@@ -10,14 +10,14 @@ import Foundation
 import Shared
 
 public protocol CragRepository {
-    func getNearByCrags(longitude: Double, latitude: Double) async throws -> [Crag]
+    func getNearByCrags(longitude: Double?, latitude: Double?) async throws -> [Crag]
     func getMyCrags() async throws -> [Crag]
 }
 
 // TODO: remove
 public struct MockCragRepository: CragRepository {
     public init() {}
-    public func getNearByCrags(longitude: Double, latitude: Double) async throws -> [Crag] {
+    public func getNearByCrags(longitude: Double?, latitude: Double?) async throws -> [Crag] {
         []
     }
     

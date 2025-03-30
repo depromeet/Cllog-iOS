@@ -12,7 +12,7 @@ import Networker
 
 public protocol CragDataSource {
     func myCrags(cursor: Double?) async throws -> (crags: [FolderCragResponseDTO], meta: BaseMetaResponseDTO?)
-    func nearByCrags(longitude: Double, latitude: Double, cursor: Double?) async throws -> (crags: [FolderCragResponseDTO], meta: BaseMetaResponseDTO?)
+    func nearByCrags(longitude: Double?, latitude: Double?, cursor: Double?) async throws -> (crags: [FolderCragResponseDTO], meta: BaseMetaResponseDTO?)
 }
 
 public final class DefaultCragDataSource: CragDataSource {
@@ -39,8 +39,8 @@ public final class DefaultCragDataSource: CragDataSource {
     }
     
     public func nearByCrags(
-        longitude: Double,
-        latitude: Double,
+        longitude: Double?,
+        latitude: Double?,
         cursor: Double?
     ) async throws -> (crags: [FolderCragResponseDTO], meta: BaseMetaResponseDTO?) {
         let response: CragResponseType = try await provider.request(
@@ -59,7 +59,7 @@ public final class DefaultCragDataSource: CragDataSource {
 
 enum CragTarget {
     case myCrags
-    case nearBy(longitude: Double, latitude: Double, cursor: Double?)
+    case nearBy(longitude: Double?, latitude: Double?, cursor: Double?)
 }
 
 extension CragTarget: EndpointType {
