@@ -46,7 +46,7 @@ struct PageView: View {
     
     var body: some View {
         VStack(spacing: 18) {
-            Spacer()
+            Spacer(minLength: 82)
             
             Text(type.title)
                 .font(.h1)
@@ -55,8 +55,9 @@ struct PageView: View {
             
             type.image
                 .resizable()
-                .frame(height: 592)
+                .scaledToFit()
         }
+        .frame(maxWidth: .infinity)
     }
 }
 
