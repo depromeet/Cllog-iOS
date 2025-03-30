@@ -220,7 +220,7 @@ extension ReportView {
                             ThumbnailView(
                                 imageURLString: video.thumbnailUrl,
                                 thumbnailType: .calendar,
-                                challengeResult: .fail,
+                                isChallengeResult: false,
                                 time: video.durationMs.msToTimeString
                             )
                             .frame(width: 166, height: 166)

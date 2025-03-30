@@ -17,6 +17,7 @@ public struct ThumbnailView: View {
     private let imageURLString: String?
     private let thumbnailType: ThumbnailType
     private let challengeResult: ChallengeResult
+    private let isChallengeResult: Bool
     private let levelName: String?
     private let levelColor: Color?
     private let time: String
@@ -25,7 +26,8 @@ public struct ThumbnailView: View {
     public init(
         imageURLString: String?,
         thumbnailType: ThumbnailType,
-        challengeResult: ChallengeResult,
+        challengeResult: ChallengeResult = .complete,
+        isChallengeResult: Bool = true,
         levelName: String? = nil,
         levelColor: Color? = nil,
         time: String,
@@ -34,6 +36,7 @@ public struct ThumbnailView: View {
         self.imageURLString = imageURLString // FIXME: response 확인
         self.thumbnailType = thumbnailType
         self.challengeResult = challengeResult
+        self.isChallengeResult = isChallengeResult
         self.levelName = levelName
         self.levelColor = levelColor
         self.time = time
@@ -75,10 +78,12 @@ public struct ThumbnailView: View {
                     .aspectRatio(1, contentMode: .fit)
                     
                     HStack(spacing: 5) {
-                        CompleteOrFailChip(
-                            challengeResult: challengeResult,
-                            isActive: true
-                        )
+                        if isChallengeResult {
+                            CompleteOrFailChip(
+                                challengeResult: challengeResult,
+                                isActive: true
+                            )
+                        }
                         if let levelName, let levelColor {
                             LevelChip(name: levelName, color: levelColor)
                                 .opacity(0.7)
