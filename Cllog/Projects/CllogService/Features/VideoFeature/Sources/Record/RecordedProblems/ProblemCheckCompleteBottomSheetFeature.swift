@@ -55,6 +55,9 @@ public struct ProblemCheckCompleteBottomSheetFeature {
 extension ProblemCheckCompleteBottomSheetFeature {
     func reducerCore(_ state: inout State, _ action: Action) -> Effect<Action> {
         switch action {
+        case .onAppear:
+            return fetchStory(state.storyId)
+            
         case .fetchSuccess(let response):
             state.story = response
             return .none

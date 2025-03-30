@@ -45,6 +45,9 @@ struct ProblemCheckCompleteBottomSheet: View {
             .style(.white)
             .padding(.horizontal, 16)
         }
+        .onAppear {
+            store.send(.onAppear)
+        }
     }
 }
 
