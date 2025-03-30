@@ -15,10 +15,12 @@ import ComposableArchitecture
 import LoginFeature
 import SplashFeature
 import OnboardingFeature
+import NickNameFeature
 import Shared
 
 @Reducer
 public struct RootFeature {
+    @Dependency(\.accountUseCase) private var accountUseCase
     
     @ObservableState
     public struct State: Equatable {
@@ -26,6 +28,7 @@ public struct RootFeature {
         var mainState: MainFeature.State?
         var splashState: SplashFeature.State? = .init()
         var onBoardingState: OnboardingFeature.State?
+        var nickNameState: NickNameFeature.State?
     }
     
     public enum Action {
@@ -43,6 +46,9 @@ public struct RootFeature {
         
         // Onboarding
         case onboardingAction(OnboardingFeature.Action)
+        
+        // NickName
+        case nickNameAction(NickNameFeature.Action)
     }
     
     public var body: some ReducerOf<Self> {
@@ -58,6 +64,9 @@ public struct RootFeature {
             }
             .ifLet(\.onBoardingState, action: \.onboardingAction) {
                 OnboardingFeature()
+            }
+            .ifLet(\.nickNameState, action: \.nickNameAction) {
+                NickNameFeature()
             }
     }
     
@@ -79,6 +88,8 @@ public struct RootFeature {
             
         case .loginAction(let action):
             return loginCore(&state, action)
+        case .nickNameAction(let action):
+            return nickNameCore(&state, action)
             
         case .mainAction(let action):
             return mainCore(&state, action)
@@ -87,6 +98,7 @@ public struct RootFeature {
             state.splashState = nil
             state.mainState = nil
             state.onBoardingState = nil
+            state.nickNameState = nil
             
             switch destination {
             case .login:
@@ -95,6 +107,8 @@ public struct RootFeature {
                 state.mainState = MainFeature.State()
             case .onBoarding:
                 state.onBoardingState = OnboardingFeature.State()
+            case .nickName:
+                state.nickNameState = NickNameFeature.State(viewState: .create)
             }
             
             return .none
@@ -135,13 +149,11 @@ private extension RootFeature {
     ) -> Effect<Action> {
         switch action {
         case .successLogin:
-            return .send(.changeDestination(.main))
+            return checkNickName()
         default:
             return .none
         }
     }
-    
-    
     /// 자동 로그인
     /// - Returns: 자동 로그인 결과
     func checkLoginStatus() -> Bool {
@@ -181,6 +193,40 @@ private extension RootFeature {
             return .send(.changeDestination(.login))
         default:
             return .none
+        }
+    }
+}
+
+private extension RootFeature {
+    
+    /// Nickname Action
+    /// - Parameters:
+    ///   - state: 저장소
+    ///   - action: OnBoarding Action
+    /// - Returns: Effect
+    func nickNameCore(
+        _ state: inout State,
+        _ action: (NickNameFeature.Action)
+    ) -> Effect<Action> {
+        switch action {
+        case .updateSuccess:
+            // 닉네임 설정 완료
+            return .send(.changeDestination(.main))
+        default:
+            return .none
+        }
+    }
+}
+
+extension RootFeature {
+    private func checkNickName() -> Effect<Action> {
+        .run { send in
+            let user = try await accountUseCase.fetchAccount()
+            if user.name != nil {
+                await send(.changeDestination(.main))
+            } else {
+                await send(.changeDestination(.nickName))
+            }
         }
     }
 }

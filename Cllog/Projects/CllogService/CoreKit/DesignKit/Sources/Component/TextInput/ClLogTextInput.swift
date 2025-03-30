@@ -14,6 +14,7 @@ public struct ClLogTextInput: View {
     @FocusState private var focusState: Bool
     @Binding private var isFocused: Bool
     private var configuration: TextInputConfiguration
+    @State var foregroundColor: Color = Color.clLogUI.white
     
     public init(
         placeHolder: String,
@@ -59,10 +60,12 @@ extension ClLogTextInput {
                 TextField("", text: $text)
                     .padding(.horizontal, 16)
                     .tint(configuration.state.foregroundColor)
+                    .foregroundColor(foregroundColor)
                     .focused($focusState)
             case .editor:
                 // TextEditor
                 TextEditor(text: $text)
+                    .foregroundStyle(foregroundColor)
                     .scrollContentBackground(.hidden)
                     .padding(16)
                     .tint(configuration.state.foregroundColor)
@@ -72,13 +75,16 @@ extension ClLogTextInput {
             // PlaceHolder
             if !focusState && text.isEmpty {
                 Text(placeHolder)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 16)
-                .padding(.vertical, configuration.type == .editor ? 16 : 0)
+                    .foregroundStyle(Color.clLogUI.gray400)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, configuration.type == .editor ? 16 : 0)
             }
         }
+        .onChange(of: configuration.state, { oldValue, newValue in
+            foregroundColor = newValue.foregroundColor
+        })
         .font(.b1)
-        .foregroundStyle(configuration.state.foregroundColor)
         .frame(height: configuration.type == .editor ? 128 : 48)
         .background(configuration.background.color)
         .clipShape(RoundedRectangle(cornerRadius: 12))

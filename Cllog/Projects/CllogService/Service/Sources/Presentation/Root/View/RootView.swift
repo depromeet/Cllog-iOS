@@ -14,6 +14,7 @@ import LoginFeature
 import AccountDomain
 import SplashFeature
 import OnboardingFeature
+import NickNameFeature
 
 import ComposableArchitecture
 
@@ -47,6 +48,9 @@ struct RootView: View {
             
             // 온보딩
             IfLetStore(store.scope(state: \.onBoardingState, action: \.onboardingAction), then: OnboardingView.init)
+            
+            // 닉네임
+            IfLetStore(store.scope(state: \.nickNameState, action: \.nickNameAction), then: NickNameView.init)
         }
     }
 }

@@ -10,7 +10,7 @@ import AccountDomain
 
 public struct UserResponseDTO: Decodable {
     let id: Int
-    let name: String
+    let name: String?
     
     func toDomain() -> User {
         return User(id: id, name: name)
