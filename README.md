@@ -16,7 +16,7 @@
 
 <br>
 
-<img src="https://github.com/user-attachments/assets/962db334-4e3d-4ef0-9ea4-e538b30c95ed" width=700 alt="Module" />
+<img src="https://github.com/user-attachments/assets/4086a9b4-3a6f-4410-924c-bf202cf9ba03" width=700 alt="Module" />
 
 <br>
 
