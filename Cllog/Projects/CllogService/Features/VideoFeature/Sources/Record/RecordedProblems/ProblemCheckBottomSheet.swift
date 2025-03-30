@@ -105,8 +105,7 @@ public struct ProblemCheckBottomSheet: View {
                 ) { attempt in
                     store.send(.deleteProblemTapped(attempt))
                 }
-                
-                if idx != 2 {
+                if store.problems.count != idx + 1 {
                     divider
                 }
             }
