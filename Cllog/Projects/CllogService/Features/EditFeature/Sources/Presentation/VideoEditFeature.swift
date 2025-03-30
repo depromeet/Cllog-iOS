@@ -149,9 +149,20 @@ public struct VideoEditFeature {
                 }
             case let .updateTrimStartPosition(position):
                 state.trimStartPosition = position
-                state.playheadPosition = max(state.playheadPosition, position)
                 updateStampValidity(state: &state)
-                return .none
+                
+                if position > state.playheadPosition {
+                    state.playheadPosition = position
+                    return .run { send in
+                        await avPlayerClient.pause()
+                        await send(.playerResponse(.playbackStatusChanged(isPlaying: false)))
+                        await MainActor.run {
+                            send(.updatePlayHead(newPosition: position))
+                        }
+                    }
+                } else {
+                    return .none
+                }
             case let .updateTrimEndPosition(position):
                 state.trimEndPosition = position
                 state.playheadPosition = min(state.playheadPosition, position - Constants.playHeadWidth)
@@ -171,18 +182,17 @@ public struct VideoEditFeature {
                     
                     // 플레이헤드 위치 계산 및 업데이트
                     let screenWidth = Constants.totalTrimmingWidth
-                    let newPosition = (currentTime / state.duration) * screenWidth
+                    let newPosition = (currentTime / state.duration) * screenWidth + 0.1
                     
                     // 트리밍 영역을 벗어난 경우 처리
                     if newPosition < state.trimStartPosition && state.isPlaying || newPosition > state.trimEndPosition - Constants.playHeadWidth && state.isPlaying {
                         let trimStartTime = (state.trimStartPosition / screenWidth) * state.duration
                         let trimStartPos = state.trimStartPosition
                         state.isPlaying = false
-                        
+                         
                         return .run { send in
                             await avPlayerClient.pause()
                             await send(.playerResponse(.playbackStatusChanged(isPlaying: false)))
-                            await avPlayerClient.seek(trimStartTime)
                             await MainActor.run {
                                 send(.updatePlayHead(newPosition: trimStartPos))
                             }
