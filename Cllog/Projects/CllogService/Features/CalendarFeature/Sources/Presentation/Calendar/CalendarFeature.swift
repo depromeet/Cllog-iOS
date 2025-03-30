@@ -89,7 +89,14 @@ extension CalendarFeature {
             
             for day in startDay...endDay {
                 if let date = calendar.date(bySetting: .day, value: day, of: previousMonth) {
-                    tempDays.append(CalendarDay(date: date, thumbnail: "", stories: [], isCurrentMonth: false))
+                    tempDays.append(
+                        CalendarDay(
+                            date: date,
+                            thumbnail: "",
+                            stories: [],
+                            isCurrentMonth: false
+                        )
+                    )
                 }
             }
         }
@@ -101,11 +108,14 @@ extension CalendarFeature {
                 // 서버 데이터에서 해당 날짜의 이벤트 찾기
                 let matchedEvent = calendarDay.first(where: { calendar.isDate($0.date, inSameDayAs: date) })
                 
+                let isEmptyStory = matchedEvent?.stories.isEmpty ?? true
+                
                 let calendarDay = CalendarDay(
                     date: date,
-                    thumbnail: matchedEvent?.thumbnail ?? "",
+                    thumbnail: matchedEvent?.thumbnail,
                     stories: matchedEvent?.stories ?? [],
-                    isCurrentMonth: true
+                    isCurrentMonth: true,
+                    hasItem: isEmptyStory ? false : true
                 )
                 
                 tempDays.append(calendarDay)
@@ -119,7 +129,14 @@ extension CalendarFeature {
             if let nextMonth = calendar.date(byAdding: .month, value: 1, to: firstDayOfMonth) {
                 for day in nextMonthStart..<(7 - remainder + 1) {
                     if let date = calendar.date(bySetting: .day, value: day, of: nextMonth) {
-                        tempDays.append(CalendarDay(date: date, thumbnail: "", stories: [], isCurrentMonth: false))
+                        tempDays.append(
+                            CalendarDay(
+                                date: date,
+                                thumbnail: "",
+                                stories: [],
+                                isCurrentMonth: false
+                            )
+                        )
                     }
                 }
             }

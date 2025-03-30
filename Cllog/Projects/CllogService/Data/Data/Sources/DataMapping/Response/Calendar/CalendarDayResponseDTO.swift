@@ -17,7 +17,7 @@ public struct CalendarDayResponseDTO: Decodable {
     func toDomain() -> CalendarDay {
         return CalendarDay(
             date: date.toDate(),
-            thumbnail: thumbnailUrl,
+            thumbnail: thumbnailUrl?.isEmpty ?? true ? nil : thumbnailUrl,
             stories: stories.map { $0.toDomain() }
         )
     }

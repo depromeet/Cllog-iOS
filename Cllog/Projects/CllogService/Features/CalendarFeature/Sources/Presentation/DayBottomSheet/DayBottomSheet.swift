@@ -40,7 +40,7 @@ struct DayBottomSheet: View {
             
             VStack(alignment: .leading, spacing: 16) {
                 ForEach(climbDay.groupedStories.keys.sorted(), id: \.self) { cragName in
-                    Text(cragName)
+                    Text(cragName.isEmpty ? "암장정보 미등록" : cragName)
                         .font(.b1)
                         .foregroundStyle(Color.clLogUI.white)
                     
