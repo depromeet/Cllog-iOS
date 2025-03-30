@@ -16,17 +16,20 @@ public struct CalendarStory: Hashable {
     public let id: Int
     public let totalDurationMs: Int
     public let cragName: String
+    public let thumbnailUrl: String?
     public let problems: [CalendarProblem]
     
     public init(
         id: Int,
         totalDurationMs: Int,
         cragName: String,
+        thumbnailUrl: String?,
         problems: [CalendarProblem]
     ) {
         self.id = id
         self.totalDurationMs = totalDurationMs
         self.cragName = cragName
+        self.thumbnailUrl = thumbnailUrl
         self.problems = problems
     }
 }

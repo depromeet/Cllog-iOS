@@ -29,17 +29,20 @@ public struct CalendarDay: Hashable, Identifiable {
     }
     
     public var isCurrentMonth: Bool
+    public var hasItem: Bool
     
     public init(
         date: Date,
         thumbnail: String?,
         stories: [CalendarStory],
-        isCurrentMonth: Bool = true
+        isCurrentMonth: Bool = true,
+        hasItem: Bool = false
     ) {
         self.date = date
         self.thumbnail = thumbnail
         self.stories = stories
         self.isCurrentMonth = isCurrentMonth
+        self.hasItem = hasItem
     }
 }
 

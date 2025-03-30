@@ -30,6 +30,7 @@ public struct CalendarView: ViewProtocol {
                     }
                 }
             }
+            .padding(16)
     }
 }
 

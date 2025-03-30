@@ -39,31 +39,43 @@ struct ClimbingCard: View {
 extension ClimbingCard {
     private func makeBody() -> some View {
         HStack(spacing: 12) {
-            
-            AsyncImage(url: URL(string: "n")) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .frame(width: 50, height: 50)
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                case .failure(let error):
-                    ZStack {
-                        Color.clLogUI.gray600
-                        
-                        Image.clLogUI.alert
+            if let thumbNail = climbStory.thumbnailUrl, let url = URL(string: thumbNail) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
                             .resizable()
-                            .frame(width: 24, height: 24)
-                            .foregroundStyle(Color.clLogUI.gray500)
-                    }
-                    .frame(width: 50, height: 50)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-                default:
-                    Color.clLogUI.gray900
-                        .frame(width: 50, height: 50)
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                    case .failure:
+                        ZStack {
+                            Color.clLogUI.gray600
+                            
+                            Image.clLogUI.alert
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(Color.clLogUI.gray500)
+                        }
                         .clipShape(RoundedRectangle(cornerRadius: 6))
+                    case .empty:
+                        ProgressView()
+                    default:
+                        EmptyView()
+                    }
                 }
+                .frame(width: 50, height: 50)
+            } else {
+                ZStack {
+                    Color.clLogUI.gray600
+                    
+                    Image.clLogUI.alert
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(Color.clLogUI.gray500)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .frame(width: 50, height: 50)
             }
+            
             
             VStack(alignment: .leading, spacing:4) {
                 HStack(spacing:4) {
@@ -103,6 +115,7 @@ extension ClimbingCard {
             id: 0,
             totalDurationMs: 0,
             cragName: "",
+            thumbnailUrl: nil,
             problems: []
         )
     ) { _ in

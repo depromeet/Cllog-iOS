@@ -13,6 +13,7 @@ public struct CalendarStoryResponseDTO: Decodable {
     let id: Int
     let totalDurationMs: Int
     let cragName: String?
+    let thumbnailUrl: String?
     let problems: [CalendarProblemResponseDTO]
     
     func toDomain() -> CalendarStory {
@@ -20,6 +21,7 @@ public struct CalendarStoryResponseDTO: Decodable {
             id: id,
             totalDurationMs: totalDurationMs,
             cragName: cragName ?? "",
+            thumbnailUrl: thumbnailUrl,
             problems: problems.map { $0.toDomain() }
         )
     }

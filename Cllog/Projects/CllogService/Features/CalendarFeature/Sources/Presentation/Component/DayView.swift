@@ -34,27 +34,39 @@ struct DayView: View {
                         Color.clLogUI.gray700 : .clear
                     )
                 
-                if let image = day.thumbnail {
-                    AsyncImage(url: URL(string: image)) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(43/53, contentMode: .fill)
-                                .overlay {
-                                    Color.black.opacity(0.3)
-                                }
-                        case .failure(let error):
-                            ZStack {
-                                Color.clLogUI.gray600
-                                
-                                Image.clLogUI.alert
+                // FIXME: 로직 수정 필요
+                if day.hasItem {
+                    if let url = day.thumbnail {
+                        AsyncImage(url: URL(string: url)) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
                                     .resizable()
-                                    .frame(width: 24, height: 24)
-                                    .foregroundStyle(Color.clLogUI.gray500)
+                                    .aspectRatio(43/53, contentMode: .fill)
+                                    .overlay {
+                                        Color.black.opacity(0.3)
+                                    }
+                            case .failure:
+                                ZStack {
+                                    Color.clLogUI.gray600
+                                    
+                                    Image.clLogUI.alert
+                                        .resizable()
+                                        .frame(width: 24, height: 24)
+                                        .foregroundStyle(Color.clLogUI.gray500)
+                                }
+                            default:
+                                EmptyView()
                             }
-                        default:
-                            Color.clear
+                        }
+                    } else {
+                        ZStack {
+                            Color.clLogUI.gray600
+                            
+                            Image.clLogUI.alert
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(Color.clLogUI.gray500)
                         }
                     }
                 }
