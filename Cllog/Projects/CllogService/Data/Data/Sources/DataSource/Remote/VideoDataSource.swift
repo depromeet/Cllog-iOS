@@ -12,9 +12,7 @@ import Starlink
 import Networker
 
 public protocol VideoDataSourceLogic {
-    func uploadThumbnail(name: String, fileName: String, min: String, data: Data) async throws -> VideoThumbnailUploadResponseDTO
-    
-    func videoUpload(_ request: VideoUploadRequestDTO) async throws -> VideoUploadResponseDTO
+    func uploadThumbnail(fileName: String, mimeType: String, data: Data) async throws -> VideoThumbnailUploadResponseDTO
 }
 
 public struct VideoDataSource: VideoDataSourceLogic {
@@ -28,17 +26,16 @@ public struct VideoDataSource: VideoDataSourceLogic {
     }
     
     public func uploadThumbnail(
-        name: String,
         fileName: String,
-        min: String,
+        mimeType: String,
         data: Data
     ) async throws -> VideoThumbnailUploadResponseDTO {
         
         let response: BaseResponseDTO<VideoThumbnailUploadResponseDTO> = try await videoProvider.uploadRequest(VideoEndPoint.uploadThumbnail, .init(
-            name: name,
+            name: "file",
             fileName: fileName,
             data: data,
-            mimeType: min
+            mimeType: mimeType
         ))
 
         guard let data = response.data else {
@@ -48,34 +45,16 @@ public struct VideoDataSource: VideoDataSourceLogic {
         return data
     }
     
-    /// 비디오 업로드 -
-    /// - Parameter request: 요청 파라미터
-    /// - Returns: Response
-    public func videoUpload(
-        _ request: VideoUploadRequestDTO
-    ) async throws -> VideoUploadResponseDTO {
-        let response: BaseResponseDTO<VideoUploadResponseDTO> = try await authProvider.request(VideoEndPoint.uploadVideo(request))
-        guard let data = response.data else {
-            throw StarlinkError.inValidJSONData(nil)
-        }
-        return data
-    }
-    
-    
 }
 
 public enum VideoEndPoint: EndpointType {
     case uploadThumbnail
-    case uploadVideo(VideoUploadRequestDTO)
     
     public var baseURL: String {
         return Environment.baseURL
     }
     public var path: String {
         switch self {
-        case .uploadVideo:
-            return ""
-            
         case .uploadThumbnail:
             return "/api/v1/thumbnails/upload"
         }
@@ -85,9 +64,6 @@ public enum VideoEndPoint: EndpointType {
         switch self {
         case .uploadThumbnail:
             return .post
-            
-        case .uploadVideo:
-            return .post
         }
     }
     
@@ -95,18 +71,12 @@ public enum VideoEndPoint: EndpointType {
         switch self {
         case .uploadThumbnail:
             return .encodable(EmptyModel())
-            
-        case .uploadVideo:
-            return nil
         }
     }
     public var encodable: (any Encodable)? {
         switch self {
         case .uploadThumbnail:
             return nil
-            
-        case .uploadVideo(let videoUploadRequestDTO):
-            return videoUploadRequestDTO
         }
     }
     public var headers: [Starlink.Header]? { nil }
@@ -114,9 +84,6 @@ public enum VideoEndPoint: EndpointType {
     public var encoding: StarlinkEncodable {
         switch self {
         case .uploadThumbnail:
-            return Starlink.StarlinkJSONEncoding()
-            
-        case .uploadVideo:
             return Starlink.StarlinkJSONEncoding()
         }
     }
