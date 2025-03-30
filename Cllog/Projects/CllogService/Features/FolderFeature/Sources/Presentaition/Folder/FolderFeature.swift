@@ -108,9 +108,9 @@ private extension FolderFeature {
                 
                 await send(.getFilterableInfo(filterableInfo))
                 await send(.getFilteredAttempts(attemptsResult))
-                await send(.setViewState(attemptsResult.isEmpty ? .empty : .content))
+                await send(.setViewState(.loaded))
             } catch {
-                await send(.setViewState(.empty))
+                debugPrint(error.localizedDescription)
             }
         }
     }
@@ -176,8 +176,7 @@ private extension FolderFeature {
 extension FolderFeature {
     public enum ViewState: Equatable {
         case loading
-        case empty
-        case content
+        case loaded
     }
     
     enum SelectedChip: Hashable, CaseIterable {
