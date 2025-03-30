@@ -12,6 +12,7 @@ import Starlink
 
 public protocol StoriesDataSource {
     func stories(_ storyId: Int) async throws -> StoryResponseDTO
+    func problem(_ request: RegisterProblemRequestDTO) async throws -> RegisterProblemResponseDTO
     func summary(_ storyId: Int) async throws -> StorySummaryResponseDTO
     func memo(_ request: EditMemoRequestDTO) async throws
     func delete(_ storyId: Int) async throws
@@ -75,10 +76,24 @@ public final class DefaultStoriesDataSource: StoriesDataSource {
         
         return data
     }
+    
+    public func problem(_ request: RegisterProblemRequestDTO) async throws -> RegisterProblemResponseDTO {
+        let response: BaseResponseDTO<RegisterProblemResponseDTO> = try await provider.request(
+            StoriesTarget.problem(request)
+        )
+        
+        guard let data = response.data else {
+            throw StarlinkError.inValidJSONData(nil)
+            
+        }
+        
+        return data
+    }
 }
 
 enum StoriesTarget {
     case stories(Int)
+    case problem(RegisterProblemRequestDTO)
     case summary(Int)
     case memo(EditMemoRequestDTO)
     case delete(Int)
@@ -94,6 +109,8 @@ extension StoriesTarget: EndpointType {
         switch self {
         case .stories(let storyId):
             return "/\(storyId)"
+        case .problem(let request):
+            return "/\(request.storyId)/problems"
         case .summary(let storyId):
             return "/\(storyId)/summary"
         case .memo(let request):
@@ -113,7 +130,7 @@ extension StoriesTarget: EndpointType {
             return .patch
         case .delete:
             return .delete
-        case .save:
+        case .save, .problem:
             return .post
         }
     }
@@ -126,12 +143,23 @@ extension StoriesTarget: EndpointType {
             return .encodable(request.body)
         case .save(let request):
             return .encodable(request)
+        case .problem(let request):
+            if request.body.gradeId == nil {
+                let dictionary = Starlink.SafeDictionary<String, Any>(
+                    storage: [
+                        "gradeId" : "null",
+                    ]
+                )
+                return Networker.ParameterType.dictionary(dictionary)
+            } else {
+                return .encodable(request.body)
+            }
         }
     }
     
     var encodable: Encodable? {
         switch self {
-        case .stories, .summary, .memo, .delete, .save:
+        case .stories, .summary, .memo, .delete, .save, .problem:
             return .none
         }
     }
@@ -144,7 +172,7 @@ extension StoriesTarget: EndpointType {
         switch self {
         case .stories, .summary, .delete:
             return Starlink.StarlinkURLEncoding()
-        case .memo, .save:
+        case .memo, .save, .problem:
             return Starlink.StarlinkJSONEncoding()
         }
         

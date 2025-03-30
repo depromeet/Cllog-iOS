@@ -112,7 +112,7 @@ public struct RecordedFeature {
         case gradeTapCragTitleButton
         
         // Save Story
-        case saveFinished
+        case saveSuccess
         case saveFailure(Error)
         
         case changeLoadingState(Bool)
@@ -457,7 +457,7 @@ extension RecordedFeature {
                 .send(.changeLoadingState(true))
                 )
             
-        case .saveFinished:
+        case .saveSuccess:
             state.isLoading = false
             return .none
             
@@ -553,7 +553,7 @@ extension RecordedFeature {
             do {
                 try await saveAttemptUseCase.register(request)
                 VideoDataManager.attemptCount += 1
-                await send(.saveFinished)
+                await send(.saveSuccess)
             } catch {
                 await send(.saveFailure(error))
             }
@@ -595,7 +595,7 @@ extension RecordedFeature {
                 let response = try await saveStoryUseCase.execute(request)
                 VideoDataManager.save(story: response)
                 VideoDataManager.attemptCount += 1
-                await send(.saveFinished)
+                await send(.saveSuccess)
             } catch {
                 await send(.saveFailure(error))
             }
