@@ -28,6 +28,7 @@ public extension OnboardingView {
     private func makeBody() -> some View {
         ZStack(alignment: .bottom) {
             
+            // Image
             TabView(selection: $store.selected){
                 PageView(type: .first).tag(0)
                 PageView(type: .second).tag(1)
@@ -36,6 +37,7 @@ public extension OnboardingView {
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             
             VStack {
+                // Progress
                 HStack {
                     HStack(spacing: 5) {
                         ForEach(0 ..< 3) {index in
@@ -56,6 +58,7 @@ public extension OnboardingView {
                 
                 Spacer()
                 
+                // Start Button
                 Button {
                     store.send(.startTapped)
                 } label: {
