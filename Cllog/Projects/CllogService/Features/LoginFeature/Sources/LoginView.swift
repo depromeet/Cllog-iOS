@@ -130,7 +130,7 @@ extension LoginView {
                 Text("이용약관")
                     .underline()
                     .onTapGesture {
-                        if let url = URL(string: "https://hungry-wall-289.notion.site/2edd8ad1613c407a8c6980e65efdb8a2") {
+                        if let url = URL(string: "https://crimson-reason-2f1.notion.site/1abbb5f5bdf780a1b2d9f2cda245bf48?pvs=4") {
                             UIApplication.shared.open(url)
                         }
                     }
@@ -138,7 +138,7 @@ extension LoginView {
                 Text("개인정보 처리방침")
                     .underline()
                     .onTapGesture {
-                        if let url = URL(string: "https://hungry-wall-289.notion.site/9e4258d6daf94f2da51e0e47b40b8af5") {
+                        if let url = URL(string: "https://crimson-reason-2f1.notion.site/1abbb5f5bdf780cd8e5fe4ccb702fe23?pvs=4") {
                             UIApplication.shared.open(url)
                         }
                     }
