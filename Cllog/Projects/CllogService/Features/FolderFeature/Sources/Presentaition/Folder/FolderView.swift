@@ -49,10 +49,7 @@ extension FolderView {
             case .loading:
                 makeLoadingView()
                 
-            case .empty:
-                makeEmptyView()
-                
-            case .content:
+            case .loaded:
                 makeContentView()
             }
         }
@@ -71,6 +68,37 @@ extension FolderView {
     
     }
     
+    private func makeContentView() -> some View {
+        ScrollView {
+            if store.filterableAttemptInfo != nil {
+                VStack (alignment: .leading) {
+                    makeTitleView()
+                        .padding(.horizontal, 16)
+                    
+                    ScrollView(.horizontal) {
+                        makeChipView()
+                    }
+                    .scrollIndicators(.hidden)
+                    .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            
+            if store.attempts.isEmpty {
+                VStack {
+                    Spacer()
+                    makeEmptyView()
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, minHeight: 500)
+            } else {
+                makeThumbnailView()
+            }
+        }
+        .padding(.horizontal, 16)
+        .scrollIndicators(.hidden)
+    }
+    
     private func makeEmptyView() -> some View {
         VStack(spacing: 20) {
             ClLogUI.videoNone
@@ -84,27 +112,7 @@ extension FolderView {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    
-    private func makeContentView() -> some View {
-        ScrollView {
-            VStack (alignment: .leading) {
-                makeTitleView()
-                    .padding(.horizontal, 16)
-                
-                ScrollView(.horizontal) {
-                    makeChipView()
-                }
-                .scrollIndicators(.hidden)
-                .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
-            makeThumbnailView()
-                .padding(.horizontal, 16)
-        }
-        .scrollIndicators(.hidden)
-    }
-    
+
     private func makeTitleView() -> some View {
         HStack(spacing: 7) {
             Text("나의 클라이밍 기록")
