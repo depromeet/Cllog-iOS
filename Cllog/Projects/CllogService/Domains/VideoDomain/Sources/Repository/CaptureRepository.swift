@@ -18,11 +18,8 @@ public protocol VideoRepository: Sendable {
     
     /// 영상을 업로드 하는 인터페이스
     func uploadVideoThumbnail(
-        name: String,
         fileName: String,
-        min: String,
+        mimeType: String,
         value: Data
     ) async throws -> Videothumbnails
-    
-    func uploadVideo() async throws
 }

@@ -70,21 +70,12 @@ public struct VideoRecordRepository: VideoRepository {
         }
     }
     
-    public func uploadVideo() async throws {
-        
-    }
-    
-    public func uploadVideo(fileURL: URL) async throws {
-//        let model: Emtpy = try await provider.request(VideoTarget())
-    }
-    
     public func uploadVideoThumbnail(
-        name: String,
         fileName: String,
-        min: String,
+        mimeType: String,
         value: Data
     ) async throws -> Videothumbnails {
-        return try await dataSource.uploadThumbnail(name: name, fileName: fileName, min: min, data: value).toDomain()
+        return try await dataSource.uploadThumbnail(fileName: fileName, mimeType: mimeType, data: value).toDomain()
     }
     
     private func saveVideoToPhotoLibrary(from fileURL: URL) async throws -> String {
