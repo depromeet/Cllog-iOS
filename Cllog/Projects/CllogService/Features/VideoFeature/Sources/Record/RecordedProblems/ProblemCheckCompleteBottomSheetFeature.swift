@@ -24,8 +24,7 @@ public struct ProblemCheckCompleteBottomSheetFeature {
         var story: Story = .init(
             id: -999,
             totalDurationMs: 0,
-            problems: [],
-            colorHex: nil
+            problems: []
         )
         
         public init(storyId: Int) {

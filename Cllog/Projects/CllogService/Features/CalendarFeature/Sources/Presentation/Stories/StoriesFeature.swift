@@ -18,8 +18,7 @@ public struct StoriesFeature {
         var story: Story = Story(
             id: 0,
             totalDurationMs: 0,
-            problems: [],
-            colorHex: nil
+            problems: []
         )
     }
     

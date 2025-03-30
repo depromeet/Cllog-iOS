@@ -46,6 +46,15 @@ public struct VideoView: View {
                     then: ProblemCheckCompleteBottomSheet.init
                 )
             }
+            .bottomSheet(isPresented: $store.showFolderBottomSheet, height: 355) {
+                IfLetStore(
+                    store.scope(
+                        state: \.problemCheckState,
+                        action: \.problemCheckAction
+                    ),
+                    then: ProblemCheckBottomSheet.init
+                )
+            }
     }
 }
 

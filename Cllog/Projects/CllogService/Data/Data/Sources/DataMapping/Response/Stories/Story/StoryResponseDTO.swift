@@ -19,8 +19,7 @@ public struct StoryResponseDTO: Decodable {
         return Story(
             id: id,
             totalDurationMs: totalDurationMs,
-            problems: problems.map { $0.toDomain() },
-            colorHex: colorHex
+            problems: problems.map { $0.toDomain() }
         )
     }
 }

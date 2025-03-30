@@ -14,16 +14,19 @@ public struct StoryProblem: Hashable, Equatable {
     public let attempts: [StoryAttempt]
     public let successCount: Int
     public let failCount: Int
+    public let colorHex: String?
     
     public init(
         id: Int,
         attempts: [StoryAttempt],
         successCount: Int,
-        failCount: Int
+        failCount: Int,
+        colorHex: String?
     ) {
         self.id = id
         self.attempts = attempts
         self.successCount = successCount
         self.failCount = failCount
+        self.colorHex = colorHex
     }
 }
