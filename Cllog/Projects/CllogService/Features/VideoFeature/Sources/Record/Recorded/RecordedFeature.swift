@@ -115,6 +115,8 @@ public struct RecordedFeature {
         case saveFinished
         case saveFailure(Error)
         
+        case changeLoadingState(Bool)
+        
         @CasePathable
         public enum Dialog: Equatable {
             case confirm
@@ -198,6 +200,10 @@ extension RecordedFeature {
             
         case .loadMoreCrags:
             return fetchMoreNearByCrags()
+            
+        case .changeLoadingState(let isLoading):
+            state.isLoading = isLoading
+            return .none
             
         default:
             return .none
@@ -322,10 +328,11 @@ extension RecordedFeature {
                 }
             } else {
                 // 이후 시도
-                state.isLoading = true
+                guard !state.isLoading else { return . none }
                 return .merge(
                     .send(.pause),
-                    registerAttempts(state)
+                    registerAttempts(state),
+                    .send(.changeLoadingState(true))
                 )
             }
             
@@ -340,10 +347,11 @@ extension RecordedFeature {
                 }
             } else {
                 // 이후 시도
-                state.isLoading = true
+                guard !state.isLoading else { return . none }
                 return .merge(
                     .send(.pause),
-                    registerAttempts(state)
+                    registerAttempts(state),
+                    .send(.changeLoadingState(true))
                 )
             }
             
@@ -437,12 +445,17 @@ extension RecordedFeature {
             return .none
             
         case .gradeSaveButtonTapped(let designGrade):
+            // 로딩 중 연속 터치 방지
+            guard !state.isLoading else { return .none }
+            
             // 암장 등급 바텀시트에서 등급을 저장하기 버튼을 누르면 오는 이벤트
             print("최종 저장 시간 : \(state.totalDuration)")
             saveSelectedGrade(grades: state.grades, selectedGrade: designGrade)
-            state.isLoading = true
             state.showSelectCragDifficultyBottomSheet = false
-            return registerStory(state)
+            return .merge(
+                registerStory(state),
+                .send(.changeLoadingState(true))
+                )
             
         case .saveFinished:
             state.isLoading = false
@@ -450,9 +463,8 @@ extension RecordedFeature {
             
         case .saveFailure(let error):
             print("error: \(error)")
-            state.isLoading = false
             state.showSelectCragDifficultyBottomSheet = true
-            return .none
+            return .send(.changeLoadingState(false))
         default: return .none
         }
     }

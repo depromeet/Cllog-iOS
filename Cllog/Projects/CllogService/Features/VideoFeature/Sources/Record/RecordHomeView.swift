@@ -15,6 +15,7 @@ import DesignKit
 
 // 외부 Module
 import ComposableArchitecture
+import DesignKit
 
 public struct RecordHomeView: View {
     
