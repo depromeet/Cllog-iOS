@@ -14,6 +14,7 @@ import SettingFeature
 import FolderFeature
 import EditFeature
 import Core
+import DesignKit
 
 @Reducer
 public struct RouterFeature {
@@ -33,6 +34,7 @@ public struct RouterFeature {
         var videoEditState: VideoEditFeature.State?
         var isPresentEdit: Bool = false
         var path = StackState<Path.State>()
+        var toast: Toast?
         public init() {}
     }
     
@@ -65,17 +67,28 @@ extension RouterFeature {
             return videoEditCore(state: &state, action: action)
         case .rootAction(let action):
             return rootCore(state: &state, action: action)
+        
+        // Calendar Detail
         case .path(.element(id: let id, action: .calendarDetail(.backButtonTapped))):
             // 캘린더 상세 페이지 pop
             state.path.pop(from: id)
             return .none
         case .path(.element(id: let id, action: .calendarDetail(.deleteStorySuccess))):
             state.path.pop(from: id)
+            state.toast = Toast(message: "기록을 삭제했습니다.", type: .success)
             return .none
-        case .path(.element(id: let id, action: .setting(.backButtonTapped))):
+            
+        // Folder Detail
+        case .path(.element(id: let id, action: .attempt(.backButtonTapped))):
             state.path.pop(from: id)
             return .none
-        case .path(.element(id: let id, action: .attempt(.backButtonTapped))):
+        case let .path(.element(id: id, action: .attempt(.deleteAttemptFinished))):
+            state.path.pop(from: id)
+            state.toast = Toast(message: "기록을 삭제했습니다.", type: .success)
+            return .none
+            
+        // Setting
+        case .path(.element(id: let id, action: .setting(.backButtonTapped))):
             state.path.pop(from: id)
             return .none
         case .path(.element(id: let id, action: .setting(.exitToStart))):
@@ -86,9 +99,12 @@ extension RouterFeature {
         case let .path(.element(id: _, action: .setting(.pushWebView(url)))):
             state.path.append(.webView(WebViewFeature.State(urlString: url)))
             return .none
+            
+        // Setting WebView
         case let .path(.element(id: id, action: .webView(.backButtonTapped))):
             state.path.pop(from: id)
             return .none
+        
         default:
             return .none
         }

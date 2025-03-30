@@ -14,6 +14,7 @@ import SettingFeature
 import FolderFeature
 import EditFeature
 import Core
+import DesignKit
 
 public struct RouterView: View {
     @Bindable private var store: StoreOf<RouterFeature>
@@ -52,6 +53,7 @@ public struct RouterView: View {
                 store.scope(state: \.videoEditState, action: \.videoEditAction), then: VideoEditView.init
             )
         }
+        .toast($store.toast)
     }
 }
 

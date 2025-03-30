@@ -28,6 +28,7 @@ public struct CalendarView: ViewProtocol {
                     DayBottomSheet(climbDay: day) { storyId in
                         store.send(.storyTapped(storyId))
                     }
+                    .padding(16)
                 }
             }
             .padding(16)
