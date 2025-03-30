@@ -10,15 +10,18 @@ import ComposableArchitecture
 
 import CalendarDomain
 import StoryDomain
+import AccountDomain
 
 @Reducer
 public struct UserInfoFeature {
+    @Dependency(\.accountUseCase) private var accountUseCase
     
     @ObservableState
     public struct State: Equatable {
         var isOpen: Bool = false
         var isEditMemo : Bool = false
         var currentMonth: Int = 0
+        var userName: String = "유저"
         
         var numOfClimbDays: Int = 0
         var id: Int = 0
@@ -36,12 +39,16 @@ public struct UserInfoFeature {
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
+        case onAppear
         case updateCurrentMonth(Int)
         case updateCalendarInfo(CalendarSummary)
         case updateStoryInfo(StorySummary)
         case updateMemo(String)
         case editMemo(Bool)
         case dropdownTapped
+        
+        case fetchSuccess(String)
+        case errorHandler(Error)
     }
     
     public init() {}
@@ -51,9 +58,13 @@ public struct UserInfoFeature {
         
         Reduce { state, action in
             switch action {
+            case .onAppear:
+                return fetchAccount()
+                
             case .dropdownTapped:
                 state.isOpen.toggle()
                 return .none
+                
             case let .updateCalendarInfo(summary):
                 state.numOfClimbDays = summary.numOfClimbDays
                 state.totalDurationMs = summary.totalDurationMs
@@ -61,6 +72,7 @@ public struct UserInfoFeature {
                 state.totalSuccessCount = summary.successAttemptCount
                 state.totalFailCount = summary.failAttemptCount
                 return .none
+                
             case let .updateStoryInfo(summary):
                 state.id = summary.id
                 state.cragName = summary.cragName ?? "암장 정보 미등록"
@@ -87,8 +99,27 @@ public struct UserInfoFeature {
                 state.memo = text
                 return .none
                 
+            case .fetchSuccess(let name):
+                state.userName = name
+                return .none
+                
+            case .errorHandler(let error):
+                print(error)
+                return .none
+                
             default:
                 return .none
+            }
+        }
+    }
+    
+    private func fetchAccount() -> Effect<Action> {
+        .run { send in
+            do {
+                let name = try await accountUseCase.fetchAccount().name
+                await send(.fetchSuccess(name ?? "유저"))
+            } catch {
+                await send(.errorHandler(error))
             }
         }
     }

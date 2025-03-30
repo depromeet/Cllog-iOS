@@ -36,6 +36,9 @@ struct UserInfoView: View {
         makeBody()
             .background(Color.clLogUI.gray900)
             .clipShape(RoundedRectangle(cornerRadius: 14))
+            .onAppear {
+                store.send(.onAppear)
+            }
     }
 }
 
@@ -68,12 +71,12 @@ extension UserInfoView {
                 text: $store.editMemo,
                 isFocused: $isFocused
             )
-                .type(.editor)
-                .background(.gray800)
-                .frame(height: 136)
-                .padding(.horizontal, 20)
-                .padding(.top, 14)
-                .padding(.bottom, 20)
+            .type(.editor)
+            .background(.gray800)
+            .frame(height: 136)
+            .padding(.horizontal, 20)
+            .padding(.top, 14)
+            .padding(.bottom, 20)
         }
     }
     
@@ -83,7 +86,7 @@ extension UserInfoView {
             switch type {
             case .normal:
                 VStack(alignment: .leading, spacing: 0) {
-                    Text("디퍼님,")
+                    Text("\(store.userName)님,")
                         .font(.h1)
                         .foregroundColor(Color.clLogUI.primary)
                     
