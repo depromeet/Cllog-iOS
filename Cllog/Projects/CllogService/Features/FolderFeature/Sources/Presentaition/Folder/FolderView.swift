@@ -33,9 +33,11 @@ public struct FolderView: ViewProtocol {
             }
             .bottomSheet(isPresented: $store.showSelectGradeBottomSheet) {
                 showSelectGradeBottomSheet()
+                    .padding(16)
             }
             .bottomSheet(isPresented: $store.showSelectCragBottomSheet) {
                 showSelectCragBottomSheet()
+                    .padding(16)
             }
     }
 }

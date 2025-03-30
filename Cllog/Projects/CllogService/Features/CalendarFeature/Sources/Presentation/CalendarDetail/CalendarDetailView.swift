@@ -33,6 +33,7 @@ public struct CalendarDetailView: View {
                         }
                     }
                 }
+                .padding(16)
             }
             .onTapGesture {
                 store.send(.screenTapped)

@@ -66,6 +66,7 @@ public struct AttemptView: ViewProtocol {
                     .presentationDetents([.height(store.dynamicSheetHeight)])
                     .presentationDragIndicator(.visible)
                     .presentationBackground(Color.clLogUI.gray800)
+                    .padding(16)
             }
             .presentDialog(
                 $store.scope(state: \.alert, action: \.alert),
