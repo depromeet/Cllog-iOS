@@ -15,6 +15,7 @@ public enum Destination {
     case login
     case main
     case onBoarding
+    case nickName
 }
 
 @Reducer

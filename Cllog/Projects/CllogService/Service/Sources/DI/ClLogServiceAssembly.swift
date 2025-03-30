@@ -245,5 +245,17 @@ public struct ClLogServiceAssembly: Assembly {
                 )
             )
         }
+        
+        container.register(AccountUseCase.self) { _ in
+            Account(
+                repository: DefaultAccountRepository(
+                    dataSource: DefaultUserDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
     }
 }

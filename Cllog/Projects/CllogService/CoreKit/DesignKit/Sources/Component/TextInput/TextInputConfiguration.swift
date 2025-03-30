@@ -21,11 +21,14 @@ public enum TextInputType {
 }
 
 public enum TextInputBackground {
+    case gray700
     case gray800
     case gray900
     
     var color: Color {
         switch self {
+        case .gray700:
+            return Color.clLogUI.gray700
         case .gray800:
             return Color.clLogUI.gray800
         case .gray900:
