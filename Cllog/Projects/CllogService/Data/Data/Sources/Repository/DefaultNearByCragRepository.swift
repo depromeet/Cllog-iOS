@@ -20,14 +20,14 @@ public actor DefaultNearByCragRepository: NearByCragRepository {
         self.dataSource = dataSource
     }
     
-    public func fetch(longitude: Double, latitude: Double) async throws -> [Crag] {
+    public func fetch(longitude: Double?, latitude: Double?) async throws -> [Crag] {
         self.cursor = nil
         self.hasMore = true
         
         return try await fetchMore(longitude: longitude, latitude: latitude)
     }
     
-    public func fetchMore(longitude: Double, latitude: Double) async throws -> [Crag] {
+    public func fetchMore(longitude: Double?, latitude: Double?) async throws -> [Crag] {
         guard hasMore else { return [] }
         
         let (crags, meta) = try await dataSource.nearByCrags(longitude: longitude, latitude: latitude, cursor: cursor)
