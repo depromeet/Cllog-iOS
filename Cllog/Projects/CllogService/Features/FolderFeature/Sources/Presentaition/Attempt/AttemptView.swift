@@ -385,6 +385,5 @@ extension AttemptView {
                 }
             }
         }
-        .padding(.horizontal, 16)
     }
 }
