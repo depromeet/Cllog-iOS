@@ -27,6 +27,7 @@ public struct VideoView: View {
     
     public var body: some View {
         bodyView
+            .debugFrameSize()
             .onAppear {
                 store.send(.onAppear)
             }

@@ -24,7 +24,7 @@ public struct RecordHomeFeature {
     public enum Action {
         
         case onAppear
-    
+        
         // Recording Action: - 녹화 액션
         case recordingAction(RecordingFeature.Action)
         // Recorded Action: - 녹화 완료 / 성공, 실패, 편집, close 할 수 있는 화면
