@@ -179,7 +179,7 @@ extension FolderView {
                         date: attempt.date
                     ),
                     challengeResult: attempt.result == .complete ? .complete : .fail,
-                    levelName: attempt.grade?.name ?? "하양",
+                    levelName: attempt.grade?.name,
                     levelColor: Color(hex: attempt.grade?.hexCode ?? "0x00000"),
                     time: attempt.recordedTime
                 )
