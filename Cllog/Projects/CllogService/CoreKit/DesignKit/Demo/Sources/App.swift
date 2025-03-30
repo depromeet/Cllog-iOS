@@ -5,7 +5,7 @@ import CalendarDomain
 import Shared
 
 @main
-struct CalendarDemoApp: App {
+struct DesignKitDemoApp: App {
     
     init() {
     }

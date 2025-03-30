@@ -109,6 +109,7 @@ public struct AttemptFeature {
         case patchedInfo(_ grade: Grade?, crag: Crag?)
         case skipEditCragTapped
         case deletedAttempt
+        case deleteAttemptFinished
         
         @CasePathable
         public enum Dialog: Equatable {
@@ -326,7 +327,7 @@ extension AttemptFeature {
         return .run { send in
             do {
                 try await attemptUseCase.delete(attemptId: attemptId)
-                await send(.editBackButtonTapped)
+                await send(.deleteAttemptFinished)
             } catch  {
                 // TODO: show error message
                 debugPrint(error.localizedDescription)
