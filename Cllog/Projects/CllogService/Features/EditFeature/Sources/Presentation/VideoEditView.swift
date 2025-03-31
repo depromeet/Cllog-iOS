@@ -139,11 +139,7 @@ public struct VideoEditView: View {
                 StampButton {
                     store.send(.didTapStamp)
                 }
-                .tooltip(text: "스탬프 버튼을 눌러\n중요 부분을 기록할 수 있어요!", position: .topTrailing(offset: -21), verticalOffset: 16, isVisible: isStampTooltipOn) {
-                    isStampTooltipOn = false
-                    isDragEditTooltipOn = true
-                    tooltipManager.setStampTooltipOff()
-                }
+                .tooltip(text: "스탬프 버튼을 눌러\n중요 부분을 기록할 수 있어요!", position: .topTrailing(offset: -21), verticalOffset: 16, isVisible: isStampTooltipOn)
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
@@ -210,10 +206,7 @@ public struct VideoEditView: View {
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 32)
-            .tooltip(text: "드래그로 영상을 자를 수 있어요!", position: .topCenter, verticalOffset: 1, isVisible: isDragEditTooltipOn) {
-                isDragEditTooltipOn = false
-                tooltipManager.setDragEditTooltipOff()
-            }
+            .tooltip(text: "드래그로 영상을 자를 수 있어요!", position: .topCenter, verticalOffset: 1, isVisible: isDragEditTooltipOn)
         }
         .presentDialog($store.scope(state: \.alert, action: \.alert), style: .default)
         .background(Color.clLogUI.gray900)
@@ -240,6 +233,16 @@ public struct VideoEditView: View {
         .onReceive(store.publisher.shouldDismiss) { shouldDismiss in
             if shouldDismiss {
                 presentationMode.wrappedValue.dismiss()
+            }
+        }
+        .onTapGesture {
+            if isStampTooltipOn {
+                isStampTooltipOn = false
+                isDragEditTooltipOn = true
+                tooltipManager.setStampTooltipOff()
+            } else if isDragEditTooltipOn {
+                isDragEditTooltipOn = false
+                tooltipManager.setDragEditTooltipOff()
             }
         }
     }
