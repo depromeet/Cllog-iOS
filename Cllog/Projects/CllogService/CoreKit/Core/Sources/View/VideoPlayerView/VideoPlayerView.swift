@@ -60,7 +60,7 @@ final class VideoPlayerContainer: UIView {
     let player: AVPlayer
     private var playerDisplayLayer: AVPlayerLayer?
     private var playbackTimeObserver: Any?
-    private var playerItemObserver: NSObjectProtocol?
+    private var playerItemObserver: NSKeyValueObservation?
     
     @Binding private var playbackState: Bool
     @Binding private var playbackProgress: Double
@@ -76,6 +76,7 @@ final class VideoPlayerContainer: UIView {
         super.init(frame: .zero)
         setupPlayerLayer()
         configurePlaybackObserver()
+        configurePlayerItemObserver()
     }
     
     private func setupPlayerLayer() {
@@ -114,6 +115,18 @@ final class VideoPlayerContainer: UIView {
             name: .AVPlayerItemDidPlayToEndTime,
             object: player.currentItem
         )
+    }
+    
+    private func configurePlayerItemObserver() {
+        playerItemObserver = player.currentItem?.observe(\.status, options: [.new, .initial]) { [weak self] item, _ in
+            guard let self = self else { return }
+            if item.status == .readyToPlay {
+                DispatchQueue.main.async {
+                    self.player.play()
+                    self.playbackState = true
+                }
+            }
+        }
     }
     
     @objc private func videoDidEnd() {
