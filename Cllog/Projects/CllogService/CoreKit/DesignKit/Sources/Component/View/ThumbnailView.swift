@@ -42,6 +42,7 @@ public struct ThumbnailView: View {
         self.time = time
         self.deleteButtonHandler = deleteButtonHandler
     }
+    
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // MARK: Time Chip
@@ -55,12 +56,14 @@ public struct ThumbnailView: View {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color.clLogUI.gray600)
                         
-                        if let imageURLString {
+                        if let imageURLString, !imageURLString.isEmpty {
                             AsyncImage(url: URL(string: imageURLString)) { phase in
                                 switch phase {
                                 case .success(let image):
                                     image.resizable()
-                                        .scaledToFit()
+                                        .resizable()
+                                        .aspectRatio(1, contentMode: .fill)
+                                    
                                 case .failure:
                                     Image.clLogUI.alert
                                         .resizable()
@@ -73,9 +76,11 @@ public struct ThumbnailView: View {
                             }
                         } else {
                             ClLogUI.basicThumbnail
+                                .resizable()
                         }
                     }
-                    .aspectRatio(1, contentMode: .fit)
+                    .frame(minHeight: 160)
+                    .cornerRadius(8)
                     
                     HStack(spacing: 5) {
                         if isChallengeResult {
