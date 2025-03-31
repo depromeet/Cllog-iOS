@@ -69,19 +69,27 @@ public struct RecordedView: View {
     
     @ViewBuilder
     private var bodyView: some View {
-#if targetEnvironment(simulator)
-        Color.gray
-            .ignoresSafeArea()
-#else
-        RecordedPlayPreview(viewModel: store.viewModel)
-            .ignoresSafeArea()
-#endif
-        
-        VStack(spacing: .zero, content: {
-            headerActionsView
-            Spacer()
-            footerActionsView
-        })
+        ZStack {
+            #if targetEnvironment(simulator)
+            Color.gray
+                .ignoresSafeArea()
+            #else
+            RecordedPlayPreview(viewModel: store.viewModel)
+                .ignoresSafeArea()
+            #endif
+
+            VStack(spacing: .zero, content: {
+                headerActionsView
+                Spacer()
+                footerActionsView
+            })
+
+            CLLogLoadingView(
+                isLoading: .init(
+                    get: { store.isLoading },
+                    set: { _ in } )
+            )
+        }
     }
     
     @ViewBuilder
