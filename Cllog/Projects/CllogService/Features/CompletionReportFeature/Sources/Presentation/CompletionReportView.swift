@@ -14,16 +14,30 @@ import DesignKit
 public struct CompletionReportView: View {
     @Bindable private var store: StoreOf<CompletionReportFeature>
     
+    @State private var renderedImage = Image(systemName: "photo")
+    @Environment(\.displayScale) var displayScale
+    @State private var loadedImage: Image?
+    
     public init(store: StoreOf<CompletionReportFeature>) {
         self.store = store
     }
     
     public var body: some View {
-        makeBody()
-            .background(Color.clLogUI.gray900)
-            .onAppear {
-                store.send(.onAppear)
+        ZStack {
+            makeBody()
+                .background(Color.clLogUI.gray900)
+                .onAppear {
+                    store.send(.onAppear)
+                }
+            
+            if store.sharedShow {
+                InstagramSharerView(
+                    filePath: store.sharedURL,
+                    uti: "\(Date.now)",
+                    isPresented: $store.sharedShow
+                )
             }
+        }
     }
 }
 
@@ -32,8 +46,10 @@ extension CompletionReportView {
         VStack(spacing: 0) {
             makeAppBar()
             ScrollView(showsIndicators: false) {
-                makeContent()
+                makeContent
             }
+            Spacer()
+            makeBottomBotton()
         }
     }
     
@@ -49,7 +65,8 @@ extension CompletionReportView {
             }
         } rightContent: {
             Button {
-                
+                let image = makeContent.snapshot()
+                store.send(.shareButtonTapped(image))
             } label: {
                 Image.clLogUI.share
                     .resizable()
@@ -60,7 +77,8 @@ extension CompletionReportView {
         .background(Color.clLogUI.gray900)
     }
     
-    private func makeContent() -> some View {
+    // Snapshot 찍어서 저장할 View
+    var makeContent: some View {
         VStack {
             makeCragName()
             Spacer(minLength: 20)
@@ -70,10 +88,12 @@ extension CompletionReportView {
             Spacer(minLength: 12)
             makeCompletionStatsView()
             Spacer(minLength: 12)
-            makeBottomBotton()
-            
+            makeProblemView()
+                .padding(.bottom, 16)
         }
         .padding(16)
+        .frame(maxWidth: .infinity)
+        .background(Color.clLogUI.gray900)
     }
     
     private func makeCragName() -> some View {
@@ -93,23 +113,34 @@ extension CompletionReportView {
     
     private func makeThumbnail() -> some View {
         ZStack(alignment: .bottom) {
-            AsyncImage(url: URL(string: "https://fastly.picsum.photos/id/554/200/300.jpg?hmac=fYkNLoTqHRKUkIc3bZt_xMEb17s_BIRuuKTz8jb9ijs")) { phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFill()
-                        .frame(height: 343)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                case .failure:
-                    Image.clLogUI.alert
-                        .resizable()
-                        .frame(height: 343)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                @unknown default:
-                    EmptyView()
+            if let loadedImage {
+                loadedImage
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 343)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            } else {
+                AsyncImage(url: URL(string: store.summary.thumbnailUrl ?? "")) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(height: 343)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .onAppear {
+                                loadedImage = image
+                            }
+                    case .failure:
+                        Image.clLogUI.alert
+                            .resizable()
+                            .frame(height: 343)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    @unknown default:
+                        EmptyView()
+                    }
                 }
             }
             
@@ -122,9 +153,15 @@ extension CompletionReportView {
                 
                 Spacer(minLength: 24)
                 
-                Text("25.02.08 FRI")
-                    .font(.h4)
-                    .foregroundStyle(Color.clLogUI.primary)
+                Text(
+                    store.summary.date.toDate(format: "yyyy.MM.dd e")
+                        .formattedString(
+                            "yy.MM.dd E",
+                            locale: Locale(identifier: "en_US")
+                        ).uppercased()
+                )
+                .font(.h4)
+                .foregroundStyle(Color.clLogUI.primary)
                 
                 DividerView(.vertical, color: Color.clLogUI.primary)
                     .padding(.vertical, 5)
@@ -209,6 +246,71 @@ extension CompletionReportView {
         }
         .style(.white)
     }
+    
+    private func makeProblemView() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 0) {
+                Text("푼 문제")
+                    .font(.h5)
+                    .foregroundStyle(Color.clLogUI.gray400)
+                
+                Spacer()
+            }
+            
+            
+            ForEach(store.summary.problems.indices, id: \.self) { index in
+                VStack(spacing: 4) {
+                    HStack(spacing: 12) {
+                        Text("문제 \(index + 1)")
+                            .font(.h4)
+                            .foregroundStyle(Color.clLogUI.gray10)
+                        HStack(spacing: 4) {
+                            ForEach(0..<store.summary.problems[index].attemptCount, id: \.self) { _ in
+                                Circle()
+                                    .fill(Color(hex: store.summary.problems[index].displayColorHex))
+                                    .frame(width: 24, height: 24)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity)
+        .background(Color.clLogUI.gray800)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+extension CompletionReportView {
+    @MainActor func render() {
+        let renderer = ImageRenderer(
+            content: makeContent
+        )
+        
+        renderer.scale = displayScale
+        
+        if let uiImage = renderer.uiImage {
+            renderedImage = Image(uiImage: uiImage)
+        }
+    }
+}
+
+extension View {
+    func snapshot() -> UIImage {
+        let controller = UIHostingController(rootView: self)
+        let view = controller.view
+
+        let targetSize = controller.view.intrinsicContentSize
+        view?.bounds = CGRect(origin: .zero, size: targetSize)
+        view?.backgroundColor = .clear
+
+        let renderer = UIGraphicsImageRenderer(size: targetSize)
+
+        return renderer.image { _ in
+            view?.drawHierarchy(in: controller.view.bounds, afterScreenUpdates: true)
+        }
+    }
 }
 
 #Preview {
@@ -221,3 +323,5 @@ extension CompletionReportView {
         )
     )
 }
+
+
