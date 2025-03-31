@@ -46,7 +46,7 @@ extension Starlink.Request {
             
             // retry Count가 최대 retry 갯수보다 낮으면 retry
             guard self.retryCount < self.retryLimit else {
-                throw error
+                throw await Starlink.sessionErrorHandler(error)
             }
             
             // default는 다시 요청 하지 않음
@@ -163,11 +163,40 @@ extension Starlink.Request: StarlinkRequest {
         } catch {
             let response = Starlink.Response(response: nil, data: nil, error: error)
             self.trakers.allTrackers().forEach { $0.willRequest(self, response) }
-            throw await Starlink.sessionErrorHandler(error)
+
+            // retry Count가 최대 retry 갯수보다 낮으면 retry
+            guard self.retryCount < self.retryLimit else {
+                throw await Starlink.sessionErrorHandler(error)
+            }
+
+            // default는 다시 요청 하지 않음
+            var retryResult: StartlinkRetryType = .doNotRetry
+
+            self.retryCount += 1
+
+            for interceptor in self.interceptors {
+                let (retryURLRequest, retryType)  = try await interceptor.retry(&urlRequest, response: response)
+                urlRequest = retryURLRequest
+                retryResult = retryType
+            }
+
+            switch retryResult {
+            case .retry:
+                // 재요청 이면 요청
+                return try await uploadResponse()
+
+            case .doNotRetry:
+                // retry를 하지 않으면 throw error
+                throw await Starlink.sessionErrorHandler(error)
+            }
         }
     }
     
-    private func upload(urlRequest: URLRequest, uploadForm: UploadDataForm, header: [HTTPHeader]) async throws -> (Data?, HTTPURLResponse?) {
+    private func upload(
+        urlRequest: URLRequest,
+        uploadForm: UploadDataForm,
+        header: [HTTPHeader]
+    ) async throws -> (Data?, HTTPURLResponse?) {
         return try await withCheckedThrowingContinuation { continuation in
             AF.upload(multipartFormData: { multipartFormData in
                 multipartFormData.append(uploadForm.data,
