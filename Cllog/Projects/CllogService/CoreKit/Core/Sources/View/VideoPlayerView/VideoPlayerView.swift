@@ -97,7 +97,7 @@ final class VideoPlayerContainer: UIView {
     }
     
     private func configurePlaybackObserver() {
-        playbackTimeObserver = player.addPeriodicTimeObserver(
+        _ = player.addPeriodicTimeObserver(
             forInterval: CMTime(seconds: 0.1, preferredTimescale: 600),
             queue: .main
         ) { [weak self] currentTime in
