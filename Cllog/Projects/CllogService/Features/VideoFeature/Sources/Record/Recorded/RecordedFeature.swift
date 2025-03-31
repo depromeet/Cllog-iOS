@@ -34,7 +34,7 @@ public struct RecordedFeature {
         @Presents var cragAlert: AlertState<Action.Dialog>?
         
         let fileName: String
-        let path: URL
+        var path: URL
         var duration: String = ""
         var totalDuration: Double = 0
         let viewModel: RecordedPlayViewModel
@@ -255,6 +255,7 @@ extension RecordedFeature {
         case .updateVideo(let video):
             state.totalDuration = 0
             state.viewModel.updateVideoUrl(videoURL: video.videoUrl)
+            state.path = video.videoUrl
             state.stampTimeList = video.stampTimeList
             return .merge(
                 .send(.play),
