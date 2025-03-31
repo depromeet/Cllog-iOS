@@ -544,9 +544,7 @@ extension RecordedFeature {
                     localPath: assetId,
                     thumbnailUrl: thumbNail?.fileUrl ?? "",
                     durationMs: Int(state.totalDuration),
-                    stamps: [
-                        StampRequest(timeMs: 0) // 타임 스탬프
-                    ]
+                    stamps: state.stampTimeList.map { StampRequest(timeMs: Int($0 * 1000)) }
                 )
             )
             
@@ -583,9 +581,7 @@ extension RecordedFeature {
                         localPath: assetId,
                         thumbnailUrl: thumbNail?.fileUrl ?? "",
                         durationMs: Int(state.totalDuration),
-                        stamps: [
-                            StampRequest(timeMs: 0) // 타임 스탬프
-                        ]
+                        stamps: state.stampTimeList.map { StampRequest(timeMs: Int($0 * 1000)) }
                     )
                 ),
                 memo: nil
