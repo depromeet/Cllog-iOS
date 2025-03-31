@@ -16,6 +16,12 @@ enum Current {
     static var asset: AVAsset?
     static var timeSubject = PassthroughSubject<Double, Never>()
     static var timeObserver: Any?
+    
+    static func clear() {
+        Self.player = nil
+        Self.asset = nil
+        Self.timeObserver = nil
+    }
 }
 
 extension DependencyValues {
