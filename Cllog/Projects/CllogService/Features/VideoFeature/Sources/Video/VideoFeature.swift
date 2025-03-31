@@ -186,6 +186,7 @@ private extension VideoFeature {
             
         case .nextProblemTapped:
             state.showSelectGradeView = true
+            state.selectedGrade = nil
             guard state.cragId != VideoDataManager.cragId else {
                 return .none
             }
