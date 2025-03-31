@@ -86,13 +86,23 @@ public struct AttemptView: ViewProtocol {
 
 extension AttemptView {
     private func makeBodyView() -> some View {
-        VStack {
-            makeAppBar()
-            
-            if let attempt = store.attempt {
-                makeContentView(with: attempt)
-            } else {
-                makeLoadingView()
+        ZStack {
+            VStack {
+                makeAppBar()
+
+                if let attempt = store.attempt {
+                    makeContentView(with: attempt)
+                } else {
+                    makeLoadingView()
+                }
+            }
+
+            if store.sharedShow {
+                InstagramSharerView(
+                    filePath: store.sharedPath,
+                    uti: store.attempt?.date,
+                    isPresented: $store.sharedShow
+                )
             }
         }
     }
