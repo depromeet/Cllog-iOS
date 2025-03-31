@@ -84,11 +84,7 @@ public struct RecordedView: View {
                 footerActionsView
             })
 
-            CLLogLoadingView(
-                isLoading: .init(
-                    get: { store.isLoading },
-                    set: { _ in } )
-            )
+            CLLogLoadingView(isLoading: $store.isLoading)
         }
     }
     
