@@ -58,7 +58,10 @@ public struct AttemptFeature {
         var showEditAttemptBottomSheet = false
         var showCragBottomSheet = false
         var showGradeBottomSheet = false
-        
+
+        var sharedPath: URL?
+        var sharedShow: Bool = false
+
         var dynamicSheetHeight: CGFloat {
             switch selectedAction {
 //            case .video:
@@ -81,6 +84,7 @@ public struct AttemptFeature {
         case onAppear
         case backButtonTapped
         case shareButtonTapped
+        case shareSetPath(URL)
         case moreButtonTapped
         case moreActionTapped(_ action: AttemptEditAction)
         case videoTapped
@@ -130,6 +134,14 @@ public struct AttemptFeature {
             case .backButtonTapped:
                 return .none
             case .shareButtonTapped:
+                return .run { [state] send in
+                    let attempt = try await attemptUseCase.execute(attemptId: state.attemptId)
+                    guard let url = await MediaUtility.getURL(fromAssetID: attempt.attempt.video.localPath) else { return }
+                    await send(.shareSetPath(url))
+                }
+            case .shareSetPath(let path):
+                state.sharedPath = path
+                state.sharedShow = true
                 return .none
             case .moreButtonTapped:
                 state.selectedEditCrag = state.attempt?.crag
