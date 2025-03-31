@@ -50,7 +50,9 @@ public struct MockFetchStory: FetchStoryUseCase {
             totalSuccessCount: 0,
             totalFailCount: 0,
             memo: "",
-            problems: []
+            problems: [],
+            date: "",
+            thumbnailUrl: nil
         )
     }
 }

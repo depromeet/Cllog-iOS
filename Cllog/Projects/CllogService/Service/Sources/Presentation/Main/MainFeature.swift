@@ -91,6 +91,7 @@ public struct MainFeature {
             case pushToSetting
             case pushToAttempt(Int)
             case presentToEdit(URL, [Double])
+            case pushToCompletionReport(Int?)
         }
     }
     
@@ -237,6 +238,9 @@ private extension MainFeature {
                 state.recordState = .init()
             }
             return .none
+            
+        case .recordCompleted(let storyId):
+            return .send(.routerAction(.pushToCompletionReport(storyId)))
         default:
             return .none
         }

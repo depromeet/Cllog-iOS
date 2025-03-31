@@ -13,6 +13,7 @@ import CalendarFeature
 import SettingFeature
 import FolderFeature
 import EditFeature
+import CompletionReportFeature
 import Core
 import DesignKit
 
@@ -45,6 +46,9 @@ public struct RouterView: View {
                     .navigationBarBackButtonHidden(true)
             case .webView(let store):
                 WebView(store: store)
+                    .navigationBarBackButtonHidden(true)
+            case .completionReport(let store):
+                CompletionReportView(store: store)
                     .navigationBarBackButtonHidden(true)
             }
         }

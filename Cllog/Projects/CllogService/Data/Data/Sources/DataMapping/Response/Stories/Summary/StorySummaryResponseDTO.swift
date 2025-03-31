@@ -18,6 +18,8 @@ public struct StorySummaryResponseDTO: Decodable {
     let totalFailCount: Int
     let memo: String?
     let problems: [StorySummaryProblemResponseDTO]
+    let date: String
+    let thumbnailUrl: String?
     
     func toDomain() -> StorySummary {
         return StorySummary(
@@ -28,7 +30,9 @@ public struct StorySummaryResponseDTO: Decodable {
             totalSuccessCount: totalSuccessCount,
             totalFailCount: totalFailCount,
             memo: memo,
-            problems: problems.map { $0.toDomain() }
+            problems: problems.map { $0.toDomain() },
+            date: date,
+            thumbnailUrl: thumbnailUrl
         )
     }
 }

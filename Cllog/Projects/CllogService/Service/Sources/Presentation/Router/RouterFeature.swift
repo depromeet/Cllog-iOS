@@ -13,6 +13,7 @@ import CalendarFeature
 import SettingFeature
 import FolderFeature
 import EditFeature
+import CompletionReportFeature
 import Core
 import DesignKit
 
@@ -105,6 +106,11 @@ extension RouterFeature {
             state.path.pop(from: id)
             return .none
         
+        // CompletionReport 
+        case let .path(.element(id: id, action: .completionReport(.finish))):
+            state.path.pop(from: id)
+            return .none
+            
         default:
             return .none
         }
@@ -116,15 +122,23 @@ extension RouterFeature {
             // 캘린더 상세 페이지 push
             state.path.append(.calendarDetail(CalendarDetailFeature.State(storyId: storyId)))
             return .none
+            
         case .mainAction(.routerAction(.pushToSetting)):
             state.path.append(.setting(SettingFeature.State()))
             return .none
+            
         case let .mainAction(.routerAction(.pushToAttempt(attemptId))):
             state.path.append(.attempt(AttemptFeature.State(attemptId: attemptId)))
             return .none
+            
         case let .mainAction(.routerAction(.presentToEdit(url, stampTimeList))):
             state.isPresentEdit = true
             state.videoEditState = VideoEditFeature.State(video: .init(videoUrl: url, stampTimeList: stampTimeList))
+            return .none
+            
+        case let .mainAction(.routerAction(.pushToCompletionReport(storyId))):
+            guard let storyId else { return .none }
+            state.path.append(.completionReport(CompletionReportFeature.State(storyId: storyId)))
             return .none
         default:
             return .none

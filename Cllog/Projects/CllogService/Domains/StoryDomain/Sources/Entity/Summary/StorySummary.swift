@@ -17,6 +17,8 @@ public struct StorySummary: Equatable {
     public let totalFailCount: Int
     public let memo: String?
     public let problems: [StorySummaryProblem]
+    public let date: String
+    public let thumbnailUrl: String?
     
     public init(
         id: Int,
@@ -26,7 +28,9 @@ public struct StorySummary: Equatable {
         totalSuccessCount: Int,
         totalFailCount: Int,
         memo: String?,
-        problems: [StorySummaryProblem]
+        problems: [StorySummaryProblem],
+        date: String,
+        thumbnailUrl: String?
     ) {
         self.id = id
         self.cragName = cragName
@@ -36,6 +40,8 @@ public struct StorySummary: Equatable {
         self.totalFailCount = totalFailCount
         self.memo = memo
         self.problems = problems
+        self.date = date
+        self.thumbnailUrl = thumbnailUrl
     }
     
     public init() {
@@ -47,5 +53,7 @@ public struct StorySummary: Equatable {
         self.totalFailCount = 0
         self.memo = ""
         self.problems = []
+        self.date = ""
+        self.thumbnailUrl = nil
     }
 }
