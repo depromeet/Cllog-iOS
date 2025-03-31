@@ -86,7 +86,7 @@ public struct VideoFeature {
         
         case problemCheckCompleteBottomSheetAction(ProblemCheckCompleteBottomSheetFeature.Action)
         case problemCheckAction(ProblemCheckFeature.Action)
-        case recordCompleted
+        case recordCompleted(Int?)
         
         case registerProblemSuccess(Int)
     }
@@ -262,10 +262,11 @@ private extension VideoFeature {
     ) -> Effect<Action> {
         switch action {
         case .finishTapped:
+            guard let storyId = VideoDataManager.savedStory?.storyId else { return .none }
             VideoDataManager.clear()
             state.showProblemCheckCompleteBottomSheet = false
             state.count = 0
-            return .send(.recordCompleted)
+            return .send(.recordCompleted(storyId))
         default:
             return .none
         }
@@ -283,7 +284,7 @@ private extension VideoFeature {
             if state.count == 0 {
                 state.showFolderBottomSheet = false
                 VideoDataManager.clear()
-                return .send(.recordCompleted)
+                return .send(.recordCompleted(nil))
             }
             return .none
         default:
