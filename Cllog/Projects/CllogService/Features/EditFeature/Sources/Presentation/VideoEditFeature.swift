@@ -238,6 +238,7 @@ public struct VideoEditFeature {
                     await send(.delegate(.edittedVideo(video: video)))
                     await send(.playerResponse(.playbackStatusChanged(isPlaying: false)))
                     await send(.dismiss)
+                    Current.clear()
                 }
             case .dismiss:
                 state.shouldDismiss = true
