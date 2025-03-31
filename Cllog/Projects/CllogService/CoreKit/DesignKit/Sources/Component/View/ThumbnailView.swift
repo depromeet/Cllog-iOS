@@ -79,6 +79,7 @@ public struct ThumbnailView: View {
                                 .resizable()
                         }
                     }
+                    .frame(minHeight: 160)
                     .cornerRadius(8)
                     
                     HStack(spacing: 5) {
