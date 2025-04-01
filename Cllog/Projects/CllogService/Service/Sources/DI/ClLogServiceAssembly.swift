@@ -186,6 +186,8 @@ public struct ClLogServiceAssembly: Assembly {
                             tokenProvider: DefaultTokenDataSource().loadToken
                         )
                     )
+//                    ,
+//                    locationService: LocationService()
                 )
             )
         }
