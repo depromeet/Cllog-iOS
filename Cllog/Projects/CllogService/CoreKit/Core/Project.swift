@@ -10,7 +10,7 @@ import ProjectDescriptionHelpers
 
 let project = Project.configure(
     moduleType: .module(name: "Core"),
-    product: .staticFramework,
+    product: .framework,
     dependencies: [
         .Core.designKit(.cllog),
         .Domains.Domain.domain(.cllog),

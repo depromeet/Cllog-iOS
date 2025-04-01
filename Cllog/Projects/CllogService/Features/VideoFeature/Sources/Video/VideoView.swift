@@ -56,6 +56,7 @@ public struct VideoView: View {
                     then: ProblemCheckBottomSheet.init
                 )
             }
+            .presentDialog($store.scope(state: \.alert, action: \.alert), style: .default)
     }
 }
 
@@ -65,10 +66,14 @@ private extension VideoView {
     var bodyView: some View {
         switch store.viewState {
         case .normal:
-            Text("")
+            ZStack {}
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.clLogUI.gray800)
             
         case .noneVideoPermission:
-            Text("카메라 권한을 허용해주세요")
+            ZStack {}
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.clLogUI.gray800)
             
         case .video:
             camerView

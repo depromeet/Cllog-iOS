@@ -15,7 +15,7 @@ public struct AppConfiguration {
     let workspaceName = "Cllog"
     let projectName: String = "Cllog"
     let organizationName = "Supershy"
-    let shortVersion: String = "1.0.0"
+    let shortVersion: String = "1.0.1"
     let bundleIdentifier: String = "$(PRODUCT_BUNDLE_IDENTIFIER)"
     let displayName: String = "클로그"
     let destination: Set<Destination> = [.iPhone]

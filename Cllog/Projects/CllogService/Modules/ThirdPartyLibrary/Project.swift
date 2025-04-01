@@ -10,7 +10,7 @@ import ProjectDescriptionHelpers
 
 let project = Project.configure(
     moduleType: .module(name: "ThirdPartyLibrary"),
-    product: .staticFramework,
+    product: .framework,
     dependencies: [
         .Library.then,
         .Library.swinject,

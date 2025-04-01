@@ -55,4 +55,13 @@ public struct InfoPlist {
         infoPlist["baseURL"] = .string(appConfiguration.baseURL)
         return infoPlist
     }
+    
+    static func permissionPlist() -> [String: Plist.Value] {
+        return [
+            "NSCameraUsageDescription": "이 앱은 프로필 사진 촬영을 위해 카메라 접근 권한이 필요합니다.",
+            "NSMicrophoneUsageDescription": "이 앱은 음성 녹음 기능을 사용하기 위해 마이크 접근 권한이 필요합니다.",
+            "NSPhotoLibraryUsageDescription": "촬영한 사진과 동영상을 저장하기 위해 사진 접근 권한이 필요합니다.",
+            "NSPhotoLibraryAddUsageDescription": "촬영한 동영상을 사진첩에 저장하려면 권한이 필요합니다."
+        ]
+    }
 }
