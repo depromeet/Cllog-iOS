@@ -12,6 +12,7 @@ import AVFoundation
 import Shared
 
 import Dependencies
+import Photos
 
 public protocol VideoPermissionUseCase: Sendable {
     func execute() async throws
@@ -24,6 +25,7 @@ public struct VideoPermission: VideoPermissionUseCase {
     public func execute() async throws {
         try await checkVideoPermission()
         try await checkMicrophonePermission()
+        try await checkPhotoLibraryPermission()
     }
     
     private func checkVideoPermission() async throws {
@@ -66,6 +68,24 @@ public struct VideoPermission: VideoPermissionUseCase {
                     continuation.resume(throwing: error)
                 }
             })
+        }
+    }
+    
+    private func checkPhotoLibraryPermission() async throws {
+        let status = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+        
+        switch status {
+        case .authorized, .limited:
+            return
+        case .restricted, .denied, .notDetermined:
+            let error = NSError(
+                domain: "CapturePermission",
+                code: 1,
+                userInfo: [NSLocalizedDescriptionKey: "Microphone permission denied."]
+            )
+            throw error
+        @unknown default:
+            break
         }
     }
 }

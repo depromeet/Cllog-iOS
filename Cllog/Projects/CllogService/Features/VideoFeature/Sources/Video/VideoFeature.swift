@@ -48,6 +48,9 @@ public struct VideoFeature {
         var showFolderBottomSheet = false
         var problemCheckState: ProblemCheckFeature.State?
         
+        // 권한 알럿
+        @Presents var alert: AlertState<Action.Dialog>?
+        
         public init() {}
     }
     
@@ -89,6 +92,14 @@ public struct VideoFeature {
         case recordCompleted(Int?)
         
         case registerProblemSuccess(Int)
+        
+        // 권한 알럿
+        case showAlert
+        case alert(PresentationAction<Dialog>)
+        @CasePathable
+        public enum Dialog: Equatable {
+            case confirm
+        }
     }
     
     public enum ViewState {
@@ -112,6 +123,7 @@ public struct VideoFeature {
             .ifLet(\.problemCheckState, action: \.problemCheckAction) {
                 ProblemCheckFeature()
             }
+            .ifLet(\.$alert, action: \.alert)
     }
 }
 
@@ -148,6 +160,9 @@ private extension VideoFeature {
             
         case .updateViewState(let viewState):
             state.viewState = viewState
+            if case .noneVideoPermission = viewState {
+                return .send(.showAlert)
+            }
             return .none
             
         case .onStartSession:
@@ -253,6 +268,24 @@ private extension VideoFeature {
             
         case .registerProblemSuccess(let problemId):
             VideoDataManager.changeProblemId(problemId)
+            return .none
+            
+        case .showAlert:
+            state.alert = AlertState {
+                TextState("영상을 촬영하기 위해서\n아래 권한이 필요합니다.")
+            } actions: {
+                ButtonState(action: .confirm) {
+                    TextState("설정으로")
+                }
+            } message: {
+                TextState("사진첩, 카메라, 마이크")
+            }
+            return .none
+            
+        case .alert(.presented(.confirm)):
+            print("확인")
+            return .none
+        default:
             return .none
         }
     }
