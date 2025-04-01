@@ -11,6 +11,7 @@ import Shared
 import ComposableArchitecture
 import VideoDomain
 import DesignKit
+import UIKit
 
 @Reducer
 public struct VideoFeature {
@@ -283,7 +284,9 @@ private extension VideoFeature {
             return .none
             
         case .alert(.presented(.confirm)):
-            print("확인")
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(url)
+            }
             return .none
         default:
             return .none

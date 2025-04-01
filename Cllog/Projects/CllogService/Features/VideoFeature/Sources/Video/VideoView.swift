@@ -66,15 +66,13 @@ private extension VideoView {
     var bodyView: some View {
         switch store.viewState {
         case .normal:
-            ZStack {
-                
-            }
+            ZStack {}
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.clLogUI.gray800)
             
         case .noneVideoPermission:
-            ZStack {
-                
-            }
+            ZStack {}
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.clLogUI.gray800)
             
         case .video:
