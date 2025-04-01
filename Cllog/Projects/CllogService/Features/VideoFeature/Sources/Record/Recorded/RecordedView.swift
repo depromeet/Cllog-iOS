@@ -22,6 +22,7 @@ public struct RecordedView: View {
     private weak var on: UIViewController?
 
     @Bindable private var store: StoreOf<RecordedFeature>
+    @State private var isEditTooltipOn: Bool
     
     public init(
         on: UIViewController?,
@@ -29,6 +30,16 @@ public struct RecordedView: View {
     ) {
         self.on = on
         self.store = store
+        
+        if VideoDataManager.isInitializedEditTooltipState == false {
+            
+            self.isEditTooltipOn = true
+            VideoDataManager.isEditTooltipOn = true
+            VideoDataManager.isInitializedEditTooltipState = true
+        } else {
+            self.isEditTooltipOn = VideoDataManager.isEditTooltipOn
+        }
+        
     }
     
     public var body: some View {
@@ -65,6 +76,10 @@ public struct RecordedView: View {
                 }, didTapCragTitleButton: {
                     store.send(.gradeTapCragTitleButton)
                 })
+            .onTapGesture {
+                self.isEditTooltipOn = false
+                VideoDataManager.isEditTooltipOn = false
+            }
     }
     
     @ViewBuilder
@@ -126,6 +141,7 @@ public struct RecordedView: View {
                         .background(Color.clLogUI.gray500.opacity(0.5))
                         .clipShape(Circle())
                 }
+                .tooltip(text: "편집 버튼으로 영상을\n자유롭게 수정할 수 있어요!", position: .bottomTrailing(offset: -21), verticalOffset: 12, isVisible: isEditTooltipOn)
             }
             .padding(.horizontal, 16)
         }
