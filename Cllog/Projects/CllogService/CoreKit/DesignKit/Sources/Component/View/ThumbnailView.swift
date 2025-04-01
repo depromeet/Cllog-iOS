@@ -77,6 +77,7 @@ public struct ThumbnailView: View {
                         } else {
                             ClLogUI.basicThumbnail
                                 .resizable()
+                                .aspectRatio(1, contentMode: .fill)
                         }
                     }
                     .frame(minHeight: 160)
