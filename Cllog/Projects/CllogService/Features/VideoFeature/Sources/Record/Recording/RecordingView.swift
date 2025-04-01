@@ -116,7 +116,7 @@ public struct RecordingView: View {
             RecodingButton(isRecoding: .init(
                 get: { true },
                 set: { newValue in }
-            ), onTapped: {
+            ), isRecordTooltipOn: .constant(false), onTapped: {
                 store.send(.onStopRecording)
             }).padding(.bottom, 40)
         }

@@ -15,6 +15,10 @@ enum VideoDataKey {
     static let attemptCount = "attemptCount"
     static let cragId = "cragId"
     static let savedGrade = "savedGrade"
+    static let isRecordTooltipOn = "isRecordTooltipOn"
+    static let isEditTooltipOn = "isEditTooltipOn"
+    static let isInitializedRecordTooltipState = "isInitializedRecordTooltipState"
+    static let isInitializedEditTooltipState = "isInitializedEditTooltipState"
 }
 
 struct VideoDataManager {
@@ -69,6 +73,42 @@ struct VideoDataManager {
             } else {
                 UserDefaults.standard.removeObject(forKey: VideoDataKey.problemId)
             }
+        }
+    }
+
+    static var isInitializedRecordTooltipState: Bool {
+        get {
+            UserDefaults.standard.bool(forKey: VideoDataKey.isInitializedRecordTooltipState)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: VideoDataKey.isInitializedRecordTooltipState)
+        }
+    }
+    
+    static var isInitializedEditTooltipState: Bool {
+        get {
+            UserDefaults.standard.bool(forKey: VideoDataKey.isInitializedEditTooltipState)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: VideoDataKey.isInitializedEditTooltipState)
+        }
+    }
+    
+    static var isRecordTooltipOn: Bool {
+        get {
+            UserDefaults.standard.bool(forKey: VideoDataKey.isRecordTooltipOn)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: VideoDataKey.isRecordTooltipOn)
+        }
+    }
+    
+    static var isEditTooltipOn: Bool {
+        get {
+            UserDefaults.standard.bool(forKey: VideoDataKey.isEditTooltipOn)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: VideoDataKey.isEditTooltipOn)
         }
     }
     

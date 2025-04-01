@@ -18,11 +18,21 @@ import ComposableArchitecture
 
 public struct VideoView: View {
     @Bindable private var store: StoreOf<VideoFeature>
+    @State private var isRecordTooltipOn: Bool
     
     public init(
         store: StoreOf<VideoFeature>
     ) {
         self.store = store
+        if VideoDataManager.isInitializedRecordTooltipState == false {
+            
+            self.isRecordTooltipOn = true
+            VideoDataManager.isRecordTooltipOn = true
+            VideoDataManager.isInitializedRecordTooltipState = true
+        } else {
+            self.isRecordTooltipOn = VideoDataManager.isRecordTooltipOn
+        }
+        
     }
     
     public var body: some View {
@@ -61,7 +71,6 @@ public struct VideoView: View {
 }
 
 private extension VideoView {
-    
     @ViewBuilder
     var bodyView: some View {
         switch store.viewState {
@@ -79,6 +88,10 @@ private extension VideoView {
             camerView
                 .onAppear {
                     store.send(.onStartSession)
+                }
+                .onTapGesture {
+                    isRecordTooltipOn = false
+                    VideoDataManager.isRecordTooltipOn = false
                 }
         }
     }
@@ -228,7 +241,8 @@ private extension VideoView {
                     RecodingButton(isRecoding: .init(
                         get: { false },
                         set: { newValue in }
-                    ), onTapped: {
+                    ), isRecordTooltipOn: $isRecordTooltipOn, onTapped: {
+                        self.isRecordTooltipOn = false
                         store.send(.onStartRecord)
                     })
                     
