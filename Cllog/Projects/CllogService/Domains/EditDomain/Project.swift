@@ -3,7 +3,7 @@ import ProjectDescriptionHelpers
 
 let project = Project.configure(
     moduleType: .domain(name: "Edit"),
-    product: .staticFramework,
+    product: .framework,
     dependencies: [
         .Modules.shared(.cllog)
     ]

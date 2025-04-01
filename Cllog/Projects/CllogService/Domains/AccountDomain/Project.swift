@@ -3,7 +3,7 @@ import ProjectDescriptionHelpers
 
 let project = Project.configure(
     moduleType: .domain(name: "Account"),
-    product: .staticFramework,
+    product: .framework,
     dependencies: [
         .Modules.shared(.cllog)
     ]
