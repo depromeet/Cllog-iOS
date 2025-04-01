@@ -209,6 +209,7 @@ public struct VideoEditFeature {
                     return .none
                 }
             case .didTapEditCancel:
+                
                 state.alert = AlertState {
                     TextState("편집 취소")
                 } actions: {
@@ -221,9 +222,19 @@ public struct VideoEditFeature {
                 } message: {
                     TextState("이 페이지를 나가면\n편집 내용이 적용되지 않아요")
                 }
-                return .none
+                if state.isPlaying {
+                    return .send(.didTapPlayPause)
+                } else {
+                    return .none
+                }
             case .alert(.presented(.confirm)):
-                return .send(.dismiss)
+                let videoUrl = state.video.videoUrl
+                return .run { send in
+                    await avPlayerClient.pause()
+                    await send(.delegate(.edittedVideo(video: Video(videoUrl: videoUrl, stampTimeList: []))))
+                    await send(.playerResponse(.playbackStatusChanged(isPlaying: false)))
+                    await send(.dismiss)
+                }
             case .alert(.presented(.cancel)):
                 return .none
             case .didTapEditCompelete:
@@ -238,9 +249,9 @@ public struct VideoEditFeature {
                     await send(.delegate(.edittedVideo(video: video)))
                     await send(.playerResponse(.playbackStatusChanged(isPlaying: false)))
                     await send(.dismiss)
-                    Current.clear()
                 }
             case .dismiss:
+                Current.clear()
                 state.shouldDismiss = true
                 return .none
             default:
