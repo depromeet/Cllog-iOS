@@ -12,6 +12,12 @@ import AVFoundation
 import Shared
 
 import Dependencies
+import Photos
+
+public enum VideoPermissionError: Error {
+    case unknown
+    case denied
+}
 
 public protocol VideoPermissionUseCase: Sendable {
     func execute() async throws
@@ -24,6 +30,7 @@ public struct VideoPermission: VideoPermissionUseCase {
     public func execute() async throws {
         try await checkVideoPermission()
         try await checkMicrophonePermission()
+        try await checkPhotoLibraryPermission()
     }
     
     private func checkVideoPermission() async throws {
@@ -35,14 +42,11 @@ public struct VideoPermission: VideoPermissionUseCase {
         try await withCheckedThrowingContinuation { continuation in
             AVCaptureDevice.requestAccess(for: .video) { granted in
                 if granted {
+                    print("✅ 카메라 권한 허용")
                     continuation.resume(returning: ())
                 } else {
-                    let error = NSError(
-                        domain: "VideoPermission",
-                        code: 1,
-                        userInfo: [NSLocalizedDescriptionKey: "Camera permission denied."]
-                    )
-                    continuation.resume(throwing: error)
+                    print("❌ 카메라 권한 없음")
+                    continuation.resume(throwing: VideoPermissionError.denied)
                 }
             }
         }
@@ -56,16 +60,28 @@ public struct VideoPermission: VideoPermissionUseCase {
         try await withCheckedThrowingContinuation { continuation in
             AVAudioApplication.requestRecordPermission(completionHandler: { granted in
                 if granted {
+                    print("✅ 마이크 권한 허용")
                     continuation.resume()
                 } else {
-                    let error = NSError(
-                        domain: "CapturePermission",
-                        code: 1,
-                        userInfo: [NSLocalizedDescriptionKey: "Microphone permission denied."]
-                    )
-                    continuation.resume(throwing: error)
+                    print("❌ 마이크 권한 없음")
+                    continuation.resume(throwing: VideoPermissionError.denied)
                 }
             })
+        }
+    }
+    
+    private func checkPhotoLibraryPermission() async throws {
+        let status = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+        
+        switch status {
+        case .authorized, .limited:
+            print("✅ 사진첩 권한 허용됨")
+            return
+        case .restricted, .denied, .notDetermined:
+            print("❌ 사진 라이브러리 권한 없음")
+            throw VideoPermissionError.denied
+        @unknown default:
+            break
         }
     }
 }
