@@ -14,7 +14,7 @@ import Photos
 import AppTrackingTransparency
  
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -28,9 +28,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Task {
             try? await Task.sleep(nanoseconds: 500_000_000)
             await requestTrackingAuthorization()
-            await requestPhotoLibraryPermission()
-            await requestVideoPermission()
             await checkMicrophonePermission()
+            await requestVideoPermission()
+            await requestPhotoLibraryPermission()
         }
         return true
     }

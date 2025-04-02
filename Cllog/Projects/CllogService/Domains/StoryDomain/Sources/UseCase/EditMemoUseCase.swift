@@ -35,10 +35,6 @@ public struct MockEditMemo: EditMemoUseCase {
 // MARK: - DependencyKey
 public enum EditMemoDependencyKey: DependencyKey {
     public static var liveValue: any EditMemoUseCase = ClLogDI.container.resolve(EditMemoUseCase.self)!
-    
-    public static var testValue: any EditMemoUseCase = MockEditMemo()
-    
-    public static var previewValue: any EditMemoUseCase = MockEditMemo()
 }
 
 public extension DependencyValues {
