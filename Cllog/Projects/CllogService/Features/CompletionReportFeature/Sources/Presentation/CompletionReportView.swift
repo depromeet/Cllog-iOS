@@ -118,6 +118,7 @@ extension CompletionReportView {
                     .resizable()
                     .scaledToFill()
                     .frame(height: 343)
+                    .frame(maxWidth: UIScreen.main.bounds.width - 32)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
             } else {
                 AsyncImage(url: URL(string: store.summary.thumbnailUrl ?? "")) { phase in
