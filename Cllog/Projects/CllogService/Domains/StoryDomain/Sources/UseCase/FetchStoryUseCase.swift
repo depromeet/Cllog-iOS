@@ -60,10 +60,6 @@ public struct MockFetchStory: FetchStoryUseCase {
 // MARK: - DependencyKey
 public enum FetchCalendarDependencyKey: DependencyKey {
     public static var liveValue: any FetchStoryUseCase = ClLogDI.container.resolve(FetchStoryUseCase.self)!
-    
-    public static var testValue: any FetchStoryUseCase = MockFetchStory()
-    
-    public static var previewValue: any FetchStoryUseCase = MockFetchStory()
 }
 
 public extension DependencyValues {

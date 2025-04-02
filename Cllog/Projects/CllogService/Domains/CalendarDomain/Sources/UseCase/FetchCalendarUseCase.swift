@@ -45,10 +45,6 @@ public struct MockFetchCalendar: FetchCalendarUseCase {
 
 public enum FetchCalendarDependencyKey: DependencyKey {
     public static var liveValue: any FetchCalendarUseCase = ClLogDI.container.resolve(FetchCalendarUseCase.self)!
-    
-    public static var testValue: any FetchCalendarUseCase = MockFetchCalendar()
-    
-    public static var previewValue: any FetchCalendarUseCase = MockFetchCalendar()
 }
 
 public extension DependencyValues {

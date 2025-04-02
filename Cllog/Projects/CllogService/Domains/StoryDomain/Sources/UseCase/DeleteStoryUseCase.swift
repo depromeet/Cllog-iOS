@@ -37,10 +37,6 @@ public struct MockDeleteStory: DeleteStoryUseCase {
 // MARK: - DependencyKey
 public enum DeleteStoryDependencyKey: DependencyKey {
     public static var liveValue: any DeleteStoryUseCase = ClLogDI.container.resolve(DeleteStoryUseCase.self)!
-    
-    public static var testValue: any DeleteStoryUseCase = MockDeleteStory()
-    
-    public static var previewValue: any DeleteStoryUseCase = MockDeleteStory()
 }
 
 public extension DependencyValues {

@@ -16,10 +16,6 @@ public struct VideoFeatureAssembly: Assembly {
     public init() {}
     
     public func assemble(container: Swinject.Container) {
-
-        container.register(VideoPermissionUseCase.self) { _ in
-            VideoPermission()
-        }
         
         container.register(VideoUseCase.self) { resolver in
             
@@ -33,7 +29,7 @@ public struct VideoFeatureAssembly: Assembly {
         }
         
         container.register(VideoFeature.self) { resolver in
-            return VideoFeature()
+            return VideoFeature(permission: VideoPermissionHandler())
         }
         
         container.register(RecordHomeFeature.self) { resolver in

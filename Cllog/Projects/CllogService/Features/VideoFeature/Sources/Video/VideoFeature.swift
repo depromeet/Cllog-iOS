@@ -21,6 +21,8 @@ public struct VideoFeature {
     @Dependency(\.gradeUseCase) var gradeUseCase
     @Dependency(\.registerProblemUseCase) var registerProblemUseCase
     
+    private let permission: PermissionHandler
+    
     @ObservableState
     public struct State: Equatable {
         // View State
@@ -112,7 +114,9 @@ public struct VideoFeature {
         case video
     }
     
-    public init() {}
+    public init(permission: PermissionHandler) {
+        self.permission = permission
+    }
     
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -143,9 +147,9 @@ private extension VideoFeature {
             state.grade = VideoDataManager.savedGrade
             state.cragId = VideoDataManager.cragId
             
-            return .run { [permissionUseCase] send in
+            return .run { [permission] send in
                 do {
-                    try await permissionUseCase.execute()
+                    try await permission.requestPermission()
                     await send(.updateViewState(.video))
                     
                     // 저장된 암장 Id 있는 경우 난이도 업데이트

@@ -58,10 +58,6 @@ public struct MockReportFetcher: ReportFetcherUseCase {
 // MARK: - DependencyKey
 public enum ReportFetcherDependencyKey: DependencyKey {
     public static var liveValue: any ReportFetcherUseCase = ClLogDI.container.resolve(ReportFetcherUseCase.self)!
-    
-    public static var testValue: any ReportFetcherUseCase = MockReportFetcher()
-    
-    public static var previewValue: any ReportFetcherUseCase = MockReportFetcher()
 }
 
 public extension DependencyValues {

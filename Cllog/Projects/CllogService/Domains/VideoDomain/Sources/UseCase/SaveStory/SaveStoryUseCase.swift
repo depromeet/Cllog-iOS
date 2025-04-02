@@ -39,10 +39,6 @@ public struct MockSaveStory: SaveStoryUseCase {
 // MARK: - DependencyKey
 public enum SaveStoryDependencyKey: DependencyKey {
     public static var liveValue: any SaveStoryUseCase = ClLogDI.container.resolve(SaveStoryUseCase.self)!
-    
-    public static var testValue: any SaveStoryUseCase = MockSaveStory()
-    
-    public static var previewValue: any SaveStoryUseCase = MockSaveStory()
 }
 
 public extension DependencyValues {

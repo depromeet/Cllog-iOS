@@ -44,10 +44,6 @@ public struct MockFutureMonthChecker: FutureMonthCheckerUseCase {
 
 public enum FutureMonthCheckerDependencyKey: DependencyKey {
     public static var liveValue: any FutureMonthCheckerUseCase = ClLogDI.container.resolve(FutureMonthCheckerUseCase.self)!
-    
-    public static var testValue: any FutureMonthCheckerUseCase = MockFutureMonthChecker()
-    
-    public static var previewValue: any FutureMonthCheckerUseCase = MockFutureMonthChecker()
 }
 
 public extension DependencyValues {

@@ -45,10 +45,6 @@ public struct MockRegisterProblem: RegisterProblemUseCase {
 // MARK: - DependencyKey
 public enum RegisterProblemDependencyKey: DependencyKey {
     public static var liveValue: any RegisterProblemUseCase = ClLogDI.container.resolve(RegisterProblemUseCase.self)!
-    
-    public static var testValue: any RegisterProblemUseCase = MockRegisterProblem()
-    
-    public static var previewValue: any RegisterProblemUseCase = MockRegisterProblem()
 }
 
 public extension DependencyValues {

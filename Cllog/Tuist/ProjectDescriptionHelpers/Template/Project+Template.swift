@@ -217,7 +217,6 @@ extension Project {
                 product: product,
                 bundleId: "\(configuration.bundleIdentifier).\(domainName.lowercased())",
                 deploymentTargets: configuration.deploymentTarget,
-                infoPlist: .extendingDefault(with: InfoPlist.permissionPlist()),
                 sources: ["Sources/**"],
                 resources: hasResources ? ["Resources/**"] : [],
                 dependencies: dependencies
