@@ -283,6 +283,9 @@ public struct VideoEditFeature {
             throw NSError(domain: "TrimVideo", code: 400, userInfo: [NSLocalizedDescriptionKey: "비디오 트랙을 찾을 수 없습니다"])
         }
         
+        // 원본 영상 회전 정보 저장
+        let transform = try? await videoTrack.load(.preferredTransform)
+        
         // 비디오 타임라인에 삽입
         let timeRange = CMTimeRange(
             start: CMTime(seconds: startTime, preferredTimescale: 600),
@@ -294,6 +297,11 @@ public struct VideoEditFeature {
             of: videoTrack,
             at: .zero
         )
+        
+        // 영상 회전 정보 추가
+        if let transform {
+            compositionVideoTrack.preferredTransform = transform
+        }
         
         // 오디오 트랙이 있으면 추가
         if let audioTrack = try await asset.loadTracks(withMediaType: .audio).first,
