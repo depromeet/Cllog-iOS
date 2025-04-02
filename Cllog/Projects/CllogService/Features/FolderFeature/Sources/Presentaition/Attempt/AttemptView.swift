@@ -241,6 +241,21 @@ extension AttemptView {
                 }
             }
             
+            if case .error = store.viewState {
+                VStack {
+                    Text("사진첩에서 영상을 찾을 수 없습니다.")
+                        .font(.h2)
+                        .foregroundStyle(Color.clLogUI.white)
+                    
+                    Text("사진첩에서 영상을 삭제하거나 편집한 경우\n영상을 찾을 수 없습니다.")
+                        .font(.b1)
+                        .foregroundStyle(Color.clLogUI.gray200)
+                        .multilineTextAlignment(.center)
+                        
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            
             PlayerProgressBar(
                 duration: Double(attempt.attempt.video.durationMs / 1000),
                 progress: CGFloat(store.progress),
