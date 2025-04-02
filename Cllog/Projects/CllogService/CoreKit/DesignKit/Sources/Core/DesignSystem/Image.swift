@@ -101,8 +101,10 @@ extension ClLogUI where Base == Image {
     // Edit
     public static var playSmall: Image { asset(#function) }
     public static var stopSmall: Image { asset(#function) }
-    public static var redo: Image { asset(#function) }
-    public static var undo: Image { asset(#function) }
+    public static var redoEnable: Image { asset(#function) }
+    public static var redoDisable: Image { asset(#function) }
+    public static var undoEnable: Image { asset(#function) }
+    public static var undoDisable: Image { asset(#function) }
     public static var edit: Image { asset(#function) }
     public static var delete: Image { asset(#function) }
     

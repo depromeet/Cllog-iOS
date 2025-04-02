@@ -85,7 +85,11 @@ public struct VideoEditView: View {
         Button {
             store.send(.didTapUndoStamp)
         } label: {
-            Image.clLogUI.undo
+            if store.stampList.isEmpty {
+                Image.clLogUI.undoDisable
+            } else {
+                Image.clLogUI.undoEnable
+            }
         }
     }
     
@@ -93,7 +97,11 @@ public struct VideoEditView: View {
         Button {
             store.send(.didTapRedoStamp)
         } label: {
-            Image.clLogUI.redo
+            if store.popedStampList.isEmpty {
+                Image.clLogUI.redoDisable
+            } else {
+                Image.clLogUI.redoEnable
+            }
         }
     }
     
