@@ -75,6 +75,14 @@ public struct AttemptFeature {
             case nil: 270
             }
         }
+        
+        // ViewState
+        var viewState: ViewState = .normal
+        
+        public enum ViewState {
+            case normal
+            case error
+        }
     }
     
     public enum Action: BindableAction {
@@ -115,6 +123,9 @@ public struct AttemptFeature {
         case deletedAttempt
         case deleteAttemptFinished
         
+        // errorHandler
+        case errorHandler(Error)
+        
         @CasePathable
         public enum Dialog: Equatable {
             case cancel
@@ -135,9 +146,13 @@ public struct AttemptFeature {
                 return .none
             case .shareButtonTapped:
                 return .run { [state] send in
-                    let attempt = try await attemptUseCase.execute(attemptId: state.attemptId)
-                    guard let url = await MediaUtility.getURL(fromAssetID: attempt.attempt.video.localPath) else { return }
-                    await send(.shareSetPath(url))
+                    do {
+                        let attempt = try await attemptUseCase.execute(attemptId: state.attemptId)
+                        let url = try await MediaUtility.getURL(fromAssetID: attempt.attempt.video.localPath)
+                        await send(.shareSetPath(url))
+                    } catch {
+                        await send(.errorHandler(error))
+                    }
                 }
             case .shareSetPath(let path):
                 state.sharedPath = path
@@ -310,6 +325,9 @@ public struct AttemptFeature {
             case .alert(.presented(.delete)):
                 return deleteAttempt(state.attemptId)
                 
+            case .errorHandler(let error):
+                state.viewState = .error
+                return .none
             default: return .none
             }
         }
@@ -325,12 +343,13 @@ extension AttemptFeature {
                 let attempt = try await attemptUseCase.execute(attemptId: attemptId)
                 await send(.getAttempt(attempt: attempt))
                 
-                if let url = await MediaUtility.getURL(fromAssetID: attempt.attempt.video.localPath) {
-                    await send(.getAssetURL(url: url))
-                }
+                let url = try await MediaUtility.getURL(fromAssetID: attempt.attempt.video.localPath)
+                print("localURL: \(url)")
+                await send(.getAssetURL(url: url))
+                
             } catch {
                 // TODO: show error message
-                debugPrint(error.localizedDescription)
+                await send(.errorHandler(error))
             }
         }
     }
