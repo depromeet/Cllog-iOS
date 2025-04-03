@@ -18,29 +18,29 @@ import VideoFeatureInterface
 import ComposableArchitecture
 
 public struct VideoView: View {
-    private let localVideoManager: VideoDataManager = LocalVideoDataManager()
+    @Dependency(\.videoDataManager) private var videoDataManager
+    
     @Bindable private var store: StoreOf<VideoFeature>
-    @State private var isRecordTooltipOn: Bool
+    @State private var isRecordTooltipOn: Bool = false
     
     public init(
         store: StoreOf<VideoFeature>
     ) {
         self.store = store
-        if localVideoManager.getIsInitializedRecordTooltipState() == false {
-            
-            self.isRecordTooltipOn = true
-            localVideoManager.setIsRecordTooltipOn(true)
-            localVideoManager.setIsInitializedRecordTooltipState(true)
-        } else {
-            self.isRecordTooltipOn = localVideoManager.getIsRecordTooltipOn()
-        }
-        
     }
     
     public var body: some View {
         bodyView
             .debugFrameSize()
             .onAppear {
+                if videoDataManager.getIsInitializedRecordTooltipState() == false {
+                    
+                    self.isRecordTooltipOn = true
+                    videoDataManager.setIsRecordTooltipOn(true)
+                    videoDataManager.setIsInitializedRecordTooltipState(true)
+                } else {
+                    self.isRecordTooltipOn = videoDataManager.getIsRecordTooltipOn()
+                }
                 store.send(.onAppear)
             }
             .overlay(
@@ -93,7 +93,7 @@ private extension VideoView {
                 }
                 .onTapGesture {
                     isRecordTooltipOn = false
-                    localVideoManager.setIsRecordTooltipOn(false)
+                    videoDataManager.setIsRecordTooltipOn(false)
                 }
         }
     }

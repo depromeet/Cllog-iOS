@@ -15,9 +15,8 @@ import ComposableArchitecture
 
 @Reducer
 public struct RecordingFeature {
-    
+    @Dependency(\.videoDataManager) private var videoDataManager
     @Dependency(\.continuousClock) var clock
-    private let localVideoManager: VideoDataManager = LocalVideoDataManager()
     
     @ObservableState
     public struct State: Equatable {
@@ -71,8 +70,8 @@ extension RecordingFeature {
     ) -> Effect<Action> {
         switch action {
         case .onAppear:
-            state.count = localVideoManager.getCount()
-            state.grade = localVideoManager.getSavedGrade()
+            state.count = videoDataManager.getCount()
+            state.grade = videoDataManager.getSavedGrade()
             return .run { send in
                 await send(.onStartSession)
                 await send(.onStartRecording)

@@ -12,14 +12,17 @@ import FolderDomain
 import DesignKit
 import Shared
 import Core
+import VideoFeatureInterface
 
 import ComposableArchitecture
 
 @Reducer
 public struct AttemptFeature {
+    
     @Dependency(\.attemptUseCase) private var attemptUseCase
     @Dependency(\.nearByCragUseCase) private var cragUseCase
     @Dependency(\.gradeUseCase) private var gradeUseCase
+    @Dependency(\.videoDataManager) private var videoDataManager
     
     public init() {}
     
@@ -358,6 +361,12 @@ extension AttemptFeature {
         return .run { send in
             do {
                 try await attemptUseCase.delete(attemptId: attemptId)
+                videoDataManager.decrementCount()
+                
+                if videoDataManager.getCount() == 0 {
+                    videoDataManager.clear()
+                }
+                
                 await send(.deleteAttemptFinished)
             } catch  {
                 // TODO: show error message

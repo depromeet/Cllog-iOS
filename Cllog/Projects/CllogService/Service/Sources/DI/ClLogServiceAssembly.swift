@@ -20,6 +20,9 @@ import Swinject
 import AccountDomain
 import ReportDomain
 
+import VideoFeatureInterface
+import VideoFeature
+
 public struct ClLogServiceAssembly: Assembly {
     public init() {}
     
@@ -268,6 +271,10 @@ public struct ClLogServiceAssembly: Assembly {
                     )
                 )
             )
+        }
+        
+        container.register(VideoDataManager.self) { _ in
+            LocalVideoDataManager()
         }
     }
 }

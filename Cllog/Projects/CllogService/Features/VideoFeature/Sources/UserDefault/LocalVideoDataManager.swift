@@ -23,63 +23,63 @@ enum VideoDataKey {
     static let isInitializedEditTooltipState = "isInitializedEditTooltipState"
 }
 
-final class LocalVideoDataManager: VideoDataManager {
+public final class LocalVideoDataManager: VideoDataManager {
     public init() {}
     
-    func getSavedStory() -> SavedStory? {
+    public func getSavedStory() -> SavedStory? {
         guard let storyId = storyId, let problemId = problemId else {
             return nil
         }
         return SavedStory(storyId: storyId, problemId: problemId)
     }
     
-    func incrementCount() {
+    public func incrementCount() {
         attemptCount += 1
     }
     
-    func decrementCount() {
+    public func decrementCount() {
         attemptCount -= 1
     }
     
-    func getCount() -> Int {
+    public func getCount() -> Int {
         attemptCount
     }
     
-    func getSavedGrade() -> SavedGrade? {
+    public func getSavedGrade() -> SavedGrade? {
         return savedGrade
     }
     
-    func changeProblemId(_ id: Int) {
+    public func changeProblemId(_ id: Int) {
         problemId = id
     }
     
-    func save(story: SavedStory?) {
+    public func save(story: SavedStory?) {
         storyId = story?.storyId
         problemId = story?.problemId
     }
     
-    func isFirstAttempt() -> Bool {
+    public func isFirstAttempt() -> Bool {
         storyId == nil
     }
     
-    func saveStory(_ story: SavedStory?) {
+    public func saveStory(_ story: SavedStory?) {
         self.storyId = story?.storyId
         self.problemId = story?.problemId
     }
     
-    func saveGrade(_ grade: SavedGrade?) {
+    public func saveGrade(_ grade: SavedGrade?) {
         savedGrade = grade
     }
     
-    func saveCragId(_ id: Int) {
+    public func saveCragId(_ id: Int) {
         self.cragId = id
     }
     
-    func getCragId() -> Int? {
+    public func getCragId() -> Int? {
         self.cragId
     }
     
-    func clear() {
+    public func clear() {
         savedGrade = nil
         cragId = nil
         storyId = nil
@@ -87,35 +87,35 @@ final class LocalVideoDataManager: VideoDataManager {
         attemptCount = 0
     }
     
-    func getIsRecordTooltipOn() -> Bool {
+    public func getIsRecordTooltipOn() -> Bool {
         isRecordTooltipOn
     }
     
-    func setIsRecordTooltipOn(_ isOn: Bool) {
+    public func setIsRecordTooltipOn(_ isOn: Bool) {
         isRecordTooltipOn = isOn
     }
     
-    func getIsEditTooltipOn() -> Bool {
+    public func getIsEditTooltipOn() -> Bool {
         isEditTooltipOn
     }
     
-    func setIsEditTooltipOn(_ isOn: Bool) {
+    public func setIsEditTooltipOn(_ isOn: Bool) {
         isEditTooltipOn = isOn
     }
     
-    func getIsInitializedRecordTooltipState() -> Bool {
+    public func getIsInitializedRecordTooltipState() -> Bool {
         isInitializedRecordTooltipState
     }
     
-    func setIsInitializedRecordTooltipState(_ isOn: Bool) {
+    public func setIsInitializedRecordTooltipState(_ isOn: Bool) {
         isInitializedRecordTooltipState = isOn
     }
     
-    func getIsInitializedEditTooltipState() -> Bool {
+    public func getIsInitializedEditTooltipState() -> Bool {
         isInitializedEditTooltipState
     }
     
-    func setIsInitializedEditTooltipState(_ isOn: Bool) {
+    public func setIsInitializedEditTooltipState(_ isOn: Bool) {
         isInitializedEditTooltipState = isOn
     }
 }

@@ -7,6 +7,8 @@
 //
 
 import VideoDomain
+import Dependencies
+import Shared
 
 public protocol VideoDataManager {
     /// 저장된 스토리를 가져오는 함수
@@ -56,4 +58,15 @@ public protocol VideoDataManager {
     
     func getIsInitializedEditTooltipState() -> Bool
     func setIsInitializedEditTooltipState(_ isOn: Bool)
+}
+
+enum VideoDataManagerDependencyKey: DependencyKey {
+    static let liveValue: VideoDataManager = ClLogDI.container.resolve(VideoDataManager.self)!
+}
+
+extension DependencyValues {
+    public var videoDataManager: VideoDataManager {
+        get { self[VideoDataManagerDependencyKey.self] }
+        set { self[VideoDataManagerDependencyKey.self] = newValue }
+    }
 }

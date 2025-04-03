@@ -19,12 +19,12 @@ import VideoFeatureInterface
 import ComposableArchitecture
 
 public struct RecordedView: View {
+    @Dependency(\.videoDataManager) private var videoDataManager
     
     private weak var on: UIViewController?
-    private let localVideoManager: VideoDataManager = LocalVideoDataManager()
     
     @Bindable private var store: StoreOf<RecordedFeature>
-    @State private var isEditTooltipOn: Bool
+    @State private var isEditTooltipOn: Bool = false
     
     public init(
         on: UIViewController?,
@@ -32,21 +32,20 @@ public struct RecordedView: View {
     ) {
         self.on = on
         self.store = store
-        
-        if localVideoManager.getIsInitializedEditTooltipState() == false {
-            
-            self.isEditTooltipOn = true
-            localVideoManager.setIsEditTooltipOn(true)
-            localVideoManager.setIsInitializedEditTooltipState(true)
-        } else {
-            self.isEditTooltipOn = localVideoManager.getIsEditTooltipOn()
-        }
-        
     }
     
     public var body: some View {
         bodyView
             .onAppear {
+                if videoDataManager.getIsInitializedEditTooltipState() == false {
+                    
+                    self.isEditTooltipOn = true
+                    videoDataManager.setIsEditTooltipOn(true)
+                    videoDataManager.setIsInitializedEditTooltipState(true)
+                } else {
+                    self.isEditTooltipOn = videoDataManager.getIsEditTooltipOn()
+                }
+                
                 store.send(.onAppear)
             }
             .presentDialog($store.scope(state: \.alert, action: \.alert), style: .default)
@@ -80,7 +79,7 @@ public struct RecordedView: View {
                 })
             .onTapGesture {
                 self.isEditTooltipOn = false
-                self.localVideoManager.setIsEditTooltipOn(false)
+                self.videoDataManager.setIsEditTooltipOn(false)
             }
     }
     
