@@ -15,20 +15,20 @@ import PulseUI
 
 extension Starlink.Request {
     
-    private func perform() async throws -> (Data, URLResponse) {
-        
+    private func perform(retryURLRequest: URLRequest? = nil) async throws -> (Data, URLResponse) {
+
         guard let urlConversion = try? path.asURL() else {
             throw StarlinkError.inValidURLPath(ErrorInfo(code: "-999", error: nil, message: nil))
         }
         
-        var urlRequest = URLRequest(url: urlConversion)
+        var urlRequest = retryURLRequest ?? URLRequest(url: urlConversion)
         urlRequest.httpMethod = "\(method)"
         
         if let parameters = params?.toDictionary() {
             try urlRequest = encoding.encode(&urlRequest, with: parameters)
         }
         
-        for interceptor in self.interceptors {
+        for interceptor in self.interceptors where retryURLRequest == nil {
             urlRequest = try await interceptor.adapt(&urlRequest)
         }
         
@@ -63,8 +63,8 @@ extension Starlink.Request {
             switch retryResult {
             case .retry:
                 // 재요청 이면 요청
-                return try await perform()
-                
+                return try await perform(retryURLRequest: urlRequest)
+
             case .doNotRetry:
                 // retry를 하지 않으면 throw error
                 throw error
@@ -115,7 +115,7 @@ extension Starlink.Request: StarlinkRequest {
         }
     }
     
-    public func uploadResponse<T>() async throws -> T where T : Decodable {
+    public func uploadResponse<T>(retryURLRequest: URLRequest? = nil) async throws -> T where T : Decodable {
         guard let uploadForm = self.uploadForm else {
             throw StarlinkError.inValidParams(.init(
                 code: "-999",
@@ -142,7 +142,7 @@ extension Starlink.Request: StarlinkRequest {
         let boundary = UUID().uuidString
         urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         
-        for interceptor in self.interceptors {
+        for interceptor in self.interceptors where retryURLRequest == nil {
             urlRequest = try await interceptor.adapt(&urlRequest)
         }
 
@@ -183,7 +183,7 @@ extension Starlink.Request: StarlinkRequest {
             switch retryResult {
             case .retry:
                 // 재요청 이면 요청
-                return try await uploadResponse()
+                return try await uploadResponse(retryURLRequest: urlRequest)
 
             case .doNotRetry:
                 // retry를 하지 않으면 throw error

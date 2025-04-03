@@ -38,4 +38,11 @@ public struct DefaultLoginRepository: LoginRepository {
         // Token 저장
         tokenDataSource.saveToken(response)
     }
+
+    public func refreshToken(_ refreshToken: String) async throws {
+        let response: AuthTokenDTO = try await authDataSource.refresh(refreshToken: refreshToken)
+
+        // Token 저장
+        tokenDataSource.saveToken(response)
+    }
 }

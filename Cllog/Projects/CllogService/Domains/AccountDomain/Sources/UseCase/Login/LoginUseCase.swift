@@ -13,6 +13,7 @@ import Shared
 public protocol LoginUseCase {
     func execute(idToken: String) async throws
     func execute(code: String, codeVerifier: String) async throws
+    func execute(refreshToken: String) async throws
 }
 
 public struct DefaultLoginUseCase: LoginUseCase {
@@ -28,6 +29,10 @@ public struct DefaultLoginUseCase: LoginUseCase {
     
     public func execute(code: String, codeVerifier: String) async throws {
         try await repository.login(code: code, codeVerifier: codeVerifier)
+    }
+
+    public func execute(refreshToken: String) async throws {
+        try await repository.refreshToken(refreshToken)
     }
 }
 

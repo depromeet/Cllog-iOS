@@ -11,7 +11,7 @@ import Dependencies
 import Shared
 
 public protocol ValidateUserSessionUseCase {
-    func fetch() -> Bool
+    func getRefreshToken() -> String?
 }
 
 public struct ValidateUserSession: ValidateUserSessionUseCase {
@@ -21,14 +21,14 @@ public struct ValidateUserSession: ValidateUserSessionUseCase {
     
     private let repository: TokenRepository
     
-    public func fetch() -> Bool {
-        repository.fetchValidateUserSession()
+    public func getRefreshToken() -> String? {
+        repository.getRefreshToken()
     }
 }
 
 public struct MockValidateUserSession: ValidateUserSessionUseCase {
-    public func fetch() -> Bool {
-        return true
+    public func getRefreshToken() -> String? {
+        return nil
     }
 }
 
