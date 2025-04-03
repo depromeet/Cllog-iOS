@@ -67,12 +67,12 @@ public struct AttemptFeature {
 //            case .video:
 //                251
             case .result:
-                230
+                210
             case .info:
                 700
             case .delete:
-                300
-            case nil: 270
+                250
+            case nil: 230
             }
         }
         

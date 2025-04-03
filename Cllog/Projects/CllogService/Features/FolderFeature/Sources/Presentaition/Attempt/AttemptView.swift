@@ -341,7 +341,7 @@ extension AttemptView {
                         }
                     }
                 }
-                .padding(.horizontal, 16)
+                
             } else {
                 
                 switch store.selectedAction {
