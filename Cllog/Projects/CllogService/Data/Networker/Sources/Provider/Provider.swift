@@ -31,7 +31,6 @@ extension Provider {
             session: session,
             interceptors: interceptors
         )
-        .option([StarlinkLogTraking()])
         .request(
             url,
             params: parameters,
@@ -52,7 +51,6 @@ extension Provider {
             session: session,
             interceptors: interceptors
         )
-        .option([StarlinkLogTraking()])
         .request(
             url,
             encodable: parameters,
@@ -79,7 +77,6 @@ extension UploadProvider {
             session: session,
             interceptors: interceptors
         )
-        .option([StarlinkLogTraking()])
         .request(
             url,
             encodable: parameters,
