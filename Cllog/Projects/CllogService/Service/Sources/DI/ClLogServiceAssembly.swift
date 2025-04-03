@@ -20,6 +20,9 @@ import Swinject
 import AccountDomain
 import ReportDomain
 
+import VideoFeatureInterface
+import VideoFeature
+
 public struct ClLogServiceAssembly: Assembly {
     public init() {}
     
@@ -271,6 +274,22 @@ public struct ClLogServiceAssembly: Assembly {
                     )
                 )
             )
+        }
+        
+        container.register(UpdateStoryStatusUseCase.self) { _ in
+            UpdateStoryStatus(
+                repository: DefaultStoryRepository(
+                    dataSource: DefaultStoriesDataSource(
+                        provider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
+                    )
+                )
+            )
+        }
+        
+        container.register(VideoDataManager.self) { _ in
+            LocalVideoDataManager()
         }
     }
 }

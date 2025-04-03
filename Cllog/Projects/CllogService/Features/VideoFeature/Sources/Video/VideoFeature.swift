@@ -9,6 +9,7 @@
 import Shared
 
 import ComposableArchitecture
+import VideoFeatureInterface
 import VideoDomain
 import DesignKit
 import UIKit
@@ -20,6 +21,8 @@ public struct VideoFeature {
     @Dependency(\.videoPermission) var permissionUseCase
     @Dependency(\.gradeUseCase) var gradeUseCase
     @Dependency(\.registerProblemUseCase) var registerProblemUseCase
+    @Dependency(\.videoDataManager) private var videoDataManager
+    @Dependency(\.updateStoryStatusUseCase) private var updateStoryStatusUseCase
     
     private let permission: PermissionHandler
     
@@ -143,9 +146,9 @@ private extension VideoFeature {
             return .none
             
         case .onAppear:
-            state.count = VideoDataManager.attemptCount
-            state.grade = VideoDataManager.savedGrade
-            state.cragId = VideoDataManager.cragId
+            state.count = videoDataManager.getCount()
+            state.grade = videoDataManager.getSavedGrade()
+            state.cragId = videoDataManager.getCragId()
             
             return .run { [permission] send in
                 do {
@@ -153,7 +156,7 @@ private extension VideoFeature {
                     await send(.updateViewState(.video))
                     
                     // 저장된 암장 Id 있는 경우 난이도 업데이트
-                    if let cragId = VideoDataManager.cragId {
+                    if let cragId = videoDataManager.getCragId() {
                         // TODO: 오류처리
                         let grades = try? await gradeUseCase.getCragGrades(cragId: cragId)
                         await send(.fetchedGrade(grades: grades ?? []))
@@ -171,7 +174,7 @@ private extension VideoFeature {
             return .none
             
         case .onStartSession:
-            state.count = VideoDataManager.attemptCount
+            state.count = videoDataManager.getCount()
             state.cameraModel.startSession()
             return .none
             
@@ -193,13 +196,13 @@ private extension VideoFeature {
             return .none
             
         case .endedStoryTapped:
-            guard let storyId = VideoDataManager.savedStory?.storyId else { return .none }
+            guard let storyId = videoDataManager.getSavedStory()?.storyId else { return .none }
             state.showProblemCheckCompleteBottomSheet = true
             state.problemCheckCompleteBottomSheetState = .init(storyId: storyId)
             return .none
             
         case .folderTapped:
-            guard let storyId = VideoDataManager.savedStory?.storyId else { return .none }
+            guard let storyId = videoDataManager.getSavedStory()?.storyId else { return .none }
             state.showFolderBottomSheet = true
             state.problemCheckState = .init(storyId: storyId)
             return .none
@@ -207,11 +210,11 @@ private extension VideoFeature {
         case .nextProblemTapped:
             state.showSelectGradeView = true
             state.selectedGrade = nil
-            guard state.cragId != VideoDataManager.cragId else {
+            guard state.cragId != videoDataManager.getCragId() else {
                 return .none
             }
             
-            guard let cragId = VideoDataManager.cragId else {
+            guard let cragId = videoDataManager.getCragId() else {
                 // 저장된 암장이 없는 경우, 난이도 선택 불가능
                 // 바로 영상 편집
                 return .none
@@ -232,13 +235,13 @@ private extension VideoFeature {
         case .fetchedGrade(let grades):
             state.grades = grades
             
-            if let previousGradeId = VideoDataManager.savedGrade?.id {
+            if let previousGradeId = videoDataManager.getSavedGrade()?.id {
                 let currentGrade = grades.first(where: { $0.id == previousGradeId })
                     .map { SavedGrade(id: $0.id, name: $0.name, hexCode: $0.hexCode) }
-                VideoDataManager.savedGrade = currentGrade
+                videoDataManager.saveGrade(currentGrade)
             } else {
                 // 저장된 난이도 정보가 없는 경우 난이도 정보 없음으로 초기화
-                VideoDataManager.savedGrade = nil
+                videoDataManager.saveGrade(nil)
                 state.selectedGrade = nil
             }
             return .none
@@ -253,10 +256,10 @@ private extension VideoFeature {
                     hexCode: grade.hexCode
                 )
                 state.grade = savedGrade
-                VideoDataManager.savedGrade = savedGrade
+                videoDataManager.saveGrade(savedGrade)
             } else {
                 state.grade = nil
-                VideoDataManager.savedGrade = nil
+                videoDataManager.saveGrade(nil)
             }
             state.selectedGrade = designGrade
             state.doNotSaveGrade = false
@@ -272,7 +275,7 @@ private extension VideoFeature {
             return problemCheckCore(&state, action)
             
         case .registerProblemSuccess(let problemId):
-            VideoDataManager.changeProblemId(problemId)
+            videoDataManager.changeProblemId(problemId)
             return .none
             
         case .showAlert:
@@ -303,11 +306,14 @@ private extension VideoFeature {
     ) -> Effect<Action> {
         switch action {
         case .finishTapped:
-            guard let storyId = VideoDataManager.savedStory?.storyId else { return .none }
-            VideoDataManager.clear()
+            guard let storyId = videoDataManager.getSavedStory()?.storyId else { return .none }
+            videoDataManager.clear()
             state.showProblemCheckCompleteBottomSheet = false
             state.count = 0
-            return .send(.recordCompleted(storyId))
+            return .merge(
+                .send(.recordCompleted(storyId)),
+                updateStoryStatus(storyId: storyId)
+            )
         default:
             return .none
         }
@@ -319,12 +325,12 @@ private extension VideoFeature {
     ) -> Effect<Action> {
         switch action {
         case .deleteSuccess:
-            VideoDataManager.attemptCount -= 1
-            state.count = VideoDataManager.attemptCount
+            videoDataManager.decrementCount()
+            state.count = videoDataManager.getCount()
             
             if state.count == 0 {
                 state.showFolderBottomSheet = false
-                VideoDataManager.clear()
+                videoDataManager.clear()
                 return .send(.recordCompleted(nil))
             }
             return .none
@@ -335,11 +341,21 @@ private extension VideoFeature {
     
     private func registerProblem(gradeId: Int?) -> Effect<Action> {
         .run { send in
-            guard let storyId = VideoDataManager.savedStory?.storyId else {
+            guard let storyId = videoDataManager.getSavedStory()?.storyId else {
                 return
             }
             let id = try await registerProblemUseCase.execute(storyId: storyId, gradeId: gradeId)
             await send(.registerProblemSuccess(id))
+        }
+    }
+    
+    private func updateStoryStatus(storyId: Int) -> Effect<Action> {
+        .run { send in
+            do {
+                try await updateStoryStatusUseCase.execute(storyId)
+            } catch {
+                print("updateStoryStatus Error: \(error)")
+            }
         }
     }
 }

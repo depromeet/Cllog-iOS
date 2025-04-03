@@ -11,4 +11,6 @@ import Foundation
 public protocol StoryRepository {
     func fetchSummary(_ storyId: Int) async throws -> StorySummary
     func fetchStory(_ storyId: Int) async throws -> Story
+    
+    func updateStatus(_ storyId: Int) async throws
 }

@@ -12,6 +12,7 @@ extension Project {
         moduleType: ModuleType,
         product: Product,
         dependencies: [TargetDependency],
+        interfaceDependencies: [TargetDependency] = [],
         packages: [Package] = [],
         hasTests: Bool = true,
         hasResources: Bool = false
@@ -137,7 +138,8 @@ extension Project {
                     name: featureTargetName,
                     organizationName: configuration.organizationName,
                     targets: targets,
-                    dependencies: dependencies
+                    dependencies: dependencies,
+                    interfaceDependencies: interfaceDependencies
                 )
             }
             
@@ -263,7 +265,8 @@ extension Project {
         name: String,
         organizationName: String,
         targets: [Target],
-        dependencies: [TargetDependency]
+        dependencies: [TargetDependency],
+        interfaceDependencies: [TargetDependency]
     ) -> Project {
         
         // Interface 타겟
@@ -281,6 +284,8 @@ extension Project {
         
         // Framework 타겟
         let frameworkTargetName = name
+        let frameworkDependencies = interfaceDependencies + [.target(name: interfaceTargetName)]
+        
         let frameworkTarget = Target.target(
             name: frameworkTargetName,
             destinations: configuration.destination,
@@ -289,9 +294,7 @@ extension Project {
             deploymentTargets: configuration.deploymentTarget,
             infoPlist: .default,
             sources: ["Sources/**"],
-            dependencies: [
-                .target(name: interfaceTargetName)
-            ]
+            dependencies: frameworkDependencies
         )
         
         // Demo 타겟
