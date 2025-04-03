@@ -6,9 +6,5 @@ let project = Project.configure(
     product: .staticFramework,
     dependencies: [
         .Core.core(.cllog),
-        
-    ],
-    interfaceDependencies: [
-        .Features.Video.interface
     ]
 )
