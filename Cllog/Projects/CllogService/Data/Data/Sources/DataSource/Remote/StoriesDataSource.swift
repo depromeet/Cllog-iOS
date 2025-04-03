@@ -17,6 +17,7 @@ public protocol StoriesDataSource {
     func memo(_ request: EditMemoRequestDTO) async throws
     func delete(_ storyId: Int) async throws
     func save(_ request: StoryRequestDTO) async throws -> SaveStoryResponseDTO
+    func updateStatus(_ storyId: Int) async throws
 }
 
 public final class DefaultStoriesDataSource: StoriesDataSource {
@@ -89,6 +90,12 @@ public final class DefaultStoriesDataSource: StoriesDataSource {
         
         return data
     }
+    
+    public func updateStatus(_ storyId: Int) async throws {
+        let _: BaseResponseDTO<EmptyResponseDTO> = try await provider.request(
+            StoriesTarget.updateStatus(storyId)
+        )
+    }
 }
 
 enum StoriesTarget {
@@ -98,6 +105,7 @@ enum StoriesTarget {
     case memo(EditMemoRequestDTO)
     case delete(Int)
     case save(StoryRequestDTO)
+    case updateStatus(Int)
 }
 
 extension StoriesTarget: EndpointType {
@@ -117,6 +125,8 @@ extension StoriesTarget: EndpointType {
             return "/\(request.storyId)/memo"
         case .delete(let storyId):
             return "/\(storyId)"
+        case .updateStatus(let storyId):
+            return "/\(storyId)/status/DONE"
         case .save:
             return ""
         }
@@ -126,7 +136,7 @@ extension StoriesTarget: EndpointType {
         switch self {
         case .stories, .summary:
             return .get
-        case .memo:
+        case .memo, .updateStatus:
             return .patch
         case .delete:
             return .delete
@@ -137,7 +147,7 @@ extension StoriesTarget: EndpointType {
     
     var parameters: ParameterType? {
         switch self {
-        case .stories, .summary, .delete:
+        case .stories, .summary, .delete, .updateStatus:
             return .none
         case .memo(let request):
             return .encodable(request.body)
@@ -159,7 +169,7 @@ extension StoriesTarget: EndpointType {
     
     var encodable: Encodable? {
         switch self {
-        case .stories, .summary, .memo, .delete, .save, .problem:
+        case .stories, .summary, .memo, .delete, .save, .problem, .updateStatus:
             return .none
         }
     }
@@ -172,7 +182,7 @@ extension StoriesTarget: EndpointType {
         switch self {
         case .stories, .summary, .delete:
             return Starlink.StarlinkURLEncoding()
-        case .memo, .save, .problem:
+        case .memo, .save, .problem, .updateStatus:
             return Starlink.StarlinkJSONEncoding()
         }
         

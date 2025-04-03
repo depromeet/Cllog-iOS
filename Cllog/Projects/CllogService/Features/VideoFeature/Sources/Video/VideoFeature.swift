@@ -22,6 +22,7 @@ public struct VideoFeature {
     @Dependency(\.gradeUseCase) var gradeUseCase
     @Dependency(\.registerProblemUseCase) var registerProblemUseCase
     @Dependency(\.videoDataManager) private var videoDataManager
+    @Dependency(\.updateStoryStatusUseCase) private var updateStoryStatusUseCase
     
     private let permission: PermissionHandler
     
@@ -309,7 +310,10 @@ private extension VideoFeature {
             videoDataManager.clear()
             state.showProblemCheckCompleteBottomSheet = false
             state.count = 0
-            return .send(.recordCompleted(storyId))
+            return .merge(
+                .send(.recordCompleted(storyId)),
+                updateStoryStatus(storyId: storyId)
+            )
         default:
             return .none
         }
@@ -342,6 +346,16 @@ private extension VideoFeature {
             }
             let id = try await registerProblemUseCase.execute(storyId: storyId, gradeId: gradeId)
             await send(.registerProblemSuccess(id))
+        }
+    }
+    
+    private func updateStoryStatus(storyId: Int) -> Effect<Action> {
+        .run { send in
+            do {
+                try await updateStoryStatusUseCase.execute(storyId)
+            } catch {
+                print("updateStoryStatus Error: \(error)")
+            }
         }
     }
 }
