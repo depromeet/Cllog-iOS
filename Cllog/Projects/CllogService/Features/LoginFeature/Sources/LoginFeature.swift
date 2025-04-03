@@ -89,9 +89,9 @@ public struct LoginFeature {
             UserApi.shared.loginWithKakaoTalk { oauthToken, error in
                 if let error {
                     continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(returning: oauthToken?.idToken)
                 }
-                
-                continuation.resume(returning: oauthToken?.idToken)
             }
         }
     }
@@ -102,9 +102,9 @@ public struct LoginFeature {
             UserApi.shared.loginWithKakaoAccount { oauthToken, error in
                 if let error {
                     continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(returning: oauthToken?.idToken)
                 }
-                
-                continuation.resume(returning: oauthToken?.idToken)
             }
         }
     }
