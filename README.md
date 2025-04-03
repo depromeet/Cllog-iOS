@@ -3,26 +3,25 @@
 
 [![image](https://github.com/user-attachments/assets/adaa1426-3bf0-41e9-b729-fc8b3b195bdb)](https://apps.apple.com/kr/app/%ED%81%B4%EB%A1%9C%EA%B7%B8/id6741767026)
 
+
 <br />
 
-## 🔥 핵심 기능
+## <img src = "https://github.com/user-attachments/assets/66b570dc-9770-425b-9ca9-f3b394aaa0de" width = 30> 핵심 기능
 > 찍은 클라이밍 영상, 갤러리에서 바로 찾지 못해 불편하지 않으셨나요?  
 > 혹은 기록할 곳이 마땅히 없어 SNS에 따로 아카이빙 하지 않으셨나요?  
 > 클로그를 통해 쉽게 클라이밍을 찍고 편집과 리포트로 나만의 기록을 남겨요!
 
-### 영상 촬영 & 편집
+### <img src = "https://github.com/user-attachments/assets/a9e85466-e095-45b6-83de-1649dafc8252" width = 20> 영상 촬영 & 편집
 - 클라이밍 장면을 촬영하고, 손쉽게 편집해요.
 - 다시 보고 싶은 구간을 스탬프로 기록할 수 있어요.
 - 암장에서 제공하는 난이도를 저장할 수 있어요.
 
-### 영상 스탬프
+### <img src = "https://github.com/user-attachments/assets/25aaa446-eaf5-40a0-a488-5348b79e888d" width = 20> 영상 폴더링 & 영상 확인
 - 기록한 스탬프로 다시 보고 싶은 구간을 쉽게 이동할 수 있어요
-
-### 영상 폴더링
 - 기록한 클라이밍 영상을 쉽게 모아볼 수 있어요.
 - 기록한 정보를 기반으로, 기록을 쉽게 확인할 수 있어요.
 
-### 성장 리포트
+### <img src = "https://github.com/user-attachments/assets/76623eaf-d62f-42dc-9048-8bc7f02f9dfc" width = 20> 성장 리포트
 - 클라이밍 성장 기록으로 한 눈에 확인 할 수 있어요.
 - 인스타그램으로 기록을 공유해보세요
 
