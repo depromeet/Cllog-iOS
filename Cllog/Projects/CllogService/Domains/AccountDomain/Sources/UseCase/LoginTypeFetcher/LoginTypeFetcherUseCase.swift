@@ -51,9 +51,9 @@ public struct MockLoginTypeFetcher: LoginTypeFetcherUseCase {
 public enum LoginTypeFetcherDependencyKey: DependencyKey {
     public static var liveValue: any LoginTypeFetcherUseCase = ClLogDI.container.resolve(LoginTypeFetcherUseCase.self)!
     
-    public static var testValue: any LoginTypeFetcherUseCase = MockLoginTypeFetcher()
+//    public static var testValue: any LoginTypeFetcherUseCase = MockLoginTypeFetcher()
     
-    public static var previewValue: any LoginTypeFetcherUseCase = MockLoginTypeFetcher()
+//    public static var previewValue: any LoginTypeFetcherUseCase = MockLoginTypeFetcher()
 }
 
 public extension DependencyValues {

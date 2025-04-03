@@ -40,9 +40,9 @@ public struct MockSaveAttempt: SaveAttemptUseCase {
 public enum SaveAttemptDependencyKey: DependencyKey {
     public static var liveValue: any SaveAttemptUseCase = ClLogDI.container.resolve(SaveAttemptUseCase.self)!
     
-    public static var testValue: any SaveAttemptUseCase = MockSaveAttempt()
+//    public static var testValue: any SaveAttemptUseCase = MockSaveAttempt()
     
-    public static var previewValue: any SaveAttemptUseCase = MockSaveAttempt()
+//    public static var previewValue: any SaveAttemptUseCase = MockSaveAttempt()
 }
 
 public extension DependencyValues {

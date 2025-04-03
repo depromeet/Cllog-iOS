@@ -35,9 +35,9 @@ public struct MockValidateUserSession: ValidateUserSessionUseCase {
 public enum ValidateUserSessionDependencyKey: DependencyKey {
     public static var liveValue: any ValidateUserSessionUseCase = ClLogDI.container.resolve(ValidateUserSessionUseCase.self)!
     
-    public static var testValue: any ValidateUserSessionUseCase = MockValidateUserSession()
+//    public static var testValue: any ValidateUserSessionUseCase = MockValidateUserSession()
     
-    public static var previewValue: any ValidateUserSessionUseCase = MockValidateUserSession()
+//    public static var previewValue: any ValidateUserSessionUseCase = MockValidateUserSession()
 }
 
 public extension DependencyValues {
