@@ -53,7 +53,7 @@ public final class UploadProvider: UploadProviderable, Sendable {
                 )
             }
         }
-        let response: T = try await reqeust.uploadResponse()
+        let response: T = try await reqeust.uploadResponse(retryURLRequest: nil)
         
         return response
     }
