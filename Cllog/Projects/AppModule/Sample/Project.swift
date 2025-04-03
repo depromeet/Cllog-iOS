@@ -14,6 +14,7 @@ let project = Project.configure(
     dependencies: [
         .Modules.umbrella,
         
-        .Library.FirebaseAnalytics
+        .Library.FirebaseAnalytics,
+        .Library.FirebasePerformance
     ]
 )

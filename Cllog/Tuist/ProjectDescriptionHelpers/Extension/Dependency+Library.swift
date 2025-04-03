@@ -31,7 +31,7 @@ public extension TargetDependency.Library {
     
     // 파이어베이스
     static let FirebaseAnalytics = TargetDependency.external(name: "FirebaseAnalytics")
+    static let FirebasePerformance = TargetDependency.external(name: "FirebasePerformance")
 //    static let FirebaseMessaging = TargetDependency.external(name: "FirebaseMessaging")
-//    static let FirebasePerformance = TargetDependency.external(name: "FirebasePerformance")
 //    static let FirebaseRemoteConfig = TargetDependency.external(name: "FirebaseRemoteConfig")
 }

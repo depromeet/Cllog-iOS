@@ -21,7 +21,7 @@ import ProjectDescriptionHelpers
 
 let package = Package(
     name: "TestProject",
-    platforms: [.iOS(.v16)],
+    platforms: [.iOS(.v17)],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.17.1"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", "5.9.1"..."6.0.0"),

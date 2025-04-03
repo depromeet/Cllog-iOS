@@ -73,7 +73,7 @@ extension Scheme {
         testTargetName: String? = nil,
         codeCoverageTargets: [String] = []
     ) -> Scheme {
-        let argument = Arguments.arguments()
+        let argument = Arguments.firebaseDebug
         
         // TestAction 생성
         let buildAction = BuildAction.buildAction(targets: [TargetReference(stringLiteral: schemeName)])
@@ -118,4 +118,10 @@ extension Scheme {
                 analyzeAction: analyzeAction
         )
     }
+}
+
+extension Arguments {
+    static let firebaseDebug: Arguments = Arguments.arguments(
+        launchArguments: [LaunchArgument.launchArgument(name: "-FIRDebugEnabled", isEnabled: true)]
+    )
 }
