@@ -31,7 +31,10 @@ public struct ClLogServiceAssembly: Assembly {
             DefaultLoginUseCase(
                 repository: DefaultLoginRepository(
                     authDataSource: DefaultAuthDataSource(
-                        provider: UnAuthProvider()
+                        unAuthProvider: UnAuthProvider(),
+                        authProvider: AuthProvider(
+                            tokenProvider: DefaultTokenDataSource().loadToken
+                        )
                     ),
                     tokenDataSource: DefaultTokenDataSource()
                 )

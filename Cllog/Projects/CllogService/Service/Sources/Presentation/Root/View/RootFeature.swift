@@ -17,10 +17,15 @@ import SplashFeature
 import OnboardingFeature
 import NickNameFeature
 import Shared
+import Foundation
+import Combine
 
 @Reducer
 public struct RootFeature {
     @Dependency(\.accountUseCase) private var accountUseCase
+    @Dependency(\.loginTypeFetcherUseCase) var loginTypeFetcherUseCase
+    
+    enum CancelID { case kickOutNotification }
     
     @ObservableState
     public struct State: Equatable {
@@ -49,6 +54,9 @@ public struct RootFeature {
         
         // NickName
         case nickNameAction(NickNameFeature.Action)
+        
+        // kickout
+        case didReceiveKickOutNotification
     }
     
     public var body: some ReducerOf<Self> {
@@ -69,7 +77,10 @@ public struct RootFeature {
                 NickNameFeature()
             }
     }
-    
+}
+
+// MARK: - Reducer Core
+private extension RootFeature {
     /// Home Action
     /// - Parameters:
     ///   - state: 저장소
@@ -81,7 +92,19 @@ public struct RootFeature {
     ) -> Effect<Action> {
         switch action {
         case .onAppear:
-            return .none
+            return Effect.publisher {
+                NotificationCenter.default
+                    .publisher(for: .didKickOut)
+                    .map { _ -> Action in .didReceiveKickOutNotification }
+                    .eraseToAnyPublisher()
+            }
+            .cancellable(id: CancelID.kickOutNotification)
+            
+        case .didReceiveKickOutNotification:
+            return .run { send in
+                await loginTypeFetcherUseCase.clear()
+                await send(.changeDestination(.login))
+            }
             
         case .splashAction(let action):
             return splashCore(&state, action)
@@ -110,8 +133,8 @@ public struct RootFeature {
             case .nickName:
                 state.nickNameState = NickNameFeature.State(viewState: .create)
             }
-            
             return .none
+            
         case .onboardingAction(let action):
             return onboardingCore(&state, action)
         }
