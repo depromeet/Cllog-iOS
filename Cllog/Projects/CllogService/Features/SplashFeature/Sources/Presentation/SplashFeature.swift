@@ -21,22 +21,24 @@ public enum Destination {
 @Reducer
 public struct SplashFeature {
     @Dependency(\.validateUserSessionUseCase) private var validateUserSessionUseCase
+    @Dependency(\.loginUseCase) private var loginUseCase
     public init() {}
     
     @ObservableState
     public struct State: Equatable {
         var isAnimationFinished: Bool = false
         var isValidUserFinished: Bool = false
-        
-        var isValidUserSession: Bool = false
+
+        var refreshToken: String?
         public init() {}
     }
     
     public enum Action: Equatable {
         case onAppear
         case animationFinished
-        case validateUserSession(Bool)
+        case validateUserSession(refershToken: String?)
         case checkCompletion
+        case refershToken(refrshToken: String)
         case finish(Destination)
     }
     
@@ -50,8 +52,8 @@ extension SplashFeature {
         switch action {
         case .onAppear:
             return validateUserSession()
-        case .validateUserSession(let result):
-            state.isValidUserSession = result
+        case .validateUserSession(let refershToken):
+            state.refreshToken = refershToken
             state.isValidUserFinished = true
             return .send(.checkCompletion)
         case .animationFinished:
@@ -65,11 +67,22 @@ extension SplashFeature {
                 return .send(.finish(.onBoarding))
             }
             
-            if state.isValidUserSession {
-                return .send(.finish(.main))
+            if let refreshToken = state.refreshToken {
+                return .send(.refershToken(refrshToken: refreshToken))
             } else {
                 return .send(.finish(.login))
             }
+
+        case .refershToken(let refreshToken):
+            return .run { send in
+                do {
+                    try await loginUseCase.execute(refreshToken: refreshToken)
+                    await send(.finish(.main))
+                } catch {
+                    await send(.finish(.login))
+                }
+            }
+
         default:
             return .none
         }
@@ -77,8 +90,8 @@ extension SplashFeature {
     
     private func validateUserSession() -> Effect<Action> {
         .run { send in
-            let result = validateUserSessionUseCase.fetch()
-            await send(.validateUserSession(result))
+            let refershToken = validateUserSessionUseCase.getRefreshToken()
+            await send(.validateUserSession(refershToken: refershToken))
         }
     }
 }
