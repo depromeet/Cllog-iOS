@@ -12,11 +12,13 @@ import SwiftUI
 
 // 내부 Module
 import DesignKit
+import VideoFeatureInterface
 
 // 외부 Module
 import ComposableArchitecture
 
 public struct VideoView: View {
+    private let localVideoManager: VideoDataManager = LocalVideoDataManager()
     @Bindable private var store: StoreOf<VideoFeature>
     @State private var isRecordTooltipOn: Bool
     
@@ -24,13 +26,13 @@ public struct VideoView: View {
         store: StoreOf<VideoFeature>
     ) {
         self.store = store
-        if VideoDataManager.isInitializedRecordTooltipState == false {
+        if localVideoManager.getIsInitializedRecordTooltipState() == false {
             
             self.isRecordTooltipOn = true
-            VideoDataManager.isRecordTooltipOn = true
-            VideoDataManager.isInitializedRecordTooltipState = true
+            localVideoManager.setIsRecordTooltipOn(true)
+            localVideoManager.setIsInitializedRecordTooltipState(true)
         } else {
-            self.isRecordTooltipOn = VideoDataManager.isRecordTooltipOn
+            self.isRecordTooltipOn = localVideoManager.getIsRecordTooltipOn()
         }
         
     }
@@ -91,7 +93,7 @@ private extension VideoView {
                 }
                 .onTapGesture {
                     isRecordTooltipOn = false
-                    VideoDataManager.isRecordTooltipOn = false
+                    localVideoManager.setIsRecordTooltipOn(false)
                 }
         }
     }

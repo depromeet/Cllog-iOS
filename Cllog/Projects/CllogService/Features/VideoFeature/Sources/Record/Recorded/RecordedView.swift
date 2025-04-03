@@ -13,6 +13,7 @@ import SwiftUI
 import Shared
 import DesignKit
 import Core
+import VideoFeatureInterface
 
 // 외부 Module
 import ComposableArchitecture
@@ -20,7 +21,8 @@ import ComposableArchitecture
 public struct RecordedView: View {
     
     private weak var on: UIViewController?
-
+    private let localVideoManager: VideoDataManager = LocalVideoDataManager()
+    
     @Bindable private var store: StoreOf<RecordedFeature>
     @State private var isEditTooltipOn: Bool
     
@@ -31,13 +33,13 @@ public struct RecordedView: View {
         self.on = on
         self.store = store
         
-        if VideoDataManager.isInitializedEditTooltipState == false {
+        if localVideoManager.getIsInitializedEditTooltipState() == false {
             
             self.isEditTooltipOn = true
-            VideoDataManager.isEditTooltipOn = true
-            VideoDataManager.isInitializedEditTooltipState = true
+            localVideoManager.setIsEditTooltipOn(true)
+            localVideoManager.setIsInitializedEditTooltipState(true)
         } else {
-            self.isEditTooltipOn = VideoDataManager.isEditTooltipOn
+            self.isEditTooltipOn = localVideoManager.getIsEditTooltipOn()
         }
         
     }
@@ -78,7 +80,7 @@ public struct RecordedView: View {
                 })
             .onTapGesture {
                 self.isEditTooltipOn = false
-                VideoDataManager.isEditTooltipOn = false
+                self.localVideoManager.setIsEditTooltipOn(false)
             }
     }
     

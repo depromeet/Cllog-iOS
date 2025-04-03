@@ -8,6 +8,7 @@
 
 import Foundation
 import AVFoundation
+import VideoFeatureInterface
 
 import DesignKit
 import VideoDomain
@@ -26,6 +27,8 @@ public struct RecordedFeature {
     @Dependency(\.saveAttemptUseCase) private var saveAttemptUseCase
     @Dependency(\.nearByCragUseCase) private var cragUseCase
     @Dependency(\.gradeUseCase) private var gradeUseCase
+    
+    private let localVideoManager: VideoDataManager = LocalVideoDataManager()
     
     @ObservableState
     public struct State: Equatable {
@@ -321,7 +324,7 @@ extension RecordedFeature {
         case .successTapped:
             // 성공하기로 저장 버튼 클릭
             state.climbingResult = .success
-            if VideoDataManager.isFirstAttempt() {
+            if localVideoManager.isFirstAttempt() {
                 // 첫 시도
                 state.showSelectCragBottomSheet = true
                 return .run { send in
@@ -340,7 +343,7 @@ extension RecordedFeature {
         case .failureTapped:
             // 실패하기로 저장 버튼 클릭
             state.climbingResult = .failure
-            if VideoDataManager.isFirstAttempt() {
+            if localVideoManager.isFirstAttempt() {
                 // 첫 시도
                 state.showSelectCragBottomSheet = true
                 return .run { send in
@@ -409,7 +412,7 @@ extension RecordedFeature {
             
         case .cragSaveButtonTapped(let designCrag):
             // 암장 선택 바텀시트 - 저장버튼 클릭
-            VideoDataManager.cragId = designCrag.id
+            localVideoManager.saveCragId(designCrag.id)
             state.showSelectCragBottomSheet = false
             
             state.selectedDesignCrag = designCrag
@@ -513,20 +516,22 @@ extension RecordedFeature {
     private func saveSelectedGrade(grades: [Grade], selectedGrade: DesignGrade?) {
         let grade = grades.first(where: { $0.id == selectedGrade?.id })
         if let grade {
-            VideoDataManager.savedGrade = SavedGrade(
-                id: grade.id,
-                name: grade.name,
-                hexCode: grade.hexCode
+            localVideoManager.saveGrade(
+                SavedGrade(
+                    id: grade.id,
+                    name: grade.name,
+                    hexCode: grade.hexCode
+                )
             )
         } else {
-            VideoDataManager.savedGrade = nil
+            localVideoManager.saveStory(nil)
         }
     }
     
     /// 시도 저장
     private func registerAttempts(_ state: State) -> Effect<Action> {
         return .run { send in
-            guard let story = VideoDataManager.savedStory else { return }
+            guard let story = localVideoManager.getSavedStory() else { return }
             
             let thumbNailImage = try await generateImage(path: state.path, totalDuration: Int(state.totalDuration))
             
@@ -551,7 +556,7 @@ extension RecordedFeature {
             
             do {
                 try await saveAttemptUseCase.register(request)
-                VideoDataManager.attemptCount += 1
+                localVideoManager.incrementCount()
                 await send(.saveSuccess)
             } catch {
                 await send(.saveFailure(error))
@@ -561,7 +566,7 @@ extension RecordedFeature {
     
     /// 최초 스토리 저장
     private func registerStory(_ state: State) -> Effect<Action> {
-        return .run { send in
+        return .run { [localVideoManager] send in
             let thumbNailImage = try await generateImage(path: state.path, totalDuration: Int(state.totalDuration))
             
             let thumbNail = try? await videoUseCase.execute(
@@ -571,7 +576,7 @@ extension RecordedFeature {
             )
             
             let assetId = try await videoUseCase.execute(saveFile: state.path)
-            let grade = VideoDataManager.savedGrade
+            let grade = localVideoManager.getSavedGrade()
             let request = StoryRequest(
                 cragId: state.selectedDesignCrag?.id,
                 problem: ProblemRequest(gradeId: grade?.id), // 난이도 ID
@@ -590,8 +595,8 @@ extension RecordedFeature {
             
             do {
                 let response = try await saveStoryUseCase.execute(request)
-                VideoDataManager.save(story: response)
-                VideoDataManager.attemptCount += 1
+                localVideoManager.saveStory(response)
+                localVideoManager.incrementCount()
                 await send(.saveSuccess)
             } catch {
                 await send(.saveFailure(error))

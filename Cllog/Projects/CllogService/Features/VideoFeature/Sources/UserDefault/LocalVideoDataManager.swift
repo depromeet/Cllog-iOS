@@ -9,6 +9,8 @@
 import Foundation
 import VideoDomain
 
+import VideoFeatureInterface
+
 enum VideoDataKey {
     static let storyId = "storyId"
     static let problemId = "problemId"
@@ -21,28 +23,63 @@ enum VideoDataKey {
     static let isInitializedEditTooltipState = "isInitializedEditTooltipState"
 }
 
-struct VideoDataManager {
-    static var savedStory: SavedStory? {
+final class LocalVideoDataManager: VideoDataManager {
+    public init() {}
+    
+    func getSavedStory() -> SavedStory? {
         guard let storyId = storyId, let problemId = problemId else {
             return nil
         }
         return SavedStory(storyId: storyId, problemId: problemId)
     }
     
-    static func changeProblemId(_ id: Int) {
+    func incrementCount() {
+        attemptCount += 1
+    }
+    
+    func decrementCount() {
+        attemptCount -= 1
+    }
+    
+    func getCount() -> Int {
+        attemptCount
+    }
+    
+    func getSavedGrade() -> SavedGrade? {
+        return savedGrade
+    }
+    
+    func changeProblemId(_ id: Int) {
         problemId = id
     }
     
-    static func save(story: SavedStory) {
-        storyId = story.storyId
-        problemId = story.problemId
+    func save(story: SavedStory?) {
+        storyId = story?.storyId
+        problemId = story?.problemId
     }
     
-    static func isFirstAttempt() -> Bool {
+    func isFirstAttempt() -> Bool {
         storyId == nil
     }
     
-    static func clear() {
+    func saveStory(_ story: SavedStory?) {
+        self.storyId = story?.storyId
+        self.problemId = story?.problemId
+    }
+    
+    func saveGrade(_ grade: SavedGrade?) {
+        savedGrade = grade
+    }
+    
+    func saveCragId(_ id: Int) {
+        self.cragId = id
+    }
+    
+    func getCragId() -> Int? {
+        self.cragId
+    }
+    
+    func clear() {
         savedGrade = nil
         cragId = nil
         storyId = nil
@@ -50,7 +87,41 @@ struct VideoDataManager {
         attemptCount = 0
     }
     
-    private static var storyId: Int? {
+    func getIsRecordTooltipOn() -> Bool {
+        isRecordTooltipOn
+    }
+    
+    func setIsRecordTooltipOn(_ isOn: Bool) {
+        isRecordTooltipOn = isOn
+    }
+    
+    func getIsEditTooltipOn() -> Bool {
+        isEditTooltipOn
+    }
+    
+    func setIsEditTooltipOn(_ isOn: Bool) {
+        isEditTooltipOn = isOn
+    }
+    
+    func getIsInitializedRecordTooltipState() -> Bool {
+        isInitializedRecordTooltipState
+    }
+    
+    func setIsInitializedRecordTooltipState(_ isOn: Bool) {
+        isInitializedRecordTooltipState = isOn
+    }
+    
+    func getIsInitializedEditTooltipState() -> Bool {
+        isInitializedEditTooltipState
+    }
+    
+    func setIsInitializedEditTooltipState(_ isOn: Bool) {
+        isInitializedEditTooltipState = isOn
+    }
+}
+
+extension LocalVideoDataManager {
+    private var storyId: Int? {
         get {
             UserDefaults.standard.object(forKey: VideoDataKey.storyId) as? Int
         }
@@ -63,7 +134,7 @@ struct VideoDataManager {
         }
     }
     
-    private static var problemId: Int? {
+    private var problemId: Int? {
         get {
             UserDefaults.standard.object(forKey: VideoDataKey.problemId) as? Int
         }
@@ -76,7 +147,7 @@ struct VideoDataManager {
         }
     }
 
-    static var isInitializedRecordTooltipState: Bool {
+    private var isInitializedRecordTooltipState: Bool {
         get {
             UserDefaults.standard.bool(forKey: VideoDataKey.isInitializedRecordTooltipState)
         }
@@ -85,7 +156,7 @@ struct VideoDataManager {
         }
     }
     
-    static var isInitializedEditTooltipState: Bool {
+    private var isInitializedEditTooltipState: Bool {
         get {
             UserDefaults.standard.bool(forKey: VideoDataKey.isInitializedEditTooltipState)
         }
@@ -94,7 +165,7 @@ struct VideoDataManager {
         }
     }
     
-    static var isRecordTooltipOn: Bool {
+    private var isRecordTooltipOn: Bool {
         get {
             UserDefaults.standard.bool(forKey: VideoDataKey.isRecordTooltipOn)
         }
@@ -103,7 +174,7 @@ struct VideoDataManager {
         }
     }
     
-    static var isEditTooltipOn: Bool {
+    private var isEditTooltipOn: Bool {
         get {
             UserDefaults.standard.bool(forKey: VideoDataKey.isEditTooltipOn)
         }
@@ -112,7 +183,7 @@ struct VideoDataManager {
         }
     }
     
-    static var attemptCount: Int {
+    private var attemptCount: Int {
         get {
             UserDefaults.standard.integer(forKey: VideoDataKey.attemptCount)
         }
@@ -121,7 +192,7 @@ struct VideoDataManager {
         }
     }
     
-    static var cragId: Int? {
+    private var cragId: Int? {
         get {
             UserDefaults.standard.object(forKey: VideoDataKey.cragId) as? Int
         }
@@ -134,7 +205,7 @@ struct VideoDataManager {
         }
     }
     
-    static var savedGrade: SavedGrade? {
+    private var savedGrade: SavedGrade? {
         get {
             guard let data = UserDefaults.standard.data(forKey: VideoDataKey.savedGrade) else { return nil }
             return try? JSONDecoder().decode(SavedGrade.self, from: data)
