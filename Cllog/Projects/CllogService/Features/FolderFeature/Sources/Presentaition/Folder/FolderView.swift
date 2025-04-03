@@ -73,7 +73,6 @@ extension FolderView {
             if store.filterableAttemptInfo != nil {
                 VStack (alignment: .leading) {
                     makeTitleView()
-                        .padding(.horizontal, 16)
                     
                     ScrollView(.horizontal) {
                         makeChipView()
@@ -83,6 +82,9 @@ extension FolderView {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+            
+            Spacer()
+                .frame(height: 24)
             
             if store.attempts.isEmpty {
                 VStack {
@@ -127,9 +129,6 @@ extension FolderView {
     
     private func makeChipView() -> some View {
         HStack {
-            Spacer()
-                .frame(width: 16)
-            
             ForEach(store.chips, id: \.self) { chip in
                 
                 let isSelectedChip = switch chip {
