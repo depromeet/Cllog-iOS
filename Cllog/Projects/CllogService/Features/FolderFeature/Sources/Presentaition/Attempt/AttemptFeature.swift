@@ -361,11 +361,6 @@ extension AttemptFeature {
         return .run { send in
             do {
                 try await attemptUseCase.delete(attemptId: attemptId)
-                videoDataManager.decrementCount()
-                
-                if videoDataManager.getCount() == 0 {
-                    videoDataManager.clear()
-                }
                 
                 await send(.deleteAttemptFinished)
             } catch  {
