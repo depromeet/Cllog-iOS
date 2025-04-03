@@ -37,9 +37,9 @@ public struct MockWithdrawUseCase: WithdrawUseCase {
 public enum WithdrawDependencyKey: DependencyKey {
     public static var liveValue: any WithdrawUseCase = ClLogDI.container.resolve(WithdrawUseCase.self)!
     
-    public static var testValue: any WithdrawUseCase = MockWithdrawUseCase()
+//    public static var testValue: any WithdrawUseCase = MockWithdrawUseCase()
     
-    public static var previewValue: any WithdrawUseCase = MockWithdrawUseCase()
+//    public static var previewValue: any WithdrawUseCase = MockWithdrawUseCase()
 }
 
 public extension DependencyValues {

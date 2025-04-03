@@ -35,9 +35,9 @@ public struct MockLogoutUseCase: LogoutUseCase {
 public enum LogoutDependencyKey: DependencyKey {
     public static var liveValue: any LogoutUseCase = ClLogDI.container.resolve(LogoutUseCase.self)!
     
-    public static var testValue: any LogoutUseCase = MockLogoutUseCase()
+//    public static var testValue: any LogoutUseCase = MockLogoutUseCase()
     
-    public static var previewValue: any LogoutUseCase = MockLogoutUseCase()
+//    public static var previewValue: any LogoutUseCase = MockLogoutUseCase()
 }
 
 public extension DependencyValues {

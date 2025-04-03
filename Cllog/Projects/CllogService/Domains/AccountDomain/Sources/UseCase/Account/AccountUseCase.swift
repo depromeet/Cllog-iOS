@@ -52,9 +52,9 @@ public struct MockAccount: AccountUseCase {
 public enum AccountDependencyKey: DependencyKey {
     public static var liveValue: any AccountUseCase = ClLogDI.container.resolve(AccountUseCase.self)!
     
-    public static var testValue: any AccountUseCase = MockAccount()
+//    public static var testValue: any AccountUseCase = MockAccount()
     
-    public static var previewValue: any AccountUseCase = MockAccount()
+//    public static var previewValue: any AccountUseCase = MockAccount()
 }
 
 public extension DependencyValues {

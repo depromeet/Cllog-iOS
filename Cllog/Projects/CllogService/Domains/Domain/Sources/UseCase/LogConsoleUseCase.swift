@@ -30,9 +30,9 @@ public struct MockLogConsole: LogConsoleUseCase {
 public enum LogConsoleDepdencyKey: DependencyKey {
     public static var liveValue: any LogConsoleUseCase = ClLogDI.container.resolve(LogConsoleUseCase.self)!
     
-    public static var testValue: any LogConsoleUseCase = MockLogConsole()
+//    public static var testValue: any LogConsoleUseCase = MockLogConsole()
     
-    public static var previewValue: any LogConsoleUseCase = MockLogConsole()
+//    public static var previewValue: any LogConsoleUseCase = MockLogConsole()
 }
 
 public extension DependencyValues {
