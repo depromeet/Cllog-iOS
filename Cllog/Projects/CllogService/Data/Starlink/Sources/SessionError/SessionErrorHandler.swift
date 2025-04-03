@@ -24,6 +24,7 @@ extension Starlink {
                 object: nil,
                 userInfo: nil
             )
+            return starlinkError
         }
 
         switch errorInfo?.message?.code {
@@ -35,24 +36,12 @@ extension Starlink {
                     userInfo: ["ErrorInfoMessage": errorInfoMessage]
                 )
             }
-            break
+            return starlinkError
         default:
             break
         }
 
         return starlinkError
-    }
-    private static func status401Handler(starlinkError: StarlinkError) async {
-
-        guard starlinkError.errorInfo?.code == "401" else {
-            let errorInfoMessage = starlinkError.errorInfo?.message
-            NotificationCenter.default.post(
-                name: .didKickOut,
-                object: nil,
-                userInfo: ["ErrorInfoMessage": errorInfoMessage]
-            )
-            return
-        }
     }
 }
 

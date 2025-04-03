@@ -15,23 +15,23 @@ import PulseUI
 
 extension Starlink.Request {
     
-    private func perform() async throws -> (Data, URLResponse) {
-        
+    private func perform(request: URLRequest? = nil, isRetry: Bool = false) async throws -> (Data, URLResponse) {
+
         guard let urlConversion = try? path.asURL() else {
             throw StarlinkError.inValidURLPath(ErrorInfo(code: "-999", error: nil, message: nil))
         }
         
-        var urlRequest = URLRequest(url: urlConversion)
+        var urlRequest = request ?? URLRequest(url: urlConversion)
         urlRequest.httpMethod = "\(method)"
         
         if let parameters = params?.toDictionary() {
             try urlRequest = encoding.encode(&urlRequest, with: parameters)
         }
-        
-        for interceptor in self.interceptors {
+
+        for interceptor in self.interceptors where isRetry == false {
             urlRequest = try await interceptor.adapt(&urlRequest)
         }
-        
+
         urlRequest.setHeaders(headers)
         
         self.trakers.allTrackers().forEach { $0.didRequest(self, urlRequest: urlRequest) }
@@ -63,8 +63,8 @@ extension Starlink.Request {
             switch retryResult {
             case .retry:
                 // 재요청 이면 요청
-                return try await perform()
-                
+                return try await perform(request: request, isRetry: true)
+
             case .doNotRetry:
                 // retry를 하지 않으면 throw error
                 throw error
