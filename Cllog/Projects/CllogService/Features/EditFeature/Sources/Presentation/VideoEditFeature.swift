@@ -100,6 +100,7 @@ public struct VideoEditFeature {
                 )
             case .didTapStamp:
                 state.stampList.append(Stamp(time: state.currentTime, xPos: state.playheadPosition, isValid: isStampValid(position: state.playheadPosition, state: state)))
+                state.popedStampList.removeAll()
                 return .none
             case .didTapPlayPause:
                 state.isPlaying.toggle()
