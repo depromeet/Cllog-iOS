@@ -13,13 +13,13 @@ import SwiftUI
 public struct Thumbnail: View {
     
     private let url: String?
-    private let height: CGFloat
-    private let width: CGFloat
+    private let height: CGFloat?
+    private let width: CGFloat?
     
     public init(
         url: String?,
-        height: CGFloat,
-        width: CGFloat
+        height: CGFloat? = nil,
+        width: CGFloat? = nil
     ) {
         self.url = url
         self.height = height
@@ -37,7 +37,7 @@ public struct Thumbnail: View {
                     case .success(let image):
                         image
                             .resizable()
-                            .scaledToFill()
+                            .aspectRatio(1, contentMode: .fill)
                     case .failure:
                         errorView
                     @unknown default:

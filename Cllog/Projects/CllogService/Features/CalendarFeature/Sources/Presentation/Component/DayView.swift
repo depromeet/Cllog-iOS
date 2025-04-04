@@ -33,20 +33,12 @@ struct DayView: View {
                         day.isCurrentMonth ?
                         Color.clLogUI.gray700 : .clear
                     )
-                
-                // FIXME: 로직 수정 필요
-                if day.hasItem {
-                    if let url = day.thumbnail {
-                        AsyncImage(url: URL(string: url)) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .aspectRatio(43/53, contentMode: .fill)
-                                    .overlay {
-                                        Color.black.opacity(0.3)
-                                    }
-                            case .failure:
+                    .overlay {
+                        // FIXME: 로직 수정 필요
+                        if day.hasItem {
+                            if let url = day.thumbnail {
+                                Thumbnail(url: url)
+                            } else {
                                 ZStack {
                                     Color.clLogUI.gray600
                                     
@@ -55,21 +47,9 @@ struct DayView: View {
                                         .frame(width: 24, height: 24)
                                         .foregroundStyle(Color.clLogUI.gray500)
                                 }
-                            default:
-                                EmptyView()
                             }
                         }
-                    } else {
-                        ZStack {
-                            Color.clLogUI.gray600
-                            
-                            Image.clLogUI.alert
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .foregroundStyle(Color.clLogUI.gray500)
-                        }
                     }
-                }
                 
                 Text("\(Calendar.current.component(.day, from: day.date))")
                     .font(.h5)
