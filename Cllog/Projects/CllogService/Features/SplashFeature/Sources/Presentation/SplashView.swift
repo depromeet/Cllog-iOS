@@ -12,7 +12,7 @@ import ComposableArchitecture
 import DesignKit
 
 public struct SplashView: View {
-    private let store: StoreOf<SplashFeature>
+    @Bindable private var store: StoreOf<SplashFeature>
     @State private var opacity: Double = 0
     
     public init(store: StoreOf<SplashFeature>) {
@@ -31,6 +31,7 @@ public struct SplashView: View {
                     store.send(.animationFinished)
                 }
             }
+            .presentDialog($store.scope(state: \.alert, action: \.alert), style: .default)
     }
 }
 
