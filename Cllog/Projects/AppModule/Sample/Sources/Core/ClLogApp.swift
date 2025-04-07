@@ -35,7 +35,9 @@ class ClLogApp {
             // Feature
             HomeFeatureAssembly(),
             MainFeatureAssembly(),
-            VideoFeatureAssembly()
+            VideoFeatureAssembly(),
+            
+            AppVersionCheckAssembly()
         ])
         
         // App Start
