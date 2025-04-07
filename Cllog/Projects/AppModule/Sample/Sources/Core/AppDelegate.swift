@@ -11,9 +11,11 @@ import Firebase
 import DesignKit
 import KakaoSDKCommon
 import Photos
+import CoreLocation
 import AppTrackingTransparency
  
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    private var locationManager: CLLocationManager?
     
     func application(
         _ application: UIApplication,
@@ -32,6 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             await checkMicrophonePermission()
             await requestVideoPermission()
             await requestPhotoLibraryPermission()
+            requestLocationPermission()
         }
         return true
     }
@@ -111,5 +114,10 @@ extension AppDelegate {
         @unknown default:           // 알려지지 않음
             print("unknow")
         }
+    }
+    
+    private func requestLocationPermission() {
+        locationManager = CLLocationManager()
+        locationManager?.requestWhenInUseAuthorization()
     }
 }
