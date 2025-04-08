@@ -27,6 +27,12 @@ public struct ClLogServiceAssembly: Assembly {
     public init() {}
     
     public func assemble(container: Container) {
+        
+        container.register(LocationFetcher.self) { _ in
+            DefaultLocationFetcher()
+        }
+        .inObjectScope(.container)
+
         container.register(LoginUseCase.self) { _ in
             DefaultLoginUseCase(
                 repository: DefaultLoginRepository(
