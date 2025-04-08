@@ -19,8 +19,6 @@ import ComposableArchitecture
 @Reducer
 public struct AttemptFeature {
     
-    private let locationFetcher = ClLogDI.container.resolve(LocationFetcher.self)!
-    
     @Dependency(\.attemptUseCase) private var attemptUseCase
     @Dependency(\.nearByCragUseCase) private var cragUseCase
     @Dependency(\.gradeUseCase) private var gradeUseCase
