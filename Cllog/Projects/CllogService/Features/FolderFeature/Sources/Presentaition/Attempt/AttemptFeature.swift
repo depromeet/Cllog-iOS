@@ -19,6 +19,8 @@ import ComposableArchitecture
 @Reducer
 public struct AttemptFeature {
     
+    private let locationFetcher = ClLogDI.container.resolve(LocationFetcher.self)!
+    
     @Dependency(\.attemptUseCase) private var attemptUseCase
     @Dependency(\.nearByCragUseCase) private var cragUseCase
     @Dependency(\.gradeUseCase) private var gradeUseCase
@@ -49,6 +51,7 @@ public struct AttemptFeature {
         var selectedAction: AttemptEditAction?
         var stampPositions = [CGFloat]()
         
+        var userLocation: Location?
         var nearByCrags = [DesignCrag]()
         var selectedCragGrades = [Grade]()
         
@@ -108,7 +111,7 @@ public struct AttemptFeature {
         case getNearByCrags(_ crags: [Crag])
         case getMoreNearByCrags(_ crags: [Crag])
         case getCragGrades(_ grades: [Grade])
-        case updateLocation(latitude: Double, longitude: Double)
+        case updateLocation(_ location: Location?)
         
         // edit actions
         case onEditSheetDismissed
@@ -322,6 +325,9 @@ public struct AttemptFeature {
                 state.showCragBottomSheet = false
                 state.selectedCragGrades = grades
                 return .none
+            case .updateLocation(let location):
+                state.userLocation = location
+                return .none
                 
             case .alert(.presented(.cancel)):
                 return .none
@@ -385,7 +391,10 @@ extension AttemptFeature {
     private func fetchNearByCrags() -> Effect<Action> {
         return .run { send in
             do {
-                let crags = try await cragUseCase.fetch()
+                let location = try await locationFetcher.fetchCurrentLocation()
+                await send(.updateLocation(location))
+                
+                let crags = try await cragUseCase.fetch(location: location)
                 await send(.getNearByCrags(crags))
             } catch {
                 debugPrint(error.localizedDescription)
@@ -396,7 +405,7 @@ extension AttemptFeature {
     private func fetchMoreNearByCrags() -> Effect<Action> {
         return .run { send in
             do {
-                let crags = try await cragUseCase.next()
+                let crags = try await cragUseCase.next(location: nil)
                 await send(.getMoreNearByCrags(crags))
             } catch {
                 debugPrint(error.localizedDescription)

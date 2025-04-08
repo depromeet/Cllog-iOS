@@ -12,7 +12,7 @@ import Domain
 
 public final class DefaultLocationFetcher: NSObject, LocationFetcher {
     private let locationManager = CLLocationManager()
-    private var locationContinuation: CheckedContinuation<CLLocation, Error>?
+    private var locationContinuation: CheckedContinuation<Location, Error>?
     
     public override init() {
         super.init()
@@ -21,7 +21,7 @@ public final class DefaultLocationFetcher: NSObject, LocationFetcher {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
     }
 
-    public func fetchCurrentLocation() async throws -> CLLocation {
+    public func fetchCurrentLocation() async throws -> Location {
         locationContinuation?.resume(throwing: LocationError.failedToFetch)
         locationContinuation = nil
         
@@ -55,7 +55,12 @@ extension DefaultLocationFetcher: CLLocationManagerDelegate {
             return continuation.resume(throwing: LocationError.failedToFetch)
         }
         
-        return continuation.resume(returning: recentLocation)
+        let userLocation = Location(
+            latitude: recentLocation.coordinate.latitude,
+            longitude: recentLocation.coordinate.longitude
+        )
+        
+        return continuation.resume(returning: userLocation)
     }
 
     public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

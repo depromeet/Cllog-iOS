@@ -10,5 +10,5 @@ import Foundation
 import CoreLocation
 
 public protocol LocationFetcher {
-    func fetchCurrentLocation() async throws -> CLLocation
+    func fetchCurrentLocation() async throws -> Location
 }

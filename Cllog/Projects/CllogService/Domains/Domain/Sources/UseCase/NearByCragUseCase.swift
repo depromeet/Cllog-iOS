@@ -13,8 +13,8 @@ import Shared
 import Dependencies
 
 public protocol NearByCragUseCase {
-    func fetch() async throws -> [Crag]
-    func next() async throws -> [Crag]
+    func fetch(location: Location?) async throws -> [Crag]
+    func next(location: Location?) async throws -> [Crag]
 }
 
 enum NearByCragUseCaseKey: DependencyKey {
@@ -29,20 +29,20 @@ extension DependencyValues {
 }
 
 public struct DefaultNearByCragUseCase: NearByCragUseCase {
-
+    // TODO: fetch 할 때 location 캐싱 및 .. 어쩌고 ..
     public let repository: NearByCragRepository
     
     public init(repository: NearByCragRepository) {
         self.repository = repository
     }
     
-    public func fetch() async throws -> [Crag] {
+    public func fetch(location: Location?) async throws -> [Crag] {
         let currentLongitude: Double? = nil
         let currentLatitude: Double? = nil
         return try await repository.fetch(longitude: currentLongitude, latitude: currentLatitude)
     }
     
-    public func next() async throws -> [Crag] {
+    public func next(location: Location?) async throws -> [Crag] {
         let currentLongitude: Double? = nil
         let currentLatitude: Double? = nil
         return try await repository.fetchMore(longitude: currentLongitude, latitude: currentLatitude)
