@@ -42,9 +42,13 @@ public final class DefaultNearByCragUseCase: NearByCragUseCase {
     }
     
     public func fetch() async throws -> [Crag] {
-        let location = try await locationFetcher.fetchCurrentLocation()
-        self.userLocation = location
-        return try await repository.fetch(longitude: location.longitude, latitude: location.latitude)
+        do {
+            let location = try await locationFetcher.fetchCurrentLocation()
+            self.userLocation = location
+            return try await repository.fetch(longitude: location.longitude, latitude: location.latitude)
+        } catch {
+            return try await repository.fetch(longitude: nil, latitude: nil)
+        }
     }
     
     public func next() async throws -> [Crag] {
