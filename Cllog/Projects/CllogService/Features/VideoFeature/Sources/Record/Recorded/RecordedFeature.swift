@@ -482,7 +482,7 @@ extension RecordedFeature {
     private func fetchNearByCrags() -> Effect<Action> {
         .run { send in
             do {
-                let crags = try await cragUseCase.fetch(location: nil)
+                let crags = try await cragUseCase.fetch()
                 await send(.fetchedCrags(crags))
             } catch {
                 debugPrint(error.localizedDescription)
@@ -504,7 +504,7 @@ extension RecordedFeature {
     private func fetchMoreNearByCrags() -> Effect<Action> {
         return .run { send in
             do {
-                let crags = try await cragUseCase.next(location: nil)
+                let crags = try await cragUseCase.next()
                 await send(.fetchedMoreCrags(crags))
             } catch {
                 debugPrint(error.localizedDescription)

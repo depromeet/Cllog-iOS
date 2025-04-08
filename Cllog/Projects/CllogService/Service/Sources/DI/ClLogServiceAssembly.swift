@@ -8,6 +8,7 @@
 
 import Foundation
 
+import Core
 import Data
 import Domain
 import AccountDomain
@@ -190,7 +191,7 @@ public struct ClLogServiceAssembly: Assembly {
             )
         }
         
-        container.register(NearByCragUseCase.self) { _ in
+        container.register(NearByCragUseCase.self) { resolver in
             DefaultNearByCragUseCase(
                 repository: DefaultNearByCragRepository(
                     dataSource: DefaultCragDataSource(
@@ -198,7 +199,8 @@ public struct ClLogServiceAssembly: Assembly {
                             tokenProvider: DefaultTokenDataSource().loadToken
                         )
                     )
-                )
+                ),
+                locationFetcher: resolver.resolveDependency()
             )
         }
         

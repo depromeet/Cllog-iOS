@@ -7,14 +7,13 @@
 //
 
 import Foundation
-
 import Shared
 
 import Dependencies
 
 public protocol NearByCragUseCase {
-    func fetch(location: Location?) async throws -> [Crag]
-    func next(location: Location?) async throws -> [Crag]
+    func fetch() async throws -> [Crag]
+    func next() async throws -> [Crag]
 }
 
 enum NearByCragUseCaseKey: DependencyKey {
@@ -28,24 +27,28 @@ extension DependencyValues {
     }
 }
 
-public struct DefaultNearByCragUseCase: NearByCragUseCase {
-    // TODO: fetch 할 때 location 캐싱 및 .. 어쩌고 ..
-    public let repository: NearByCragRepository
+public final class DefaultNearByCragUseCase: NearByCragUseCase {
+    private let repository: NearByCragRepository
+    private let locationFetcher: LocationFetcher
     
-    public init(repository: NearByCragRepository) {
+    private var userLocation: Location?
+    
+    public init(
+        repository: NearByCragRepository,
+        locationFetcher: LocationFetcher
+    ) {
         self.repository = repository
+        self.locationFetcher = locationFetcher
     }
     
-    public func fetch(location: Location?) async throws -> [Crag] {
-        let currentLongitude: Double? = nil
-        let currentLatitude: Double? = nil
-        return try await repository.fetch(longitude: currentLongitude, latitude: currentLatitude)
+    public func fetch() async throws -> [Crag] {
+        let location = try await locationFetcher.fetchCurrentLocation()
+        self.userLocation = location
+        return try await repository.fetch(longitude: location.longitude, latitude: location.latitude)
     }
     
-    public func next(location: Location?) async throws -> [Crag] {
-        let currentLongitude: Double? = nil
-        let currentLatitude: Double? = nil
-        return try await repository.fetchMore(longitude: currentLongitude, latitude: currentLatitude)
+    public func next() async throws -> [Crag] {
+        return try await repository.fetchMore(longitude: userLocation?.longitude, latitude: userLocation?.latitude)
     }
     
 }
