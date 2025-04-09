@@ -53,8 +53,8 @@
 ### 📑 Docs
 - [문서 링크]()
 
-### 👻 Blog
-- [블로그 링크]()
+### 👻 Article
+- [클로그 기술 스택 및 설계 과정](https://velog.io/@junlight94/%EB%94%94%ED%94%84%EB%A7%8C-16%EA%B8%B0-%EA%B8%B0%EC%88%A0%EC%8A%A4%ED%83%9D-%EC%84%A0%EC%A0%95-%EB%B0%8F-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%84%A4%EA%B3%84-%EA%B3%BC%EC%A0%95)
 
 <br />
 
