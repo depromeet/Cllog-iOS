@@ -25,13 +25,16 @@ public enum VideoError: Error {
     // 사진앱 저장 실패 에러
     case savePhotoDenied
     case notFoundAsset
+    
+    // 업로드 에러
+    case uploadFailed
 }
 
 public protocol VideoUseCase: Sendable {
     func execute(saveFile fileURL: URL) async throws -> String
     func execute(loadName: String) async throws -> URL
     
-    func execute(fileName: String, mimeType: String, value: Data) async throws -> Videothumbnails
+    func execute(fileName: String, mimeType: String, value: Data) async throws -> String
 }
 
 public struct VideoUploadUsesCase {
@@ -54,7 +57,7 @@ extension VideoUploadUsesCase: VideoUseCase {
         try await videoRepository.readSavedVideo(fileName: loadName)
     }
     
-    public func execute(fileName: String, mimeType: String, value: Data) async throws -> Videothumbnails {
+    public func execute(fileName: String, mimeType: String, value: Data) async throws -> String {
         try await videoRepository.uploadVideoThumbnail(fileName: fileName, mimeType: mimeType, value: value)
     }
 }

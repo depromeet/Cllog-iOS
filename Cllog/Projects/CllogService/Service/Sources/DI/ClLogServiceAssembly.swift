@@ -230,7 +230,6 @@ public struct ClLogServiceAssembly: Assembly {
         container.register(VideoRepository.self) { resolver in
             VideoRecordRepository(
                 dataSource: VideoDataSource(
-                    videoProvider: UploadProvider(tokenProvider: DefaultTokenDataSource().loadToken),
                     authProvider: AuthProvider(tokenProvider: DefaultTokenDataSource().loadToken)
                 )
             )

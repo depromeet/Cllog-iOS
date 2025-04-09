@@ -21,5 +21,5 @@ public protocol VideoRepository: Sendable {
         fileName: String,
         mimeType: String,
         value: Data
-    ) async throws -> Videothumbnails
+    ) async throws -> String
 }

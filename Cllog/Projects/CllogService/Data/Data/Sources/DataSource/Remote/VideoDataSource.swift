@@ -10,33 +10,27 @@ import Foundation
 
 import Starlink
 import Networker
+import Alamofire
+import VideoDomain
 
-public protocol VideoDataSourceLogic {
-    func uploadThumbnail(fileName: String, mimeType: String, data: Data) async throws -> VideoThumbnailUploadResponseDTO
+public protocol VideoDataSourceLogic: Sendable {
+    /// S3에 직접 업로드 하기 위한 인증
+    func authenticate(_ request: ThumbnailPreSignedUploadRequestDTO) async throws -> VideoThumbnailUploadResponseDTO
+    func thumbnailUpload(preSignedURL: String, data: Data) async throws
 }
 
 public struct VideoDataSource: VideoDataSourceLogic {
     
-    private let videoProvider: UploadProvider
     private let authProvider: AuthProvider
     
-    public init(videoProvider: UploadProvider, authProvider: AuthProvider) {
-        self.videoProvider = videoProvider
+    public init(authProvider: AuthProvider) {
         self.authProvider = authProvider
     }
     
-    public func uploadThumbnail(
-        fileName: String,
-        mimeType: String,
-        data: Data
+    public func authenticate(
+        _ request: ThumbnailPreSignedUploadRequestDTO
     ) async throws -> VideoThumbnailUploadResponseDTO {
-        
-        let response: BaseResponseDTO<VideoThumbnailUploadResponseDTO> = try await videoProvider.uploadRequest(VideoEndPoint.uploadThumbnail, .init(
-            name: "file",
-            fileName: fileName,
-            data: data,
-            mimeType: mimeType
-        ))
+        let response: BaseResponseDTO<VideoThumbnailUploadResponseDTO> = try await authProvider.request(VideoEndPoint.authenticate(request))
 
         guard let data = response.data else {
             throw StarlinkError.inValidJSONData(nil)
@@ -45,45 +39,66 @@ public struct VideoDataSource: VideoDataSourceLogic {
         return data
     }
     
+    public func thumbnailUpload(preSignedURL: String, data: Data) async throws {
+        do {
+            _ = try await AF.upload(
+                data,
+                to: preSignedURL,
+                method: .put,
+                headers: .init([HTTPHeader(name: "Content-Type", value: "image/png")])
+            )
+            .validate(statusCode: 200 ..< 300)
+            .serializingDecodable(Empty.self, emptyResponseCodes: Set(200 ..< 300))
+            .value
+        } catch {
+            print("failure : \(error)")
+            throw VideoError.uploadFailed
+        }
+    }
 }
 
 public enum VideoEndPoint: EndpointType {
-    case uploadThumbnail
+    case authenticate(ThumbnailPreSignedUploadRequestDTO)
     
     public var baseURL: String {
         return Environment.baseURL
     }
     public var path: String {
         switch self {
-        case .uploadThumbnail:
-            return "/api/v1/thumbnails/upload"
+        case .authenticate:
+            return "/api/v1/thumbnails/upload-url"
         }
     }
     
     public var method: Starlink.Method {
         switch self {
-        case .uploadThumbnail:
+        case .authenticate:
             return .post
         }
     }
     
     public var parameters: ParameterType? {
         switch self {
-        case .uploadThumbnail:
-            return .encodable(EmptyModel())
+        case .authenticate(let request):
+            return .encodable(request)
         }
     }
     public var encodable: (any Encodable)? {
         switch self {
-        case .uploadThumbnail:
+        case .authenticate:
             return nil
         }
     }
-    public var headers: [Starlink.Header]? { nil }
+    public var headers: [Starlink.Header]? {
+        switch self {
+        case .authenticate:
+            return nil
+        }
+    }
     
     public var encoding: StarlinkEncodable {
         switch self {
-        case .uploadThumbnail:
+        case .authenticate:
             return Starlink.StarlinkJSONEncoding()
         }
     }

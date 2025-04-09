@@ -11,14 +11,22 @@ import Foundation
 import VideoDomain
 
 
-public struct VideoThumbnailUploadResponseDTO: Codable {
+public struct VideoThumbnailUploadResponseDTO: Decodable {
+    public let presignedUrl: String
     public let fileUrl: String
     
-    public init(fileUrl: String) {
+    public init(
+        presignedUrl: String,
+        fileUrl: String
+    ) {
+        self.presignedUrl = presignedUrl
         self.fileUrl = fileUrl
     }
     
-    func toDomain() -> Videothumbnails {
-        return Videothumbnails(fileUrl: fileUrl)
+    func toDomain() -> VideoThumbnails {
+        return VideoThumbnails(
+            preSignedUrl: presignedUrl,
+            fileUrl: fileUrl
+        )
     }
 }

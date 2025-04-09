@@ -16,10 +16,10 @@ import Photos
 
 public struct VideoRecordRepository: VideoRepository {
 
-    private let dataSource: VideoDataSource
+    private let dataSource: VideoDataSourceLogic
     
     public init(
-        dataSource: VideoDataSource
+        dataSource: VideoDataSourceLogic
     ) {
         self.dataSource = dataSource
     }
@@ -74,8 +74,23 @@ public struct VideoRecordRepository: VideoRepository {
         fileName: String,
         mimeType: String,
         value: Data
-    ) async throws -> Videothumbnails {
-        return try await dataSource.uploadThumbnail(fileName: fileName, mimeType: mimeType, data: value).toDomain()
+    ) async throws -> String {
+        let request = ThumbnailPreSignedUploadRequestDTO(
+            originalFilename: fileName,
+            contentType: mimeType
+        )
+        do {
+            let authenticateResponse = try await dataSource.authenticate(request)
+            
+            try await dataSource.thumbnailUpload(
+                preSignedURL: authenticateResponse.presignedUrl,
+                data: value
+            )
+            
+            return authenticateResponse.fileUrl
+        } catch {
+            throw VideoError.uploadFailed
+        }
     }
     
     private func saveVideoToPhotoLibrary(from fileURL: URL) async throws -> String {

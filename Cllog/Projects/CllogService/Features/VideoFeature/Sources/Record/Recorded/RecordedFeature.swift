@@ -61,7 +61,7 @@ public struct RecordedFeature {
         var isLoading: Bool = false
         
         public init(fileName: String, path: URL) {
-            self.fileName = fileName
+            self.fileName = fileName.replacingOccurrences(of: ".mov", with: "")
             self.path = path
             self.viewModel = RecordedPlayViewModel(videoURL: path)
         }
@@ -534,7 +534,7 @@ extension RecordedFeature {
             
             let thumbNailImage = try await generateImage(path: state.path, totalDuration: Int(state.totalDuration))
             
-            let thumbNail = try? await videoUseCase.execute(
+            let thumbNailUrl = try? await videoUseCase.execute(
                 fileName: "\(state.fileName).png",
                 mimeType: "image/png",
                 value: thumbNailImage
@@ -547,7 +547,7 @@ extension RecordedFeature {
                 problemId: story.problemId,
                 video: VideoRequest(
                     localPath: assetId,
-                    thumbnailUrl: thumbNail?.fileUrl ?? "",
+                    thumbnailUrl: thumbNailUrl,
                     durationMs: Int(state.totalDuration),
                     stamps: state.stampTimeList.map { StampRequest(timeMs: Int($0 * 1000)) }
                 )
@@ -568,7 +568,7 @@ extension RecordedFeature {
         return .run { [videoDataManager] send in
             let thumbNailImage = try await generateImage(path: state.path, totalDuration: Int(state.totalDuration))
             
-            let thumbNail = try? await videoUseCase.execute(
+            let thumbNailUrl = try? await videoUseCase.execute(
                 fileName: "\(state.fileName).png",
                 mimeType: "image/png",
                 value: thumbNailImage
@@ -584,7 +584,7 @@ extension RecordedFeature {
                     problemId: nil,
                     video: VideoRequest(
                         localPath: assetId,
-                        thumbnailUrl: thumbNail?.fileUrl ?? "",
+                        thumbnailUrl: thumbNailUrl,
                         durationMs: Int(state.totalDuration),
                         stamps: state.stampTimeList.map { StampRequest(timeMs: Int($0 * 1000)) }
                     )

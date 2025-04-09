@@ -8,10 +8,15 @@
 
 import Foundation
 
-public struct Videothumbnails: Codable {
+public struct VideoThumbnails {
+    public let preSignedUrl: String
     public let fileUrl: String
     
-    public init(fileUrl: String) {
+    public init(
+        preSignedUrl: String,
+        fileUrl: String
+    ) {
+        self.preSignedUrl = preSignedUrl
         self.fileUrl = fileUrl
     }
 }
