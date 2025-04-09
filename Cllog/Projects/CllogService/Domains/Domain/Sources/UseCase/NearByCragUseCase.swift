@@ -7,7 +7,6 @@
 //
 
 import Foundation
-
 import Shared
 
 import Dependencies
@@ -28,24 +27,32 @@ extension DependencyValues {
     }
 }
 
-public struct DefaultNearByCragUseCase: NearByCragUseCase {
-
-    public let repository: NearByCragRepository
+public final class DefaultNearByCragUseCase: NearByCragUseCase {
+    private let repository: NearByCragRepository
+    private let locationFetcher: LocationFetcher
     
-    public init(repository: NearByCragRepository) {
+    private var userLocation: Location?
+    
+    public init(
+        repository: NearByCragRepository,
+        locationFetcher: LocationFetcher
+    ) {
         self.repository = repository
+        self.locationFetcher = locationFetcher
     }
     
     public func fetch() async throws -> [Crag] {
-        let currentLongitude: Double? = nil
-        let currentLatitude: Double? = nil
-        return try await repository.fetch(longitude: currentLongitude, latitude: currentLatitude)
+        do {
+            let location = try await locationFetcher.fetchCurrentLocation()
+            self.userLocation = location
+            return try await repository.fetch(longitude: location.longitude, latitude: location.latitude)
+        } catch {
+            return try await repository.fetch(longitude: nil, latitude: nil)
+        }
     }
     
     public func next() async throws -> [Crag] {
-        let currentLongitude: Double? = nil
-        let currentLatitude: Double? = nil
-        return try await repository.fetchMore(longitude: currentLongitude, latitude: currentLatitude)
+        return try await repository.fetchMore(longitude: userLocation?.longitude, latitude: userLocation?.latitude)
     }
     
 }

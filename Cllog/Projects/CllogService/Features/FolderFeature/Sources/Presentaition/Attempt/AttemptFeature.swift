@@ -108,7 +108,6 @@ public struct AttemptFeature {
         case getNearByCrags(_ crags: [Crag])
         case getMoreNearByCrags(_ crags: [Crag])
         case getCragGrades(_ grades: [Grade])
-        case updateLocation(latitude: Double, longitude: Double)
         
         // edit actions
         case onEditSheetDismissed
@@ -322,7 +321,7 @@ public struct AttemptFeature {
                 state.showCragBottomSheet = false
                 state.selectedCragGrades = grades
                 return .none
-                
+          
             case .alert(.presented(.cancel)):
                 return .none
             case .alert(.presented(.delete)):

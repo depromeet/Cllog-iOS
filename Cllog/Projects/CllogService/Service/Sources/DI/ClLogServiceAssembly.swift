@@ -8,6 +8,7 @@
 
 import Foundation
 
+import Core
 import Data
 import Domain
 import AccountDomain
@@ -27,6 +28,12 @@ public struct ClLogServiceAssembly: Assembly {
     public init() {}
     
     public func assemble(container: Container) {
+        
+        container.register(LocationFetcher.self) { _ in
+            DefaultLocationFetcher()
+        }
+        .inObjectScope(.container)
+
         container.register(LoginUseCase.self) { _ in
             DefaultLoginUseCase(
                 repository: DefaultLoginRepository(
@@ -184,7 +191,7 @@ public struct ClLogServiceAssembly: Assembly {
             )
         }
         
-        container.register(NearByCragUseCase.self) { _ in
+        container.register(NearByCragUseCase.self) { resolver in
             DefaultNearByCragUseCase(
                 repository: DefaultNearByCragRepository(
                     dataSource: DefaultCragDataSource(
@@ -192,7 +199,8 @@ public struct ClLogServiceAssembly: Assembly {
                             tokenProvider: DefaultTokenDataSource().loadToken
                         )
                     )
-                )
+                ),
+                locationFetcher: resolver.resolveDependency()
             )
         }
         
