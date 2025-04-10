@@ -16,9 +16,6 @@ public protocol CragRepository {
 // TODO: remove
 public struct MockCragRepository: CragRepository {
     public init() {}
-    public func getNearByCrags(longitude: Double?, latitude: Double?) async throws -> [Crag] {
-        []
-    }
     
     public func getMyCrags() async throws -> [Crag] {
         [

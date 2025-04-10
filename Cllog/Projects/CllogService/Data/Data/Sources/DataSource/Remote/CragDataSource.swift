@@ -88,15 +88,6 @@ extension CragTarget: EndpointType {
     var parameters: Networker.ParameterType? {
         switch self {
         case .myCrags: return nil
-            let dictionary = Starlink.SafeDictionary<String, Any>(
-                storage: [
-                    "cursor" : cursor,
-                    "longitude": longitude,
-                    "latitude" : latitude,
-                ].compactMapValues { $0 }
-            )
-            return Networker.ParameterType.dictionary(dictionary)
-            
         case .nearBy(let longitude, let latitude, let cursor, let keyword):
             var storage: [String: Any] = [:]
             if let cursor { storage["cursor"] = cursor }

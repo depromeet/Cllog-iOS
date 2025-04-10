@@ -19,22 +19,6 @@ public actor DefaultCragRepository: CragRepository {
         self.dataSource = dataSource
     }
     
-    public func getNearByCrags(
-        longitude: Double?,
-        latitude: Double?
-    ) async throws -> [Crag] {
-        let (crags, meta) = try await dataSource.nearByCrags(
-            longitude: longitude,
-            latitude: latitude,
-            cursor: cursor
-        )
-        
-        self.cursor = meta?.nextCursor ?? 0
-        self.hasMore = meta?.hasMore ?? false
-        
-        return crags.map { $0.toDomain() }
-    }
-    
     public func getMyCrags() async throws -> [Crag] {
         let (crags, meta) = try await dataSource.myCrags(cursor: cursor)
         return crags.map { $0.toDomain() }
