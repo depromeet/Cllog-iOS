@@ -12,7 +12,7 @@ import Shared
 import Dependencies
 
 public protocol NearByCragUseCase {
-    func fetch() async throws -> [Crag]
+    func fetch(keyword: String) async throws -> [Crag]
     func next() async throws -> [Crag]
 }
 
@@ -41,13 +41,13 @@ public final class DefaultNearByCragUseCase: NearByCragUseCase {
         self.locationFetcher = locationFetcher
     }
     
-    public func fetch() async throws -> [Crag] {
+    public func fetch(keyword: String) async throws -> [Crag] {
         do {
             let location = try await locationFetcher.fetchCurrentLocation()
             self.userLocation = location
-            return try await repository.fetch(longitude: location.longitude, latitude: location.latitude)
+            return try await repository.fetch(longitude: location.longitude, latitude: location.latitude, keyword: keyword)
         } catch {
-            return try await repository.fetch(longitude: nil, latitude: nil)
+            return try await repository.fetch(longitude: nil, latitude: nil, keyword: keyword)
         }
     }
     

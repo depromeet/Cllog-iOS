@@ -10,7 +10,6 @@ import Foundation
 import Shared
 
 public protocol CragRepository {
-    func getNearByCrags(longitude: Double?, latitude: Double?) async throws -> [Crag]
     func getMyCrags() async throws -> [Crag]
 }
 

@@ -204,18 +204,6 @@ public struct ClLogServiceAssembly: Assembly {
             )
         }
         
-        container.register(CragUseCase.self) { _ in
-            DefaultCragUseCase(
-                cragRepository: DefaultCragRepository(
-                    dataSource: DefaultCragDataSource(
-                        provider: AuthProvider(
-                            tokenProvider: DefaultTokenDataSource().loadToken
-                        )
-                    )
-                )
-            )
-        }
-        
         container.register(GradeUseCase.self) { _ in
             DefaultGradeUseCase(
                 gradeRepository: DefaultGradeRepository(

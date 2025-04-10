@@ -55,6 +55,8 @@ public struct AttemptView: ViewProtocol {
                 },
                 didNearEnd: {
                     store.send(.loadMoreCrags)
+                }, didChangeSearchText: { searchText in
+                    store.send(.cragName(keyWord: searchText))
                 },
                 matchesPattern: { crag, searchText in
                     crag.name.matchesPattern(searchText)
