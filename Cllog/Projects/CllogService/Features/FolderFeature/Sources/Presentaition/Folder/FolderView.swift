@@ -20,6 +20,8 @@ public struct FolderView: ViewProtocol {
         GridItem(.flexible())
     ]
     
+    private let size = (UIScreen.main.bounds.width / 2) - 20
+    
     public init(store: StoreOf<FolderFeature>) {
         self.store = store
     }
@@ -190,8 +192,11 @@ extension FolderView {
                     challengeResult: attempt.result == .complete ? .complete : .fail,
                     levelName: attempt.grade?.name,
                     levelColor: Color(hex: attempt.grade?.hexCode ?? "0x00000"),
-                    time: attempt.recordedTime
+                    time: attempt.recordedTime,
+                    width: size,
+                    height: size
                 )
+                .clipShape(RoundedRectangle(cornerRadius: 8))
                 .onTapGesture {
                     store.send(.moveToAttempt(attempt.id))
                 }

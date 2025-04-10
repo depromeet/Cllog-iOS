@@ -21,6 +21,8 @@ public struct ThumbnailView: View {
     private let levelName: String?
     private let levelColor: Color?
     private let time: String
+    private let width: CGFloat?
+    private let height: CGFloat?
     private let deleteButtonHandler: (() -> Void)?
     
     public init(
@@ -31,6 +33,8 @@ public struct ThumbnailView: View {
         levelName: String? = nil,
         levelColor: Color? = nil,
         time: String,
+        width: CGFloat? = nil,
+        height: CGFloat? = nil,
         deleteButtonHandler: (() -> Void)? = nil
     ) {
         self.imageURLString = imageURLString // FIXME: response 확인
@@ -40,10 +44,13 @@ public struct ThumbnailView: View {
         self.levelName = levelName
         self.levelColor = levelColor
         self.time = time
+        self.width = width
+        self.height = height
         self.deleteButtonHandler = deleteButtonHandler
     }
     
     public var body: some View {
+        
         VStack(alignment: .leading, spacing: 0) {
             // MARK: Time Chip
             ZStack(alignment: .topTrailing) {
@@ -56,32 +63,13 @@ public struct ThumbnailView: View {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color.clLogUI.gray600)
                         
-                        if let imageURLString, !imageURLString.isEmpty {
-                            AsyncImage(url: URL(string: imageURLString)) { phase in
-                                switch phase {
-                                case .success(let image):
-                                    image.resizable()
-                                        .resizable()
-                                        .aspectRatio(1, contentMode: .fill)
-                                    
-                                case .failure:
-                                    Image.clLogUI.alert
-                                        .resizable()
-                                        .frame(width: 60, height: 60)
-                                        .foregroundStyle(Color.clLogUI.gray500)
-                                default:
-                                    Image(systemName: "photo")
-                                        .foregroundColor(.clLogUI.gray600)
-                                }
-                            }
-                        } else {
-                            ClLogUI.basicThumbnail
-                                .resizable()
-                                .aspectRatio(1, contentMode: .fill)
-                        }
+                        Thumbnail(
+                            url: imageURLString
+                        )
+                        .frame(width: width, height: height)
                     }
-                    .frame(minHeight: 160)
-                    .cornerRadius(8)
+                    .frame(width: width, height: height)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                     
                     HStack(spacing: 5) {
                         if isChallengeResult {

@@ -39,31 +39,9 @@ public struct ReportVideoImageView: View {
     
     public var body: some View {
         ZStack(alignment: .topTrailing) {
-            AsyncImage(url: URL(string: imageName)) { phase in
-                switch phase {
-                case .success(let image):
-                    image.resizable()
-                        .resizable()
-                        .frame(width: 84, height: 84)
-                        .clipShape(RoundedRectangle(cornerRadius: 14.4))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 14.4)
-                                .strokeBorder(borderColor, lineWidth: 3)
-                        )
-                case .failure:
-                    Image.clLogUI.alert
-                        .resizable()
-                        .frame(width: 84, height: 84)
-                        .foregroundStyle(Color.clLogUI.gray500)
-                case .empty:
-                    ProgressView()
-                        .frame(width: 84, height: 84)
-                default:
-                    Image(systemName: "photo")
-                        .frame(width: 84, height: 84)
-                        .foregroundColor(.clLogUI.gray600)
-                }
-            }
+            
+            Thumbnail(url: imageName, width: 84, height: 84)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             
             Button {
                 deleteButtonHandler()

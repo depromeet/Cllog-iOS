@@ -13,17 +13,17 @@ import SwiftUI
 public struct Thumbnail: View {
     
     private let url: String?
-    private let height: CGFloat
-    private let width: CGFloat
+    private let height: CGFloat?
+    private let width: CGFloat?
     
     public init(
         url: String?,
-        height: CGFloat,
-        width: CGFloat
+        width: CGFloat? = nil,
+        height: CGFloat? = nil
     ) {
         self.url = url
-        self.height = height
         self.width = width
+        self.height = height
     }
     
     public var body: some View {
@@ -45,13 +45,13 @@ public struct Thumbnail: View {
                     }
                 }
             } else {
-                errorView
+                ClLogUI.basicThumbnail
+                    .resizable()
+                    .scaledToFill()
             }
         }
         .frame(width: width, height: height)
         .background(Color.clLogUI.gray700)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        
     }
 }
 
@@ -59,15 +59,14 @@ extension Thumbnail {
     private var errorView: some View {
         Image.clLogUI.alert
             .resizable()
-            .frame(width: 60, height: 60)
             .foregroundStyle(Color.clLogUI.gray50)
     }
 }
 
 #Preview {
-    Thumbnail(url: "https://fastly.picsum.photos/id/866/200/300.jpg?hmac=rcadCENKh4rD6MAp6V_ma-AyWv641M4iiOpe1RyFHeI", height: 166, width: 166)
+    Thumbnail(url: "https://fastly.picsum.photos/id/866/200/300.jpg?hmac=rcadCENKh4rD6MAp6V_ma-AyWv641M4iiOpe1RyFHeI", width: 166, height: 166)
     
-    Thumbnail(url: "https://fastly.picsum.photos/id/866/200/300.jpg?hmac=rcadCENKh4rD6MAp6V_ma-AyWv641M4iiOpe1RyFHeI", height: 100, width: 100)
+    Thumbnail(url: "https://fastly.picsum.photos/id/866/200/300.jpg?hmac=rcadCENKh4rD6MAp6V_ma-AyWv641M4iiOpe1RyFHeI", width: 100, height: 100)
     
-    Thumbnail(url: "https://fastly.picsum.photos/id/866/200/300.jpg?hmac=rcadCENKh4rD6MAp6V_ma-AyWv641M4iiOpe1RyFHeI", height: 250, width: 250)
+    Thumbnail(url: "https://fastly.picsum.photos/id/866/200/300.jpg?hmac=rcadCENKh4rD6MAp6V_ma-AyWv641M4iiOpe1RyFHeI", width: 250, height: 250)
 }
