@@ -31,9 +31,10 @@ public struct RootFeature {
     public struct State: Equatable {
         var loginState: LoginFeature.State?
         var mainState: MainFeature.State?
-        var splashState: SplashFeature.State?
+        var splashState: SplashFeature.State? = .init()
         var onBoardingState: OnboardingFeature.State?
         var nickNameState: NickNameFeature.State?
+        var isOnAppeared: Bool = false
     }
     
     public enum Action {
@@ -92,7 +93,9 @@ private extension RootFeature {
     ) -> Effect<Action> {
         switch action {
         case .onAppear:
-            state.splashState = .init()
+            guard !state.isOnAppeared else { return .none }
+            state.isOnAppeared = true
+            
             return Effect.publisher {
                 NotificationCenter.default
                     .publisher(for: .didKickOut)
