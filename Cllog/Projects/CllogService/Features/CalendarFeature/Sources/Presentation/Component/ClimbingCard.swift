@@ -38,44 +38,9 @@ struct ClimbingCard: View {
 
 extension ClimbingCard {
     private func makeBody() -> some View {
-        HStack(spacing: 12) {
-            if let thumbNail = climbStory.thumbnailUrl, let url = URL(string: thumbNail) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
-                    case .failure:
-                        ZStack {
-                            Color.clLogUI.gray600
-                            
-                            Image.clLogUI.alert
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .foregroundStyle(Color.clLogUI.gray500)
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                    case .empty:
-                        ProgressView()
-                    default:
-                        EmptyView()
-                    }
-                }
-                .frame(width: 50, height: 50)
-            } else {
-                ZStack {
-                    Color.clLogUI.gray600
-                    
-                    Image.clLogUI.alert
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundStyle(Color.clLogUI.gray500)
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 6))
-                .frame(width: 50, height: 50)
-            }
-            
+        HStack(alignment: .center, spacing: 12) {
+            Thumbnail(url: climbStory.thumbnailUrl, width: 50, height: 50)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             
             VStack(alignment: .leading, spacing:4) {
                 HStack(spacing:4) {

@@ -224,6 +224,7 @@ extension ReportView {
                                 time: video.durationMs.msToTimeString
                             )
                             .frame(width: 166, height: 166)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                     }
                 }
