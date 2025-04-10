@@ -16,6 +16,7 @@ public extension View {
         didTapSaveButton: @escaping (DesignCrag) -> Void,
         didTapSkipButton: @escaping () -> Void,
         didNearEnd: @escaping () -> Void,
+        didChangeSearchText: @escaping (String) -> Void,
         matchesPattern: @escaping (DesignCrag, String) -> Bool,
         crags: Binding<[DesignCrag]>
     ) -> some View {
@@ -23,6 +24,7 @@ public extension View {
             SelectCragView(
                 didTapSaveButton: didTapSaveButton,
                 didTapSkipButton: didTapSkipButton,
+                didChangeSearchText: didChangeSearchText,
                 didNearEnd: didNearEnd,
                 matchesPattern: matchesPattern,
                 crags: crags
@@ -50,12 +52,14 @@ struct SelectCragView: View {
     public init(
         didTapSaveButton: @escaping (DesignCrag) -> Void,
         didTapSkipButton: @escaping () -> Void,
+        didChangeSearchText: @escaping (String) -> Void,
         didNearEnd: @escaping () -> Void,
         matchesPattern: @escaping (DesignCrag, String) -> Bool,
         crags: Binding<[DesignCrag]>
     ) {
         self.didTapSaveButton = didTapSaveButton
         self.didTapSkipButton = didTapSkipButton
+        self.didChangeSearchText = didChangeSearchText
         self.didNearEnd = didNearEnd
         self.matchesPattern = matchesPattern
         self._crags = crags
@@ -63,20 +67,16 @@ struct SelectCragView: View {
     
     private var didTapSaveButton: (DesignCrag) -> Void
     private var didTapSkipButton: () -> Void
+    private var didChangeSearchText: (String) -> Void
     private var didNearEnd: () -> Void
     private let matchesPattern: (DesignCrag, String) -> Bool
     
     @State private var searchText = ""
-    @State private var debouncedSearchText = ""
     @Binding private var crags: [DesignCrag]
     @State private var selectedCrag: DesignCrag?
     @FocusState private var isFocused: Bool
     @State private var debounceWorkItem: DispatchWorkItem?
     @State private var isLoading = false
-    private var filteredCrags: [DesignCrag] {
-        guard !debouncedSearchText.isEmpty else { return crags }
-        return crags.filter { matchesPattern($0, debouncedSearchText) }
-    }
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -110,7 +110,7 @@ struct SelectCragView: View {
     private var cragSelectionSection: some View {
         ScrollView {
             LazyVStack(alignment: .leading) {
-                ForEach(filteredCrags, id: \.id) { crag in
+                ForEach(crags, id: \.id) { crag in
                     TwoLineRow(
                         title: crag.name,
                         subtitle: crag.address
@@ -160,7 +160,7 @@ struct SelectCragView: View {
         isLoading = !text.isEmpty
         
         let workItem = DispatchWorkItem {
-            debouncedSearchText = text
+            didChangeSearchText(text)
             isLoading = false
         }
         
@@ -177,6 +177,8 @@ struct SelectCragView_Previews: PreviewProvider {
             },
             didTapSkipButton: {
                 print("건너뛰기 버튼 클릭됨")
+            },
+            didChangeSearchText: { _ in
             },
             didNearEnd: { },
             matchesPattern: { _, _ in

@@ -124,6 +124,7 @@ public struct AttemptFeature {
         case skipEditCragTapped
         case deletedAttempt
         case deleteAttemptFinished
+        case cragName(keyWord: String)
         
         // errorHandler
         case errorHandler(Error)
@@ -261,7 +262,9 @@ public struct AttemptFeature {
             case .editCragTapped:
                 state.showGradeBottomSheet = false
                 return fetchNearByCrags()
-                
+            case .cragName(let keyword):
+                return fetchNearByCrags(keyword: keyword)
+              
             case .attemptResultActionTapped(let newAction):
                 guard let currentAttempt = state.attempt else {
                     return .none
@@ -381,10 +384,10 @@ extension AttemptFeature {
         }
     }
     
-    private func fetchNearByCrags() -> Effect<Action> {
+    private func fetchNearByCrags(keyword: String = "") -> Effect<Action> {
         return .run { send in
             do {
-                let crags = try await cragUseCase.fetch()
+                let crags = try await cragUseCase.fetch(keyword: keyword)
                 await send(.getNearByCrags(crags))
             } catch {
                 debugPrint(error.localizedDescription)

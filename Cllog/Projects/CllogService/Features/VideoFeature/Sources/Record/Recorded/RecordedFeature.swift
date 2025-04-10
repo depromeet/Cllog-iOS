@@ -434,9 +434,10 @@ extension RecordedFeature {
             }
             return .none
             
-        case .cragName(let keyWord):
+        case .cragName(let keyword):
             // 암장 등급을 검색할떄 호출
-            return .none
+            return fetchNearByCrags(keyword: keyword)
+            
         case .gradeBottomSheetShow(let grades):
             // 암장 등급을 보여주기 위해서 호출되는 값
             state.grades = grades
@@ -479,10 +480,10 @@ extension RecordedFeature {
         return .none
     }
     
-    private func fetchNearByCrags() -> Effect<Action> {
+    private func fetchNearByCrags(keyword: String = "") -> Effect<Action> {
         .run { send in
             do {
-                let crags = try await cragUseCase.fetch()
+                let crags = try await cragUseCase.fetch(keyword: keyword)
                 await send(.fetchedCrags(crags))
             } catch {
                 debugPrint(error.localizedDescription)

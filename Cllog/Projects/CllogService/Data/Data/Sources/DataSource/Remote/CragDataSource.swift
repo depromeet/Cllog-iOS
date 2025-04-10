@@ -12,7 +12,7 @@ import Networker
 
 public protocol CragDataSource {
     func myCrags(cursor: Double?) async throws -> (crags: [FolderCragResponseDTO], meta: BaseMetaResponseDTO?)
-    func nearByCrags(longitude: Double?, latitude: Double?, cursor: Double?) async throws -> (crags: [FolderCragResponseDTO], meta: BaseMetaResponseDTO?)
+    func nearByCrags(longitude: Double?, latitude: Double?, cursor: Double?, keyword: String?) async throws -> (crags: [FolderCragResponseDTO], meta: BaseMetaResponseDTO?)
 }
 
 public final class DefaultCragDataSource: CragDataSource {
@@ -41,10 +41,11 @@ public final class DefaultCragDataSource: CragDataSource {
     public func nearByCrags(
         longitude: Double?,
         latitude: Double?,
-        cursor: Double?
+        cursor: Double?,
+        keyword: String?
     ) async throws -> (crags: [FolderCragResponseDTO], meta: BaseMetaResponseDTO?) {
         let response: CragResponseType = try await provider.request(
-            CragTarget.nearBy(longitude: longitude, latitude: latitude, cursor: cursor)
+            CragTarget.nearBy(longitude: longitude, latitude: latitude, cursor: cursor, keyword: keyword)
         )
         
         guard let crags = response.data else {
@@ -59,7 +60,7 @@ public final class DefaultCragDataSource: CragDataSource {
 
 enum CragTarget {
     case myCrags
-    case nearBy(longitude: Double?, latitude: Double?, cursor: Double?)
+    case nearBy(longitude: Double?, latitude: Double?, cursor: Double?, keyword: String?)
 }
 
 extension CragTarget: EndpointType {
@@ -87,14 +88,13 @@ extension CragTarget: EndpointType {
     var parameters: Networker.ParameterType? {
         switch self {
         case .myCrags: return nil
-        case .nearBy(let longitude, let latitude, let cursor):
-            let dictionary = Starlink.SafeDictionary<String, Any>(
-                storage: [
-                    "cursor" : cursor,
-                    "longitude": longitude,
-                    "latitude" : latitude,
-                ].compactMapValues { $0 }
-            )
+        case .nearBy(let longitude, let latitude, let cursor, let keyword):
+            var storage: [String: Any] = [:]
+            if let cursor { storage["cursor"] = cursor }
+            if let longitude { storage["longitude"] = longitude }
+            if let latitude { storage["latitude"] = latitude }
+            if let keyword { storage["keyword"] = keyword }
+            let dictionary = Starlink.SafeDictionary<String, Any>(storage: storage)
             return Networker.ParameterType.dictionary(dictionary)
         }
     }
