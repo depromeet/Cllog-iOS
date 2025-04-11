@@ -32,7 +32,7 @@ extension StoriesView {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Circle()
-                            .fill(.red)
+                            .fill(Color.init(hex: store.story.problems[index].colorHex ?? "#41444D"))
                             .frame(width: 16, height: 16)
                         
                         Text("문제\(index + 1)")
