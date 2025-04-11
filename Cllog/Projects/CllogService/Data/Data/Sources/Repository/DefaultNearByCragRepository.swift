@@ -15,6 +15,8 @@ public actor DefaultNearByCragRepository: NearByCragRepository {
     private var cursor: Double?
     private var keyword: String?
     private var hasMore: Bool = true
+    private var latitude: Double?
+    private var longitude: Double?
     private let dataSource: CragDataSource
     
     public init(dataSource: CragDataSource) {
@@ -25,11 +27,15 @@ public actor DefaultNearByCragRepository: NearByCragRepository {
         self.cursor = nil
         self.keyword = keyword
         self.hasMore = true
+        if let longitude, let latitude {
+            self.latitude = latitude
+            self.longitude = longitude
+        }
         
-        return try await fetchMore(longitude: longitude, latitude: latitude)
+        return try await fetchMore()
     }
     
-    public func fetchMore(longitude: Double?, latitude: Double?) async throws -> [Crag] {
+    public func fetchMore() async throws -> [Crag] {
         guard hasMore else { return [] }
         
         let (crags, meta) = try await dataSource.nearByCrags(longitude: longitude, latitude: latitude, cursor: cursor, keyword: keyword)

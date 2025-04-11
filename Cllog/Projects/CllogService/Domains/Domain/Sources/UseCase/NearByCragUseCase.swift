@@ -30,28 +30,16 @@ extension DependencyValues {
 public final class DefaultNearByCragUseCase: NearByCragUseCase {
     private let repository: NearByCragRepository
     
-    private var userLocation: Location?
-    
-    public init(
-        repository: NearByCragRepository
-    ) {
+    public init(repository: NearByCragRepository) {
         self.repository = repository
     }
     
     public func fetch(keyword: String, location: Location?) async throws -> [Crag] {
-        do {
-            self.userLocation = location
-            guard let location else {
-                return try await repository.fetch(longitude: nil, latitude: nil, keyword: keyword)
-            }
-            return try await repository.fetch(longitude: location.longitude, latitude: location.latitude, keyword: keyword)
-        } catch {
-            return try await repository.fetch(longitude: nil, latitude: nil, keyword: keyword)
-        }
+        return try await repository.fetch(longitude: location?.longitude, latitude: location?.latitude, keyword: keyword)
     }
     
     public func next() async throws -> [Crag] {
-        return try await repository.fetchMore(longitude: userLocation?.longitude, latitude: userLocation?.latitude)
+        return try await repository.fetchMore()
     }
     
 }
