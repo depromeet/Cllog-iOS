@@ -387,7 +387,7 @@ extension AttemptFeature {
     private func fetchNearByCrags(keyword: String = "") -> Effect<Action> {
         return .run { send in
             do {
-                let crags = try await cragUseCase.fetch(keyword: keyword)
+                let crags = try await cragUseCase.fetch(keyword: keyword, location: nil)
                 await send(.getNearByCrags(crags))
             } catch {
                 debugPrint(error.localizedDescription)

@@ -28,6 +28,7 @@ public struct RecordedFeature {
     @Dependency(\.nearByCragUseCase) private var cragUseCase
     @Dependency(\.gradeUseCase) private var gradeUseCase
     @Dependency(\.videoDataManager) private var videoDataManager
+    @Dependency(\.locationFetcher) private var locationFetcher
     
     @ObservableState
     public struct State: Equatable {
@@ -481,9 +482,11 @@ extension RecordedFeature {
     }
     
     private func fetchNearByCrags(keyword: String = "") -> Effect<Action> {
-        .run { send in
+        let locationFetcher = locationFetcher
+        return .run { [locationFetcher] send in
             do {
-                let crags = try await cragUseCase.fetch(keyword: keyword)
+                let location = try await locationFetcher.fetchCurrentLocation()
+                let crags = try await cragUseCase.fetch(keyword: keyword, location: location)
                 await send(.fetchedCrags(crags))
             } catch {
                 debugPrint(error.localizedDescription)

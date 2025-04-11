@@ -8,7 +8,20 @@
 
 import Foundation
 import CoreLocation
+import Dependencies
+import Shared
 
 public protocol LocationFetcher {
     func fetchCurrentLocation() async throws -> Location
+}
+
+enum LocationFetcherKey: DependencyKey {
+    static let liveValue: LocationFetcher = ClLogDI.container.resolve(LocationFetcher.self)!
+}
+
+extension DependencyValues {
+    public var locationFetcher: LocationFetcher {
+        get { self[LocationFetcherKey.self] }
+        set { self[LocationFetcherKey.self] = newValue }
+    }
 }
