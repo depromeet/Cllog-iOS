@@ -61,9 +61,11 @@ extension ClimbingCard {
                     
                     HStack(spacing:4) {
                         ForEach(climbStory.problems, id: \.self) { problem in
-                            Circle()
-                                .fill(Color(hex: problem.colorHex))
-                                .frame(width: 10, height: 10)
+                            ForEach(0..<problem.attemptCount, id: \.self) { _ in
+                                Circle()
+                                    .fill(Color(hex: problem.colorHex))
+                                    .frame(width: 10, height: 10)
+                            }
                         }
                     }
                 }

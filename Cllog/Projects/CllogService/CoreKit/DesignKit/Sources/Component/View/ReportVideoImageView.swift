@@ -41,7 +41,11 @@ public struct ReportVideoImageView: View {
         ZStack(alignment: .topTrailing) {
             
             Thumbnail(url: imageName, width: 84, height: 84)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(RoundedRectangle(cornerRadius: 14.4))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14.4)
+                        .strokeBorder(borderColor, lineWidth: 3)
+                )
             
             Button {
                 deleteButtonHandler()
