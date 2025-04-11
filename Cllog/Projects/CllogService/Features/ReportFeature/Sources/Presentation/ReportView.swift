@@ -221,9 +221,10 @@ extension ReportView {
                                 imageURLString: video.thumbnailUrl,
                                 thumbnailType: .calendar,
                                 isChallengeResult: false,
-                                time: video.durationMs.msToTimeString
+                                time: video.durationMs.msToTimeString,
+                                width: 166,
+                                height: 166
                             )
-                            .frame(width: 166, height: 166)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                     }

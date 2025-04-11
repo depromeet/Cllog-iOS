@@ -14,6 +14,7 @@ import DesignKit
 struct StoriesView: View {
     private let calendarColumns = Array(repeating: GridItem(.flexible(), spacing: 18), count: 2)
     private let store: StoreOf<StoriesFeature>
+    private let size = (UIScreen.main.bounds.width / 2) - 11
     
     init(store: StoreOf<StoriesFeature>) {
         self.store = store
@@ -31,7 +32,7 @@ extension StoriesView {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Circle()
-                            .fill(.red)
+                            .fill(Color.init(hex: store.story.problems[index].colorHex ?? "#41444D"))
                             .frame(width: 16, height: 16)
                         
                         Text("문제\(index + 1)")
@@ -45,7 +46,9 @@ extension StoriesView {
                                 imageURLString: attempt.video.thumbnailUrl,
                                 thumbnailType: .calendar,
                                 challengeResult: attempt.status == .success ? .complete : .fail,
-                                time: attempt.video.durationMs.msToTimeString
+                                time: attempt.video.durationMs.msToTimeString,
+                                width: size,
+                                height: size
                             )
                         }
                     }

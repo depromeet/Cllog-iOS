@@ -11,5 +11,5 @@ import Shared
 
 public protocol NearByCragRepository {
     func fetch(longitude: Double?, latitude: Double?, keyword: String?) async throws -> [Crag]
-    func fetchMore(longitude: Double?, latitude: Double?) async throws -> [Crag]
+    func fetchMore() async throws -> [Crag]
 }

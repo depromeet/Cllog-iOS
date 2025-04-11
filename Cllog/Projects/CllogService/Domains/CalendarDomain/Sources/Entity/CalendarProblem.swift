@@ -8,14 +8,17 @@
 
 import Foundation
 
-public struct CalendarProblem: Hashable {
+public struct CalendarProblem: Hashable, Identifiable {
+    public var id: UUID
     public let attemptCount: Int
     public let colorHex: String
     
     public init(
+        id: UUID = UUID(),
         attemptCount: Int,
         colorHex: String
     ) {
+        self.id = id
         self.attemptCount = attemptCount
         self.colorHex = colorHex
     }
