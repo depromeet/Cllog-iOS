@@ -183,12 +183,13 @@ extension RecordedFeature {
         
         // 암장정보 조회 및 저장
         case .fetchCrags:
-            return fetchNearByCrags()
+            return .none
             
         case .fetchedCrags(let crags):
             state.designCrags = crags.map {
                 DesignCrag(id: $0.id, name: $0.name, address: $0.address)
             }
+            state.showSelectCragBottomSheet = true
             return .none
         case .fetchedMoreCrags(let crags):
             let newCrags = crags.map {
@@ -329,6 +330,7 @@ extension RecordedFeature {
                 state.showSelectCragBottomSheet = true
                 return .run { send in
                     await send(.pause)
+                    await send(.cragName(keyWord: ""))
                 }
             } else {
                 // 이후 시도
@@ -348,6 +350,7 @@ extension RecordedFeature {
                 state.showSelectCragBottomSheet = true
                 return .run { send in
                     await send(.pause)
+                    await send(.cragName(keyWord: ""))
                 }
             } else {
                 // 이후 시도
@@ -481,11 +484,11 @@ extension RecordedFeature {
         return .none
     }
     
-    private func fetchNearByCrags(keyword: String = "") -> Effect<Action> {
+    private func fetchNearByCrags(keyword: String) -> Effect<Action> {
         let locationFetcher = locationFetcher
         return .run { [locationFetcher] send in
             do {
-                let location = try await locationFetcher.fetchCurrentLocation()
+                let location = try? await locationFetcher.fetchCurrentLocation()
                 let crags = try await cragUseCase.fetch(keyword: keyword, location: location)
                 await send(.fetchedCrags(crags))
             } catch {
