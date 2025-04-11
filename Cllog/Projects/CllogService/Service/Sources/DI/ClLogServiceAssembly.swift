@@ -32,7 +32,6 @@ public struct ClLogServiceAssembly: Assembly {
         container.register(LocationFetcher.self) { _ in
             DefaultLocationFetcher()
         }
-        .inObjectScope(.container)
 
         container.register(LoginUseCase.self) { _ in
             DefaultLoginUseCase(
@@ -191,7 +190,7 @@ public struct ClLogServiceAssembly: Assembly {
             )
         }
         
-        container.register(NearByCragUseCase.self) { resolver in
+        container.register(NearByCragUseCase.self) { _ in
             DefaultNearByCragUseCase(
                 repository: DefaultNearByCragRepository(
                     dataSource: DefaultCragDataSource(
@@ -199,8 +198,7 @@ public struct ClLogServiceAssembly: Assembly {
                             tokenProvider: DefaultTokenDataSource().loadToken
                         )
                     )
-                ),
-                locationFetcher: resolver.resolveDependency()
+                )
             )
         }
         
