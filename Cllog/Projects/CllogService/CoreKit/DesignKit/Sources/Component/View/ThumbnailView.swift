@@ -66,6 +66,7 @@ public struct ThumbnailView: View {
                         Thumbnail(
                             url: imageURLString
                         )
+                        .allowsHitTesting(false)
                         .frame(width: width, height: height)
                     }
                     .frame(width: width, height: height)
