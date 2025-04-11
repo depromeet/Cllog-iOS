@@ -79,6 +79,8 @@ extension SettingFeature {
                 return .send(.withdrawTapped)
             case .privacyPolicy:
                 return .send(.pushWebView("https://crimson-reason-2f1.notion.site/1abbb5f5bdf780cd8e5fe4ccb702fe23?pvs=4"))
+            case .feedback:
+                return .send(.pushWebView("https://docs.google.com/forms/d/e/1FAIpQLSfZ04n5p2bEMNPsjg87g4TzQdS79h3kLWn51lVisHaLcXN_sg/viewform"))
             case .termsOfService:
                 return .send(.pushWebView("https://crimson-reason-2f1.notion.site/1abbb5f5bdf780a1b2d9f2cda245bf48?pvs=4"))
             default:
